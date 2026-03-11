@@ -1,0 +1,20 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.cs]
+# Вимикаємо вимогу обов'язкової документації (коментарів) для кожного методу
+dotnet_diagnostic.SA1600.severity = none
+dotnet_diagnostic.SA1633.severity = none
+
+# Дозволяємо using-директиви поза namespace (стандарт для сучасного .NET)
+dotnet_diagnostic.SA1200.severity = none
+
+# Налаштування Roslynator (підказки для рефакторингу)
+dotnet_analyzer_diagnostic.category-Redundancy.severity = warning
