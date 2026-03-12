@@ -1,7 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using StudentHelper.Infrastructure.Data;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Serilog configuration
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -9,8 +14,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<StudentHelperDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
 var app = builder.Build();
+
+// Enable Serilog request logging
+app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -21,12 +28,13 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
 
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.Run();
