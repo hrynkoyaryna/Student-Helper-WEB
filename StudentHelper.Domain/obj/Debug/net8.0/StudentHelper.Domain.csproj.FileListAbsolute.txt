@@ -1,0 +1,12 @@
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/bin/Debug/net8.0/StudentHelper.Domain.deps.json
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/bin/Debug/net8.0/StudentHelper.Domain.dll
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/bin/Debug/net8.0/StudentHelper.Domain.pdb
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/obj/Debug/net8.0/StudentHelper.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/obj/Debug/net8.0/StudentHelper.Domain.AssemblyInfoInputs.cache
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/obj/Debug/net8.0/StudentHelper.Domain.AssemblyInfo.cs
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/obj/Debug/net8.0/StudentHelper.Domain.csproj.CoreCompileInputs.cache
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/obj/Debug/net8.0/StudentHelper.Domain.sourcelink.json
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/obj/Debug/net8.0/StudentHelper.Domain.dll
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/obj/Debug/net8.0/refint/StudentHelper.Domain.dll
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/obj/Debug/net8.0/StudentHelper.Domain.pdb
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/obj/Debug/net8.0/ref/StudentHelper.Domain.dll

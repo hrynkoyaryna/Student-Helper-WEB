@@ -1,0 +1,16 @@
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/bin/Debug/net8.0/StudentHelper.Application.deps.json
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/bin/Debug/net8.0/StudentHelper.Application.dll
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/bin/Debug/net8.0/StudentHelper.Application.pdb
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/bin/Debug/net8.0/StudentHelper.Domain.dll
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/bin/Debug/net8.0/StudentHelper.Domain.pdb
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/StudentHelper.Application.csproj.AssemblyReference.cache
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/StudentHelper.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/StudentHelper.Application.AssemblyInfoInputs.cache
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/StudentHelper.Application.AssemblyInfo.cs
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/StudentHelper.Application.csproj.CoreCompileInputs.cache
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/StudentHelper.Application.sourcelink.json
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/StudentH.A07F0C3E.Up2Date
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/StudentHelper.Application.dll
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/refint/StudentHelper.Application.dll
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/StudentHelper.Application.pdb
+/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/ref/StudentHelper.Application.dll

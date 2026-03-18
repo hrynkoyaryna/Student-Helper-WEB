@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "9BOiE6yCeU8=",
+  "success": true,
+  "projectFilePath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/StudentHelper.Application.csproj",
+  "expectedPackageFiles": [
+    "/Users/katerynavitik/.nuget/packages/stylecop.analyzers/1.1.118/stylecop.analyzers.1.1.118.nupkg.sha512"
+  ],
+  "logs": []
+}

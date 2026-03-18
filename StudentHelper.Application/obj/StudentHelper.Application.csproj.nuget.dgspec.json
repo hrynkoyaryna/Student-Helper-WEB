@@ -1,0 +1,148 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/StudentHelper.Application.csproj": {}
+  },
+  "projects": {
+    "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/StudentHelper.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/StudentHelper.Application.csproj",
+        "projectName": "StudentHelper.Application",
+        "projectPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/StudentHelper.Application.csproj",
+        "packagesPath": "/Users/katerynavitik/.nuget/packages/",
+        "outputPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/katerynavitik/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "/usr/local/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/StudentHelper.Domain.csproj": {
+                "projectPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/StudentHelper.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "StyleCop.Analyzers": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.1.118, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/StudentHelper.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/StudentHelper.Domain.csproj",
+        "projectName": "StudentHelper.Domain",
+        "projectPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/StudentHelper.Domain.csproj",
+        "packagesPath": "/Users/katerynavitik/.nuget/packages/",
+        "outputPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/katerynavitik/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "/usr/local/share/dotnet/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "StyleCop.Analyzers": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.1.118, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
