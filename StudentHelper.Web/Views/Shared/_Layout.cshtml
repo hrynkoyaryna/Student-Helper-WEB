@@ -1,47 +1,159 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - StudentHelper.Web</title>
+    <title>@ViewData["Title"]</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/StudentHelper.Web.styles.css" asp-append-version="true" />
+    <style>
+        :root {
+            --primary-color: rgb(91, 200, 216);
+            --primary-dark: rgb(68, 184, 200);
+            --text-dark: rgb(26, 26, 26);
+            --text-light: rgb(113, 128, 150);
+            --bg-light: rgb(244, 247, 246);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-dark);
+        }
+
+        .navbar {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 12px 0;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary-color) !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand::before {
+            content: "📚";
+            font-size: 24px;
+        }
+
+        .nav-link {
+            color: var(--text-light) !important;
+            font-weight: 500;
+            padding: 8px 15px !important;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .btn-outline-secondary {
+            color: var(--text-light);
+            border-color: var(--text-light);
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--text-light);
+            color: white;
+            border-color: var(--text-light);
+        }
+
+        footer {
+            background-color: var(--bg-light);
+            margin-top: 100px;
+            padding: 30px 0;
+            color: var(--text-light);
+        }
+
+        footer a {
+            color: var(--primary-color);
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            min-height: calc(100vh - 200px);
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">StudentHelper.Web</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Student Helper</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                        aria-expanded="false" aria-label="Меню навігації">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Calendar" asp-action="Index">Календар</a>
+                            </li>
+                        }
                     </ul>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-secondary" style="font-size: 14px;">@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value</span>
+                            <form method="post" asp-controller="Account" asp-action="Logout" style="margin: 0;">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Вихід</button>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="Account" asp-action="Login">Вхід</a>
+                            <a class="btn btn-primary btn-sm" asp-controller="Account" asp-action="Register">Реєстрація</a>
+                        </div>
+                    }
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <main role="main">
+        @RenderBody()
+    </main>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - StudentHelper.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="border-top text-muted">
+        <div class="container-fluid">
+            <div style="padding: 40px 20px; text-align: center;">
+                <p style="margin-bottom: 10px;">&copy; 2026 Student Helper - <a asp-area="" asp-controller="Home" asp-action="Privacy">Конфіденційність</a></p>
+                <p style="font-size: 12px; opacity: 0.7;">Офіційна платформа для управління навчанням студентів</p>
+            </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

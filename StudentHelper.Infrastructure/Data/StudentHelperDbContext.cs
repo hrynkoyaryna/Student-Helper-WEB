@@ -1,17 +1,17 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using StudentHelper.Domain.Entities;
 
 namespace StudentHelper.Infrastructure.Data;
 
-public class StudentHelperDbContext : DbContext
+public class StudentHelperDbContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
     public StudentHelperDbContext(DbContextOptions<StudentHelperDbContext> options)
         : base(options)
     {
     }
 
-    public DbSet<User> Users => Set<User>();
-    public DbSet<Role> Roles => Set<Role>();
     public DbSet<Group> Groups => Set<Group>();
     public DbSet<Subject> Subjects => Set<Subject>();
     public DbSet<Teacher> Teachers => Set<Teacher>();
@@ -25,17 +25,13 @@ public class StudentHelperDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Role>()
-            .HasMany(r => r.Users)
-            .WithOne(u => u.Role)
-            .HasForeignKey(u => u.RoleId)
-            .OnDelete(DeleteBehavior.Restrict);
-
+        // Налаштування для Group
         modelBuilder.Entity<Group>()
             .HasMany(g => g.Users)
             .WithOne(u => u.Group)
             .HasForeignKey(u => u.GroupId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .IsRequired(false) 
+            .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Entity<Group>()
             .HasMany(g => g.ScheduleLessons)
@@ -43,12 +39,14 @@ public class StudentHelperDbContext : DbContext
             .HasForeignKey(s => s.GroupId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // Налаштування для Subject
         modelBuilder.Entity<Subject>()
             .HasMany(s => s.ScheduleLessons)
             .WithOne(sl => sl.Subject)
             .HasForeignKey(sl => sl.SubjectId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Налаштування для Teacher
         modelBuilder.Entity<Teacher>()
             .HasMany(t => t.ScheduleLessons)
             .WithOne(sl => sl.Teacher)
@@ -83,9 +81,9 @@ public class StudentHelperDbContext : DbContext
             .HasIndex(u => u.Email)
             .IsUnique();
 
-        modelBuilder.Entity<Role>().HasData(
-            new Role { Id = 1, Name = "Admin" },
-            new Role { Id = 2, Name = "User" }
+        modelBuilder.Entity<IdentityRole<int>>().HasData(
+            new IdentityRole<int> { Id = 1, Name = "Admin", NormalizedName = "ADMIN" },
+            new IdentityRole<int> { Id = 2, Name = "User", NormalizedName = "USER" }
         );
     }
 }

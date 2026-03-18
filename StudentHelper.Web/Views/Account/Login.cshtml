@@ -1,0 +1,198 @@
+@model StudentHelper.Web.Models.LoginViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Вхід - Student Helper</title>
+    <style>
+        body { 
+            background-color: rgb(244, 247, 246); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .login-box { 
+            background: white; 
+            padding: 40px 50px; 
+            border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05); 
+            width: 100%; 
+            max-width: 480px;
+            text-align: center;
+        }
+        .logo-container {
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+        .logo-container img {
+            width: 90px; 
+            height: 90px;
+            object-fit: contain;
+            border-radius: 15px;
+        }
+        .app-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: rgb(26, 26, 26);
+            margin: 8px 0 28px 0;
+        }
+        .form-group { 
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            color: rgb(74, 74, 74);
+            font-weight: 600;
+            font-size: 14px;
+            padding-left: 2px;
+        }
+        .form-control { 
+            width: 100%; 
+            padding: 14px 18px;
+            border: 1px solid rgb(226, 232, 240); 
+            border-radius: 12px;
+            box-sizing: border-box; 
+            font-size: 15px;
+            background-color: rgb(248, 250, 252);
+            color: rgb(26, 26, 26);
+            transition: all 0.2s ease;
+        }
+        .form-control:focus {
+            border-color: rgb(91, 200, 216);
+            outline: none;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(91, 200, 216, 0.15);
+        }
+        .form-control::placeholder { 
+            color: rgb(160, 174, 192); 
+        }
+        .remember-me-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: -8px;
+        }
+        .remember-me-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: rgb(91, 200, 216);
+            margin-right: 8px;
+        }
+        .remember-me-group label {
+            margin: 0;
+            font-weight: 500;
+            color: rgb(113, 128, 150);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .btn-primary { 
+            width: 100%; 
+            padding: 16px; 
+            background-color: rgb(91, 200, 216); 
+            border: none; 
+            border-radius: 12px; 
+            color: white; 
+            font-size: 17px; 
+            font-weight: 700;
+            cursor: pointer; 
+            margin-top: 15px;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+        .btn-primary:hover { 
+            background-color: rgb(68, 184, 200); 
+        }
+        .btn-primary:active { 
+            transform: scale(0.98); 
+        }
+        .text-danger { 
+            color: rgb(229, 62, 62); 
+            font-size: 12px; 
+            margin-top: 5px; 
+            display: block; 
+            padding-left: 4px;
+        }
+        .footer-links { 
+            margin-top: 25px; 
+            font-size: 15px;
+            color: rgb(113, 128, 150);
+        }
+        .footer-links a { 
+            color: rgb(91, 200, 216); 
+            text-decoration: none; 
+            font-weight: 600;
+        }
+        .footer-links a:hover { 
+            text-decoration: underline; 
+        }
+        .validation-summary {
+            background-color: rgb(254, 226, 226);
+            border: 1px solid rgb(248, 113, 113);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            color: rgb(229, 62, 62);
+            font-size: 14px;
+        }
+        .validation-summary ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <div class="logo-container">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px;">
+            <img src="/logo.png" alt="Logo" style="width: 80px; height: auto; object-fit: contain;" onerror="this.style.display='none'" />
+            <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: rgb(91, 200, 216);">Student Helper</h1>
+        </div>
+    </div>
+
+    <form asp-controller="Account" asp-action="Login" method="post">
+        <div asp-validation-summary="All" class="validation-summary"></div>
+        
+        <div class="form-group">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" type="email" placeholder="email@lnu.edu.ua" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Password"></label>
+            <input asp-for="Password" type="password" class="form-control" placeholder="Введіть пароль" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <div class="remember-me-group">
+            <input asp-for="RememberMe" type="checkbox" id="RememberMe" />
+            <label for="RememberMe">Запам'ятати мене</label>
+        </div>
+
+        <button type="submit" class="btn-primary">Увійти</button>
+        <a asp-controller="Account" asp-action="ForgotPassword" style="display: block; margin-top: 15px; text-align: center; color: rgb(91, 200, 216); text-decoration: none; font-weight: 600; font-size: 14px;">Забули пароль?</a>
+    </form>
+
+    <div class="footer-links">
+        Немає акаунту? <a asp-controller="Account" asp-action="Register">Зареєструватись</a>
+    </div>
+</div>
+
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

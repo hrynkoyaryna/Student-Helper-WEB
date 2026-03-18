@@ -1,34 +1,33 @@
 {
   "format": 1,
   "restore": {
-    "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Web/StudentHelper.Web.csproj": {}
+    "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Web\\StudentHelper.Web.csproj": {}
   },
   "projects": {
-    "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/StudentHelper.Application.csproj": {
+    "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Application\\StudentHelper.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/StudentHelper.Application.csproj",
+        "projectUniqueName": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Application\\StudentHelper.Application.csproj",
         "projectName": "StudentHelper.Application",
-        "projectPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/StudentHelper.Application.csproj",
-        "packagesPath": "/Users/katerynavitik/.nuget/packages/",
-        "outputPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/",
+        "projectPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Application\\StudentHelper.Application.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/katerynavitik/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/StudentHelper.Domain.csproj": {
-                "projectPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/StudentHelper.Domain.csproj"
+              "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Domain\\StudentHelper.Domain.csproj": {
+                "projectPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Domain\\StudentHelper.Domain.csproj"
               }
             }
           }
@@ -72,27 +71,26 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/StudentHelper.Domain.csproj": {
+    "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Domain\\StudentHelper.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/StudentHelper.Domain.csproj",
+        "projectUniqueName": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Domain\\StudentHelper.Domain.csproj",
         "projectName": "StudentHelper.Domain",
-        "projectPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/StudentHelper.Domain.csproj",
-        "packagesPath": "/Users/katerynavitik/.nuget/packages/",
-        "outputPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/obj/",
+        "projectPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Domain\\StudentHelper.Domain.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/katerynavitik/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -117,6 +115,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.Extensions.Identity.Stores": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "StyleCop.Analyzers": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -140,38 +142,37 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Infrastructure/StudentHelper.Infrastructure.csproj": {
+    "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Infrastructure\\StudentHelper.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Infrastructure/StudentHelper.Infrastructure.csproj",
+        "projectUniqueName": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Infrastructure\\StudentHelper.Infrastructure.csproj",
         "projectName": "StudentHelper.Infrastructure",
-        "projectPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Infrastructure/StudentHelper.Infrastructure.csproj",
-        "packagesPath": "/Users/katerynavitik/.nuget/packages/",
-        "outputPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Infrastructure/obj/",
+        "projectPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Infrastructure\\StudentHelper.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/katerynavitik/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/StudentHelper.Application.csproj": {
-                "projectPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/StudentHelper.Application.csproj"
+              "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Application\\StudentHelper.Application.csproj": {
+                "projectPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Application\\StudentHelper.Application.csproj"
               },
-              "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/StudentHelper.Domain.csproj": {
-                "projectPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Domain/StudentHelper.Domain.csproj"
+              "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Domain\\StudentHelper.Domain.csproj": {
+                "projectPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Domain\\StudentHelper.Domain.csproj"
               }
             }
           }
@@ -195,6 +196,10 @@
             "BCrypt.Net-Next": {
               "target": "Package",
               "version": "[4.1.0, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
@@ -233,38 +238,37 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Web/StudentHelper.Web.csproj": {
+    "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Web\\StudentHelper.Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Web/StudentHelper.Web.csproj",
+        "projectUniqueName": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Web\\StudentHelper.Web.csproj",
         "projectName": "StudentHelper.Web",
-        "projectPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Web/StudentHelper.Web.csproj",
-        "packagesPath": "/Users/katerynavitik/.nuget/packages/",
-        "outputPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Web/obj/",
+        "projectPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Web\\StudentHelper.Web.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Web\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/katerynavitik/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/StudentHelper.Application.csproj": {
-                "projectPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/StudentHelper.Application.csproj"
+              "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Application\\StudentHelper.Application.csproj": {
+                "projectPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Application\\StudentHelper.Application.csproj"
               },
-              "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Infrastructure/StudentHelper.Infrastructure.csproj": {
-                "projectPath": "/Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Infrastructure/StudentHelper.Infrastructure.csproj"
+              "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Infrastructure\\StudentHelper.Infrastructure.csproj": {
+                "projectPath": "C:\\TempProj\\Student-Helper-WEB\\StudentHelper.Infrastructure\\StudentHelper.Infrastructure.csproj"
               }
             }
           }
@@ -285,6 +289,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -329,7 +337,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

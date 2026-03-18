@@ -14,3 +14,67 @@
 /Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/refint/StudentHelper.Application.dll
 /Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/StudentHelper.Application.pdb
 /Users/katerynavitik/Student-Helper-WEB/StudentHelper/StudentHelper.Application/obj/Debug/net8.0/ref/StudentHelper.Application.dll
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Application.deps.json
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Application.dll
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Application.pdb
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Domain.dll
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Domain.pdb
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.csproj.AssemblyReference.cache
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.AssemblyInfoInputs.cache
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.AssemblyInfo.cs
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.csproj.CoreCompileInputs.cache
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.sourcelink.json
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentH.A07F0C3E.Up2Date
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.dll
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\refint\StudentHelper.Application.dll
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.pdb
+C:\Users\User\Desktop\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\ref\StudentHelper.Application.dll
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Application.deps.json
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Application.dll
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Application.pdb
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Domain.dll
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Domain.pdb
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.csproj.AssemblyReference.cache
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.AssemblyInfoInputs.cache
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.AssemblyInfo.cs
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.csproj.CoreCompileInputs.cache
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.sourcelink.json
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentH.A07F0C3E.Up2Date
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.dll
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\refint\StudentHelper.Application.dll
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.pdb
+C:\Users\User\Desktop\3 курс\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\ref\StudentHelper.Application.dll
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Application.deps.json
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Application.dll
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Application.pdb
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Domain.dll
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Domain.pdb
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.csproj.AssemblyReference.cache
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.AssemblyInfoInputs.cache
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.AssemblyInfo.cs
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.csproj.CoreCompileInputs.cache
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.sourcelink.json
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentH.A07F0C3E.Up2Date
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.dll
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\refint\StudentHelper.Application.dll
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.pdb
+C:\Users\User\Desktop\course\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\ref\StudentHelper.Application.dll
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Application.deps.json
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Application.dll
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Application.pdb
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Domain.dll
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\bin\Debug\net8.0\StudentHelper.Domain.pdb
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.csproj.AssemblyReference.cache
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.AssemblyInfoInputs.cache
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.AssemblyInfo.cs
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.csproj.CoreCompileInputs.cache
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.sourcelink.json
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentH.A07F0C3E.Up2Date
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.dll
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\refint\StudentHelper.Application.dll
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\StudentHelper.Application.pdb
+C:\TempProj\Student-Helper-WEB\StudentHelper.Application\obj\Debug\net8.0\ref\StudentHelper.Application.dll
