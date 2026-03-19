@@ -1,0 +1,120 @@
+﻿@model StudentHelper.Web.Models.Tasks.TaskIndexViewModel
+
+@{
+    ViewData["Title"] = "Завдання";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 style="font-size: 32px; font-weight: 800; color: rgb(26, 26, 26);">📝 Завдання</h1>
+        <a asp-action="Create" class="btn btn-primary px-4">Додати завдання</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success rounded-4 shadow-sm">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="bg-white rounded-4 shadow-sm p-4">
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <a asp-action="Index" asp-route-status="Поточне" asp-route-subject="@Model.SelectedSubject"
+               class="btn @(Model.SelectedStatus == "Поточне" ? "btn-primary" : "btn-outline-primary")">
+                Поточні
+            </a>
+
+            <a asp-action="Index" asp-route-status="Виконане" asp-route-subject="@Model.SelectedSubject"
+               class="btn @(Model.SelectedStatus == "Виконане" ? "btn-primary" : "btn-outline-primary")">
+                Виконані
+            </a>
+
+            <a asp-action="Index" asp-route-status="Прострочене" asp-route-subject="@Model.SelectedSubject"
+               class="btn @(Model.SelectedStatus == "Прострочене" ? "btn-primary" : "btn-outline-primary")">
+                Прострочені
+            </a>
+        </div>
+
+        <form method="get" asp-action="Index" class="row g-3 align-items-end mb-4">
+            <input type="hidden" name="status" value="@Model.SelectedStatus" />
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Предмет</label>
+                <select name="subject" class="form-select">
+                    <option value="">Усі предмети</option>
+                    @foreach (var subject in Model.Subjects)
+                    {
+                        if (Model.SelectedSubject == subject)
+                        {
+                            <option value="@subject" selected>@subject</option>
+                        }
+                        else
+                        {
+                            <option value="@subject">@subject</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-auto">
+                <button type="submit" class="btn btn-primary">Фільтрувати</button>
+            </div>
+
+            <div class="col-md-auto">
+                <a asp-action="Index" asp-route-status="@Model.SelectedStatus" class="btn btn-outline-secondary">Скинути</a>
+            </div>
+        </form>
+
+        @if (!Model.Tasks.Any())
+        {
+            <div class="text-center py-5 text-secondary">
+                <h5 class="mb-2">Немає завдань</h5>
+                <p class="mb-0">Додай нове завдання або зміни фільтр.</p>
+            </div>
+        }
+        else
+        {
+            <div class="row g-3">
+                @foreach (var task in Model.Tasks)
+                {
+                    <div class="col-12">
+                        <div class="border rounded-4 p-4 shadow-sm">
+                            <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                                <div>
+                                    <h4 class="mb-2">@task.Title</h4>
+                                    <div class="text-secondary mb-1">
+                                        <strong>Предмет:</strong> @task.Subject
+                                    </div>
+                                    <div class="text-secondary mb-1">
+                                        <strong>Дедлайн:</strong> @task.Deadline.ToString("dd.MM.yyyy HH:mm")
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-info text-dark">@task.Status</span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-2 align-items-start">
+                                    <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-outline-secondary btn-sm">Деталі</a>
+                                    <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-outline-primary btn-sm">Редагувати</a>
+                                    <a asp-action="Delete" asp-route-id="@task.Id" class="btn btn-outline-danger btn-sm">Видалити</a>
+
+                                    <form asp-action="ChangeStatus" method="post" class="d-flex gap-2">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@task.Id" />
+                                        <select name="status" class="form-select form-select-sm">
+                                            <option value="Поточне" selected="@(task.Status == "Поточне")">Поточне</option>
+                                            <option value="Виконане" selected="@(task.Status == "Виконане")">Виконане</option>
+                                            <option value="Прострочене" selected="@(task.Status == "Прострочене")">Прострочене</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary btn-sm">Оновити</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+</div>

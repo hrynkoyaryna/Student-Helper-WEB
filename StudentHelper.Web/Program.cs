@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Application.Services;
+using StudentHelper.Infrastructure.Services;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Infrastructure.Data;
 using Serilog;
@@ -46,6 +47,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // 6. Реєстрація сервісів
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 // 7. Email Sender (заглушка для розробки - замініть на реальний сервіс)
 builder.Services.AddSingleton<IEmailSender, ConsoleEmailSender>();
@@ -79,7 +81,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); ← поки можеш закоментити
+
 app.UseStaticFiles();
 
 app.UseRouting();
