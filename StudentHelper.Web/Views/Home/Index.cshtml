@@ -1,0 +1,260 @@
+﻿@{
+    ViewData["Title"] = "Student Helper - Головна";
+}
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    /* Hero Section */
+    .hero {
+        background: linear-gradient(135deg, rgb(91, 200, 216) 0%, rgba(91, 200, 216, 0.8) 100%);
+        color: white;
+        padding: 80px 20px;
+        text-align: center;
+        margin-top: -16px;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .hero-logo {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 30px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 60px;
+    }
+
+    .hero h1 {
+        font-size: 48px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero p {
+        font-size: 20px;
+        margin-bottom: 40px;
+        opacity: 0.95;
+        line-height: 1.6;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero {
+        padding: 15px 40px;
+        font-size: 16px;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary-hero {
+        background-color: white;
+        color: rgb(91, 200, 216);
+    }
+
+    .btn-primary-hero:hover {
+        background-color: #f0f0f0;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-secondary-hero {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid white;
+    }
+
+    .btn-secondary-hero:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    /* Features Section */
+    .features {
+        padding: 80px 20px;
+        background-color: #f8fafc;
+    }
+
+    .features-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .features-title {
+        text-align: center;
+        font-size: 36px;
+        font-weight: 800;
+        margin-bottom: 60px;
+        color: #1a1a1a;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 40px 30px;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .feature-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #1a1a1a;
+    }
+
+    .feature-card p {
+        color: #666;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, rgb(91, 200, 216) 0%, rgba(91, 200, 216, 0.8) 100%);
+        color: white;
+        padding: 60px 20px;
+        text-align: center;
+        margin-top: 60px;
+    }
+
+    .cta-section h2 {
+        font-size: 32px;
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
+
+    .cta-section p {
+        font-size: 18px;
+        margin-bottom: 30px;
+        opacity: 0.95;
+    }
+
+    /* Responsive */
+    @@media (max-width: 1024px) {
+        .features-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .hero h1 {
+            font-size: 32px;
+        }
+
+        .hero p {
+            font-size: 16px;
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-hero {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .features-title {
+            font-size: 24px;
+        }
+
+        .cta-section h2 {
+            font-size: 24px;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero">
+    <div class="hero-content">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 30px;">
+            <img src="/logo.png" alt="Logo" style="width: 100px; height: auto; object-fit: contain;" onerror="this.style.display='none'" />
+            <h1 style="margin: 0; font-size: 48px;">Student Helper</h1>
+        </div>
+        <p>Зробіть своє навчання ефективнішим з нашим персональним помічником студента</p>
+        <div class="hero-buttons">
+            <a href="@Url.Action("Register", "Account")" class="btn-hero btn-primary-hero">Зареєструватись</a>
+            <a href="@Url.Action("Login", "Account")" class="btn-hero btn-secondary-hero">Уже є акаунт?</a>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features">
+    <div class="features-container">
+        <h2 class="features-title">Чому вибирати Student Helper?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>Розклад занять</h3>
+                <p>Слідкуйте за розкладом занять і ніколи не пропустіть лекцію чи практику</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">✅</div>
+                <h3>Управління завданнями</h3>
+                <p>Легко відстежуйте свої завдання та не забувайте про термін їх здачі</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3>Нотатки</h3>
+                <p>Організуйте свої нотатки та швидко знаходьте потрібну інформацію</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Дати екзаменів</h3>
+                <p>Відстежуйте свої дати екзаменів і плануйте свій час ефективно</p>
+            </div>
+
+        </div>
+    </div>
+</div>
