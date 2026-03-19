@@ -5,6 +5,10 @@ using StudentHelper.Application.Services;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Infrastructure.Data;
 using Serilog;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using MailKit.Net.Smtp;
+using System.Net.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,9 +50,23 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // 6. Реєстрація сервісів
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
-// 7. Email Sender (заглушка для розробки - замініть на реальний сервіс)
-builder.Services.AddSingleton<IEmailSender, ConsoleEmailSender>();
+// 7. Email Sender - bind SMTP settings and register SMTP implementation
+builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
+
+// Choose email sender implementation based on configuration
+var smtpOptions = builder.Configuration.GetSection("Smtp").Get<SmtpOptions>();
+if (smtpOptions != null && !string.IsNullOrEmpty(smtpOptions.Host) && !string.IsNullOrEmpty(smtpOptions.UserName) && !string.IsNullOrEmpty(smtpOptions.Password))
+{
+    // Use real SMTP sender when SMTP is configured
+    builder.Services.AddSingleton<StudentHelper.Application.Interfaces.IEmailSender, SmtpEmailSender>();
+}
+else
+{
+    // Fallback to console sender (useful for local development)
+    builder.Services.AddSingleton<StudentHelper.Application.Interfaces.IEmailSender, ConsoleEmailSender>();
+}
 
 var app = builder.Build();
 
@@ -93,17 +111,110 @@ app.MapControllerRoute(
 
 app.Run();
 
-// ========== EmailSender Implementation ==========
-public interface IEmailSender
+// ========== EmailSender Implementation using MailKit ==========
+public class SmtpOptions
 {
-    Task SendEmailAsync(string email, string subject, string htmlMessage);
+    public string? Host { get; set; }
+    public int Port { get; set; } = 25;
+    public bool UseSsl { get; set; } = true;
+    public string? UserName { get; set; }
+    public string? Password { get; set; }
+    public string? FromName { get; set; }
+    public string? FromEmail { get; set; }
 }
 
-public class ConsoleEmailSender : IEmailSender
+public class SmtpEmailSender : StudentHelper.Application.Interfaces.IEmailSender
 {
+    private readonly SmtpOptions _options;
+    private readonly ILogger<SmtpEmailSender> _logger;
+
+    public SmtpEmailSender(IOptions<SmtpOptions> options, ILogger<SmtpEmailSender> logger)
+    {
+        _options = options.Value;
+        _logger = logger;
+    }
+
+    public async Task SendEmailAsync(string email, string subject, string htmlMessage)
+    {
+        var message = new MimeMessage();
+
+        // Determine From address with validation
+        var fromEmail = _options.FromEmail ?? _options.UserName ?? "noreply@example.com";
+        var fromName = _options.FromName ?? "Student Helper";
+
+        try
+        {
+            // Validate using System.Net.Mail.MailAddress
+            var _ = new System.Net.Mail.MailAddress(fromEmail);
+            message.From.Add(new MimeKit.MailboxAddress(fromName, fromEmail));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Invalid From email '{FromEmail}', falling back to noreply@example.com", fromEmail);
+            message.From.Add(new MimeKit.MailboxAddress("Student Helper", "noreply@example.com"));
+        }
+
+        // Validate recipient
+        try
+        {
+            var _ = new System.Net.Mail.MailAddress(email);
+            message.To.Add(MimeKit.MailboxAddress.Parse(email));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Invalid recipient email: {Email}", email);
+            throw new ArgumentException("Invalid recipient email address", nameof(email));
+        }
+
+        message.Subject = subject;
+
+        var body = new BodyBuilder { HtmlBody = htmlMessage };
+        message.Body = body.ToMessageBody();
+
+        try
+        {
+            using var client = new MailKit.Net.Smtp.SmtpClient();
+            // Office365 requires STARTTLS on port 587
+            var secureSocket = MailKit.Security.SecureSocketOptions.StartTls;
+            if (_options.Port == 465)
+            {
+                secureSocket = MailKit.Security.SecureSocketOptions.SslOnConnect;
+            }
+
+            await client.ConnectAsync(_options.Host ?? "localhost", _options.Port, secureSocket);
+
+            if (!string.IsNullOrEmpty(_options.UserName))
+            {
+                await client.AuthenticateAsync(_options.UserName, _options.Password);
+            }
+
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
+
+            _logger.LogInformation("Email sent to {Email} with subject {Subject}", email, subject);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send email to {Email}", email);
+            throw;
+        }
+    }
+}
+
+// Simple console email sender for development
+public class ConsoleEmailSender : StudentHelper.Application.Interfaces.IEmailSender
+{
+    private readonly ILogger<ConsoleEmailSender> _logger;
+
+    public ConsoleEmailSender(ILogger<ConsoleEmailSender> logger)
+    {
+        _logger = logger;
+    }
+
     public Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
-        Console.WriteLine($"\n[EMAIL]\nЕ-mail: {email}\nТема: {subject}\nПовідомлення: {htmlMessage}\n");
+        _logger.LogInformation("[EMAIL] To: {Email}; Subject: {Subject}; Body: {Body}", email, subject, htmlMessage);
+        Console.WriteLine($"\n[EMAIL]\nTo: {email}\nSubject: {subject}\n{htmlMessage}\n");
         return Task.CompletedTask;
     }
 }

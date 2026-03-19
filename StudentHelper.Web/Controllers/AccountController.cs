@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Web.Models;
 using System.Text;
-using System.Web;
+using Microsoft.AspNetCore.WebUtilities;
+using StudentHelper.Application.Interfaces;
 
 namespace StudentHelper.Web.Controllers;
 
@@ -11,18 +12,18 @@ public class AccountController : Controller
 {
     private readonly SignInManager<User> _signInManager;
     private readonly UserManager<User> _userManager;
-    private readonly IEmailSender _emailSender;
+    private readonly IAccountService _accountService;
     private readonly ILogger<AccountController> _logger;
 
     public AccountController(
         SignInManager<User> signInManager,
         UserManager<User> userManager,
-        IEmailSender emailSender,
+        IAccountService accountService,
         ILogger<AccountController> logger)
     {
         _signInManager = signInManager;
         _userManager = userManager;
-        _emailSender = emailSender;
+        _accountService = accountService;
         _logger = logger;
     }
 
@@ -166,15 +167,18 @@ public class AccountController : Controller
         }
 
         var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var callbackUrl = Url.Action("ResetPassword", "Account", 
-            new { userId = user.Id, code = code }, 
+        // Encode the token to make it safe for URLs
+        var codeBytes = Encoding.UTF8.GetBytes(code);
+        var codeEncoded = WebEncoders.Base64UrlEncode(codeBytes);
+
+        var callbackUrl = Url.Action("ResetPassword", "Account",
+            new { userId = user.Id, code = codeEncoded },
             protocol: Request.Scheme);
 
-        await _emailSender.SendEmailAsync(user.Email ?? "", "Скидання пароля",
-            $"Клацніть на посилання для скидання пароля: <a href=\"{callbackUrl}\">тут</a>");
+        await _accountService.SendPasswordResetEmailAsync(user, callbackUrl ?? string.Empty);
 
         _logger.LogInformation($"Для користувача {user.Email} надіслано посилання для скидання пароля");
-        
+
         return View("ForgotPasswordConfirmation");
     }
 
@@ -187,6 +191,7 @@ public class AccountController : Controller
             return RedirectToAction("ForgotPassword");
         }
 
+        // Keep the encoded token in the hidden field to avoid HTML encoding issues
         var model = new ResetPasswordViewModel { UserId = userId.Value, Code = code };
         return View(model);
     }
@@ -206,7 +211,20 @@ public class AccountController : Controller
             return View(model);
         }
 
-        var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+        // Decode the token from the form (it was encoded with Base64UrlEncode)
+        string decodedCode;
+        try
+        {
+            var codeBytes = WebEncoders.Base64UrlDecode(model.Code);
+            decodedCode = Encoding.UTF8.GetString(codeBytes);
+        }
+        catch
+        {
+            ModelState.AddModelError("", "Неприпустимий токен");
+            return View(model);
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, decodedCode, model.Password);
 
         if (result.Succeeded)
         {
