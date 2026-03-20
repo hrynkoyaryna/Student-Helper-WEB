@@ -66,7 +66,6 @@ else
 
 builder.Services.AddScoped<ITaskService, TaskService>();
 
-
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

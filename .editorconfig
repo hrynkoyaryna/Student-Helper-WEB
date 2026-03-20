@@ -31,5 +31,8 @@ dotnet_diagnostic.SA1117.severity = none
 dotnet_diagnostic.SA0001.severity = none
 dotnet_diagnostic.SA1503.severity = none
 dotnet_diagnostic.SA1027.severity = none
+dotnet_diagnostic.SA1633.severity = none
+dotnet_diagnostic.SA1402.severity = none
+dotnet_diagnostic.SA1312.severity = none
 
 dotnet_analyzer_diagnostic.category-Redundancy.severity = warning
