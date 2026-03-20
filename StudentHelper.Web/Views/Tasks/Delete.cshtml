@@ -1,0 +1,26 @@
+@model StudentHelper.Domain.Entities.TaskItem
+
+@{
+    ViewData["Title"] = "Видалити завдання";
+}
+
+<div class="container py-5">
+    <div class="bg-white rounded-4 shadow-sm p-4 mx-auto" style="max-width: 700px;">
+        <h2 class="fw-bold mb-4 text-danger">Видалити завдання</h2>
+
+        <p>Ти справді хочеш видалити це завдання?</p>
+
+        <div class="border rounded-4 p-3 mb-4">
+            <p><strong>Назва:</strong> @Model.Title</p>
+            <p><strong>Предмет:</strong> @Model.Subject</p>
+            <p><strong>Дедлайн:</strong> @Model.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
+            <p class="mb-0"><strong>Статус:</strong> @Model.Status</p>
+        </div>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Видалити</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Скасувати</a>
+        </form>
+    </div>
+</div>

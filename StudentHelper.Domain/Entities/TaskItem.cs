@@ -8,7 +8,7 @@ public class TaskItem
 
     public DateTime Deadline { get; set; }
 
-    public string Status { get; set; } = string.Empty;
+    public string Status { get; set; } = "Поточне";
 
     public string Subject { get; set; } = string.Empty;
 
