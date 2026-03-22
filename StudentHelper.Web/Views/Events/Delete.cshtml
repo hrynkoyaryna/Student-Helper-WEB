@@ -1,0 +1,21 @@
+@model StudentHelper.Domain.Entities.PersonalEvent
+
+<div class="container py-5">
+    <div class="bg-white rounded-4 shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <h2 class="fw-bold text-danger mb-4">Видалити подію</h2>
+        <p>Ви впевнені, що хочете видалити цю подію?</p>
+        
+        <div class="border rounded-4 p-3 mb-4">
+            <h4>@Model.Title</h4>
+            <p class="text-secondary mb-0">@Model.Description</p>
+            <hr />
+            <p><strong>Час:</strong> @Model.StartTime.ToString(@"hh\:mm") - @Model.EndTime.ToString(@"hh\:mm")</p>
+        </div>
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Так, видалити</button>
+            <a asp-action="Index" asp-controller="Calendar" class="btn btn-outline-secondary">Скасувати</a>
+        </form>
+    </div>
+</div>

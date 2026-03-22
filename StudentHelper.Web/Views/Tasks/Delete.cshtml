@@ -1,26 +1,28 @@
 @model StudentHelper.Domain.Entities.TaskItem
 
 @{
-    ViewData["Title"] = "Видалити завдання";
+    ViewData["Title"] = "Р’РёРґР°Р»РёС‚Рё Р·Р°РІРґР°РЅРЅСЏ";
 }
 
 <div class="container py-5">
     <div class="bg-white rounded-4 shadow-sm p-4 mx-auto" style="max-width: 700px;">
-        <h2 class="fw-bold mb-4 text-danger">Видалити завдання</h2>
+        <h2 class="fw-bold mb-4 text-danger">Р’РёРґР°Р»РёС‚Рё Р·Р°РІРґР°РЅРЅСЏ</h2>
 
-        <p>Ти справді хочеш видалити це завдання?</p>
+        <p>Р’Рё РІРїРµРІРЅРµРЅС–, С‰Рѕ С…РѕС‡РµС‚Рµ РІРёРґР°Р»РёС‚Рё С†Рµ Р·Р°РІРґР°РЅРЅСЏ?</p>
 
         <div class="border rounded-4 p-3 mb-4">
-            <p><strong>Назва:</strong> @Model.Title</p>
-            <p><strong>Предмет:</strong> @Model.Subject</p>
-            <p><strong>Дедлайн:</strong> @Model.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
-            <p class="mb-0"><strong>Статус:</strong> @Model.Status</p>
+            <p><strong>РќР°Р·РІР°:</strong> @Model.Title</p>
+            <p><strong>РџСЂРµРґРјРµС‚:</strong> @Model.Subject</p>
+            <p><strong>Р”РµРґР»Р°Р№РЅ:</strong> @Model.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
+            <p class="mb-0"><strong>РЎС‚Р°С‚СѓСЃ:</strong> @Model.Status</p>
         </div>
 
         <form asp-action="Delete" method="post">
             <input type="hidden" asp-for="Id" />
-            <button type="submit" class="btn btn-danger">Видалити</button>
-            <a asp-action="Index" class="btn btn-outline-secondary">Скасувати</a>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">Р’РёРґР°Р»РёС‚Рё</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">РЎРєР°СЃСѓРІР°С‚Рё</a>
+            </div>
         </form>
     </div>
 </div>

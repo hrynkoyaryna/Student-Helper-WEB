@@ -18,6 +18,7 @@
     }
 
     <div class="bg-white rounded-4 shadow-sm p-4">
+        @* Фільтри за статусом *@
         <div class="d-flex flex-wrap gap-2 mb-4">
             <a asp-action="Index" asp-route-status="Поточне" asp-route-subject="@Model.SelectedSubject"
                class="btn @(Model.SelectedStatus == "Поточне" ? "btn-primary" : "btn-outline-primary")">
@@ -35,6 +36,7 @@
             </a>
         </div>
 
+        @* Фільтр за предметом *@
         <form method="get" asp-action="Index" class="row g-3 align-items-end mb-4">
             <input type="hidden" name="status" value="@Model.SelectedStatus" />
 
@@ -44,14 +46,7 @@
                     <option value="">Усі предмети</option>
                     @foreach (var subject in Model.Subjects)
                     {
-                        if (Model.SelectedSubject == subject)
-                        {
-                            <option value="@subject" selected>@subject</option>
-                        }
-                        else
-                        {
-                            <option value="@subject">@subject</option>
-                        }
+                        <option value="@subject" selected="@(Model.SelectedSubject == subject)">@subject</option>
                     }
                 </select>
             </div>
@@ -78,10 +73,10 @@
                 @foreach (var task in Model.Tasks)
                 {
                     <div class="col-12">
-                        <div class="border rounded-4 p-4 shadow-sm">
+                        <div class="border rounded-4 p-4 shadow-sm bg-light-hover">
                             <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
                                 <div>
-                                    <h4 class="mb-2">@task.Title</h4>
+                                    <h4 class="mb-2 fw-bold">@task.Title</h4>
                                     <div class="text-secondary mb-1">
                                         <strong>Предмет:</strong> @task.Subject
                                     </div>
@@ -89,24 +84,28 @@
                                         <strong>Дедлайн:</strong> @task.Deadline.ToString("dd.MM.yyyy HH:mm")
                                     </div>
                                     <div>
-                                        <span class="badge bg-info text-dark">@task.Status</span>
+                                        <span class="badge @(task.Status == "Виконане" ? "bg-success" : (task.Status == "Прострочене" ? "bg-danger" : "bg-info text-dark"))">
+                                            @task.Status
+                                        </span>
                                     </div>
                                 </div>
 
                                 <div class="d-flex flex-wrap gap-2 align-items-start">
-                                    <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-outline-secondary btn-sm">Деталі</a>
-                                    <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-outline-primary btn-sm">Редагувати</a>
-                                    <a asp-action="Delete" asp-route-id="@task.Id" class="btn btn-outline-danger btn-sm">Видалити</a>
+                                    <div class="btn-group">
+                                        <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-outline-secondary btn-sm">Деталі</a>
+                                        <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-outline-primary btn-sm">Редагувати</a>
+                                        <a asp-action="Delete" asp-route-id="@task.Id" class="btn btn-outline-danger btn-sm">Видалити</a>
+                                    </div>
 
-                                    <form asp-action="ChangeStatus" method="post" class="d-flex gap-2">
+                                    <form asp-action="ChangeStatus" method="post" class="d-flex gap-2 ms-md-2">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@task.Id" />
-                                        <select name="status" class="form-select form-select-sm">
+                                        <select name="status" class="form-select form-select-sm" style="width: auto;">
                                             <option value="Поточне" selected="@(task.Status == "Поточне")">Поточне</option>
                                             <option value="Виконане" selected="@(task.Status == "Виконане")">Виконане</option>
                                             <option value="Прострочене" selected="@(task.Status == "Прострочене")">Прострочене</option>
                                         </select>
-                                        <button type="submit" class="btn btn-primary btn-sm">Оновити</button>
+                                        <button type="submit" class="btn btn-sm btn-primary">Оновити</button>
                                     </form>
                                 </div>
                             </div>
@@ -116,5 +115,4 @@
             </div>
         }
     </div>
-</div>
 </div>

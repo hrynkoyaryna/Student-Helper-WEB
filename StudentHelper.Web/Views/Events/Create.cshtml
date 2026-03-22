@@ -1,0 +1,46 @@
+@model StudentHelper.Web.Models.Events.EventCreateViewModel
+
+@{
+    ViewData["Title"] = "Додати подію";
+}
+
+<div class="container py-5">
+    <div class="bg-white rounded-4 shadow-sm p-4 mx-auto" style="max-width: 600px; border: 1px solid #eee;">
+        <h2 class="fw-bold mb-4">Створити подію</h2>
+
+        <form asp-action="Create" method="post">
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label fw-bold">Назва події</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="EventDate" class="form-label fw-bold">Дата події</label>
+                <input asp-for="EventDate" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="EventDate" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-bold">Опис</label>
+                <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label asp-for="StartTime" class="form-label fw-bold">Початок (час)</label>
+                    <input asp-for="StartTime" type="time" class="form-control" />
+                </div>
+                <div class="col-6 mb-3">
+                    <label asp-for="EndTime" class="form-label fw-bold">Кінець (час)</label>
+                    <input asp-for="EndTime" type="time" class="form-control" />
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 pt-3">
+                <button type="submit" class="btn btn-primary px-4">Зберегти</button>
+                <a asp-controller="Calendar" asp-action="Index" class="btn btn-outline-secondary">Скасувати</a>
+            </div>
+        </form>
+    </div>
+</div>

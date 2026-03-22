@@ -1,0 +1,51 @@
+@model StudentHelper.Web.Models.Events.EventCreateViewModel
+
+<div class="container py-5">
+    <div class="bg-white rounded-4 shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Редагувати подію</h2>
+            <a asp-action="Index" asp-controller="Calendar" class="btn-close" aria-label="Close"></a>
+        </div>
+
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            
+            @* Приховане поле для ID, щоб сервер знав, яку саме подію ми оновлюємо *@
+            <input type="hidden" name="id" value="@ViewContext.RouteData.Values["id"]" />
+
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label fw-semibold">Назва події</label>
+                <input asp-for="Title" class="form-control rounded-3"/>
+                <span asp-validation-for="Title" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-semibold">Опис (необов'язково)</label>
+                <textarea asp-for="Description" class="form-control rounded-3" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger small"></span>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <label asp-for="StartTime" class="form-label fw-semibold">Початок</label>
+                    <input asp-for="StartTime" type="time" class="form-control rounded-3" />
+                    <span asp-validation-for="StartTime" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="EndTime" class="form-label fw-semibold">Кінець</label>
+                    <input asp-for="EndTime" type="time" class="form-control rounded-3" />
+                    <span asp-validation-for="EndTime" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold">Зберегти зміни</button>
+                <a asp-action="Index" asp-controller="Calendar" class="btn btn-link text-secondary">Скасувати</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

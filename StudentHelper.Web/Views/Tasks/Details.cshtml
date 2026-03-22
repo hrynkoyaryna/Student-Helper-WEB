@@ -1,23 +1,23 @@
 @model StudentHelper.Domain.Entities.TaskItem
 
 @{
-    ViewData["Title"] = "Деталі завдання";
+    ViewData["Title"] = "Р”РµС‚Р°Р»С– Р·Р°РІРґР°РЅРЅСЏ";
 }
 
 <div class="container py-5">
     <div class="bg-white rounded-4 shadow-sm p-4 mx-auto" style="max-width: 700px;">
-        <h2 class="fw-bold mb-4">Деталі завдання</h2>
+        <h2 class="fw-bold mb-4">Р”РµС‚Р°Р»С– Р·Р°РІРґР°РЅРЅСЏ</h2>
 
         <div class="border rounded-4 p-3 mb-4">
-            <p><strong>Назва:</strong> @Model.Title</p>
-            <p><strong>Предмет:</strong> @Model.Subject</p>
-            <p><strong>Дедлайн:</strong> @Model.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
-            <p class="mb-0"><strong>Статус:</strong> @Model.Status</p>
+            <p><strong>РќР°Р·РІР°:</strong> @Model.Title</p>
+            <p><strong>РџСЂРµРґРјРµС‚:</strong> @Model.Subject</p>
+            <p><strong>Р”РµРґР»Р°Р№РЅ:</strong> @Model.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
+            <p class="mb-0"><strong>РЎС‚Р°С‚СѓСЃ:</strong> @Model.Status</p>
         </div>
 
         <div class="d-flex gap-2">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редагувати</a>
-            <a asp-action="Index" class="btn btn-outline-secondary">Назад</a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Р РµРґР°РіСѓРІР°С‚Рё</a>
+            <a asp-action="Index" class="btn btn-outline-secondary">РќР°Р·Р°Рґ</a>
         </div>
     </div>
 </div>
