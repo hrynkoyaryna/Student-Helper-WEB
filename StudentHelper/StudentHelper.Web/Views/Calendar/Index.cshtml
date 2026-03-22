@@ -1,0 +1,61 @@
+@model IReadOnlyCollection<StudentHelper.Domain.Entities.PersonalEvent>
+
+@{
+	ViewData["Title"] = "Календар";
+}
+
+<div class="calendar-page">
+	<div class="calendar-page-title">Календар</div>
+
+	@if (TempData["SuccessMessage"] is string message)
+	{
+		<div class="success-banner">@message</div>
+	}
+
+	<div class="calendar-toolbar">
+		<a asp-controller="Calendar" asp-action="Create" class="primary-btn">Додати подію</a>
+
+		<div class="view-switch">
+			<div class="view-pill">День</div>
+			<div class="view-pill active">Тиждень</div>
+			<div class="view-pill">Місяць</div>
+		</div>
+	</div>
+
+	<div class="calendar-panel">
+		<div class="filter-row">
+			<div class="search-box">
+				<input type="text" placeholder="Введіть запит" />
+			</div>
+
+			<div class="filter-checks">
+				<label><input type="checkbox" checked /> Особисте</label>
+				<label><input type="checkbox" /> Навчальне</label>
+			</div>
+		</div>
+
+		@if (!Model.Any())
+		{
+			<div class="empty-state">
+				Подій поки немає. Натисни «Додати подію», щоб створити першу.
+			</div>
+		}
+		else
+		{
+			<div class="event-grid">
+				@foreach (var item in Model)
+				{
+					<div class="event-card personal">
+						<div class="event-title">@item.Title</div>
+						<div class="event-time">
+							@item.StartAt.ToString("dd.MM.yyyy HH:mm") – @item.EndAt.ToString("HH:mm")
+						</div>
+						<div class="event-description">
+							@(string.IsNullOrWhiteSpace(item.Description) ? "Без опису" : item.Description)
+						</div>
+					</div>
+				}
+			</div>
+		}
+	</div>
+</div>

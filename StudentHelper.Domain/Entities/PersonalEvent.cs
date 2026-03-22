@@ -8,10 +8,11 @@ public class PersonalEvent
 
     public string Description { get; set; } = string.Empty;
 
-    public TimeSpan StartTime { get; set; }
+    public DateTime StartAt { get; set; }
 
-    public TimeSpan EndTime { get; set; }
+    public DateTime EndAt { get; set; }
 
     public int UserId { get; set; }
+
     public User User { get; set; } = null!;
 }

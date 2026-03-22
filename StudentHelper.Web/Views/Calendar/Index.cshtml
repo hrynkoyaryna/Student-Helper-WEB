@@ -1,127 +1,267 @@
+@model StudentHelper.Web.Models.Calendar.CalendarIndexViewModel
+
 @{
     ViewData["Title"] = "Календар - Student Helper";
+
+    var previousWeek = Model.WeekStartDate.AddDays(-7);
+    var nextWeek = Model.WeekStartDate.AddDays(7);
+
+    string[] dayNames = { "Понеділок", "Вівторок", "Середа", "Четвер", "Пʼятниця", "Субота", "Неділя" };
 }
 
 <style>
     .calendar-container {
-        max-width: 1200px;
+        max-width: 1300px;
         margin: 0 auto;
-        padding: 40px 20px;
+        padding: 32px 20px 48px;
     }
 
-    .calendar-header {
+    .calendar-topbar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 40px;
+        gap: 16px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
     }
 
-    .calendar-header h1 {
-        font-size: 32px;
-        font-weight: 800;
-        color: rgb(26, 26, 26);
-        margin: 0;
-    }
-
-    .calendar-controls {
+    .calendar-title-block {
         display: flex;
+        flex-direction: column;
         gap: 10px;
     }
 
-    .calendar-btn {
-        padding: 10px 20px;
-        background-color: rgb(91, 200, 216);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: background-color 0.3s ease;
+    .calendar-title {
+        font-size: 38px;
+        font-weight: 800;
+        margin: 0;
+        color: #1a1a1a;
     }
 
-    .calendar-btn:hover {
-        background-color: rgb(68, 184, 200);
+    .calendar-subtitle {
+        font-size: 16px;
+        color: #64748b;
     }
 
-    .calendar-content {
-        background-color: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        padding: 40px;
-        text-align: center;
-        min-height: 500px;
+    .calendar-actions {
         display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .calendar-btn,
+    .calendar-add-btn {
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-    }
-
-    .empty-state {
-        text-align: center;
-    }
-
-    .empty-state-icon {
-        font-size: 80px;
-        margin-bottom: 20px;
-        opacity: 0.3;
-    }
-
-    .empty-state h2 {
-        font-size: 24px;
+        padding: 12px 20px;
+        border-radius: 10px;
+        text-decoration: none;
         font-weight: 700;
-        color: rgb(113, 128, 150);
-        margin-bottom: 10px;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s ease;
     }
 
-    .empty-state p {
-        color: rgb(160, 174, 192);
-        font-size: 16px;
+    .calendar-btn {
+        background-color: #5bc8d8;
+        color: white;
     }
 
-    @@media (max-width: 768px) {
-        .calendar-header {
-            flex-direction: column;
-            gap: 20px;
-            align-items: flex-start;
+        .calendar-btn:hover {
+            background-color: #43b5c7;
+            color: white;
         }
 
-        .calendar-header h1 {
-            font-size: 24px;
+    .calendar-add-btn {
+        background-color: #111827;
+        color: white;
+    }
+
+        .calendar-add-btn:hover {
+            background-color: #1f2937;
+            color: white;
         }
 
-        .calendar-controls {
-            width: 100%;
+    .calendar-shell {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+    }
+
+    .calendar-week-label {
+        padding: 20px 24px 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: #334155;
+    }
+
+    .calendar-grid {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+        .calendar-grid th,
+        .calendar-grid td {
+            border: 1px solid #e5e7eb;
+            vertical-align: top;
         }
 
-        .calendar-content {
-            padding: 20px;
-            min-height: 300px;
+        .calendar-grid thead th {
+            background: #f8fafc;
+            text-align: center;
+            padding: 14px 8px;
+            font-weight: 700;
+            color: #334155;
         }
 
-        .empty-state-icon {
-            font-size: 60px;
-        }
+    .time-col {
+        width: 90px;
+        background: #f8fafc;
+        font-weight: 700;
+        color: #64748b;
+        text-align: center;
+        padding: 12px 8px;
+    }
 
-        .empty-state h2 {
-            font-size: 18px;
-        }
+    .calendar-cell {
+        height: 88px;
+        padding: 6px;
+        background: white;
+        position: relative;
+    }
+
+    .calendar-event {
+        background: #dff7fb;
+        border-left: 4px solid #5bc8d8;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 13px;
+        line-height: 1.35;
+        color: #0f172a;
+        box-shadow: 0 2px 8px rgba(91, 200, 216, 0.16);
+    }
+
+    .calendar-event-title {
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .calendar-event-time {
+        font-size: 12px;
+        color: #475569;
+    }
+
+    .calendar-event-description {
+        font-size: 12px;
+        margin-top: 4px;
+        color: #334155;
+    }
+
+    .empty-calendar {
+        padding: 40px;
+        text-align: center;
+        color: #94a3b8;
+    }
+
+    @@media (max-width: 992px) {
+        .calendar-shell
+
+    {
+        overflow-x: auto;
+    }
+
+    .calendar-grid {
+        min-width: 920px;
+    }
+
     }
 </style>
 
 <div class="calendar-container">
-    <div class="calendar-header">
-        <h1>📅 Календар</h1>
-        <div class="calendar-controls">
-            <button class="calendar-btn">← Назад</button>
-            <button class="calendar-btn">Сьогодні</button>
-            <button class="calendar-btn">Вперед →</button>
+    <div class="calendar-topbar">
+        <div class="calendar-title-block">
+            <h1 class="calendar-title">Календар</h1>
+            <div class="calendar-subtitle">
+                Тиждень: @Model.WeekStartDate.ToString("dd.MM.yyyy") –
+                @Model.WeekStartDate.AddDays(6).ToString("dd.MM.yyyy")
+            </div>
+        </div>
+
+        <div class="calendar-actions">
+            <a asp-action="Index" asp-route-weekStartDate="@previousWeek" class="calendar-btn">← Назад</a>
+            <a asp-action="Index" class="calendar-btn">Сьогодні</a>
+            <a asp-action="Index" asp-route-weekStartDate="@nextWeek" class="calendar-btn">Вперед →</a>
+            <a asp-action="Create" class="calendar-add-btn">Додати подію</a>
         </div>
     </div>
 
-    <div class="calendar-content">
-        <div class="empty-state">
-            <div class="empty-state-icon">📅</div>
-            <h2>Календар розробляється</h2>
-            <p>Ця сторінка буде розроблена найближчим часом</p>
+    <div class="calendar-shell">
+        <div class="calendar-week-label">
+            Розклад подій
         </div>
+
+        @if (Model.Days.Any() && Model.TimeSlots.Any())
+        {
+            <table class="calendar-grid">
+                <thead>
+                    <tr>
+                        <th class="time-col">Час</th>
+                        @for (int i = 0; i < Model.Days.Count; i++)
+                        {
+                            <th>
+                                <div>@dayNames[i]</div>
+                                <div>@Model.Days.ElementAt(i).ToString("dd.MM")</div>
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var slot in Model.TimeSlots)
+                    {
+                        <tr>
+                            <td class="time-col">@slot.ToString("HH:mm")</td>
+
+                            @foreach (var day in Model.Days)
+                            {
+                                var eventsForCell = Model.Events
+                                .Where(e =>
+                                DateOnly.FromDateTime(e.StartAt.ToLocalTime()) == day &&
+                                e.StartAt.ToLocalTime().Hour == slot.Hour)
+                                .OrderBy(e => e.StartAt)
+                                .ToList();
+
+                                <td class="calendar-cell">
+                                    @foreach (var ev in eventsForCell)
+                                    {
+                                        <div class="calendar-event">
+                                            <div class="calendar-event-title">@ev.Title</div>
+                                            <div class="calendar-event-time">
+                                                @ev.StartAt.ToLocalTime().ToString("HH:mm") -
+                                                @ev.EndAt.ToLocalTime().ToString("HH:mm")
+                                            </div>
+
+                                            @if (!string.IsNullOrWhiteSpace(ev.Description))
+                                            {
+                                                <div class="calendar-event-description">@ev.Description</div>
+                                            }
+                                        </div>
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-calendar">
+                Дані календаря поки недоступні.
+            </div>
+        }
     </div>
 </div>

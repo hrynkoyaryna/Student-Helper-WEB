@@ -1,0 +1,188 @@
+@model StudentHelper.Web.Models.Calendar.CreatePersonalEventViewModel
+
+@{
+    ViewData["Title"] = "Створення події";
+}
+
+<style>
+    .create-event-container {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .create-event-card {
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        padding: 32px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .create-event-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 28px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+            .form-group input:focus,
+            .form-group textarea:focus {
+                border-color: #5bc8d8;
+                box-shadow: 0 0 0 4px rgba(91, 200, 216, 0.18);
+            }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+    }
+
+    .validation-error {
+        color: #dc2626;
+        font-size: 14px;
+        margin-top: 6px;
+        display: block;
+    }
+
+    .validation-summary-errors {
+        color: #dc2626;
+        margin-bottom: 20px;
+        font-weight: 700;
+        padding: 12px 14px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 28px;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        padding: 12px 22px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.2s ease;
+    }
+
+    .save-btn {
+        background-color: #5bc8d8;
+        color: white;
+    }
+
+        .save-btn:hover {
+            background-color: #43b5c7;
+        }
+
+    .cancel-btn {
+        background-color: #e5e7eb;
+        color: #374151;
+    }
+
+        .cancel-btn:hover {
+            background-color: #d1d5db;
+            color: #111827;
+        }
+
+    @@media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .create-event-card {
+            padding: 22px;
+        }
+
+        .create-event-title {
+            font-size: 26px;
+        }
+    }
+</style>
+
+<div class="create-event-container">
+    <div class="create-event-card">
+        <h1 class="create-event-title">Створення події</h1>
+
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+            <div class="form-group">
+                <label asp-for="Title">Назва події</label>
+                <input asp-for="Title" />
+                <span asp-validation-for="Title" class="validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description">Опис</label>
+                <textarea asp-for="Description"></textarea>
+                <span asp-validation-for="Description" class="validation-error"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Date">Дата</label>
+                    <input asp-for="Date" type="date" />
+                    <span asp-validation-for="Date" class="validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="StartTime">Час початку</label>
+                    <input asp-for="StartTime" type="time" />
+                    <span asp-validation-for="StartTime" class="validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="EndTime">Час завершення</label>
+                    <input asp-for="EndTime" type="time" />
+                    <span asp-validation-for="EndTime" class="validation-error"></span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="action-btn save-btn">Зберегти</button>
+                <a asp-action="Index" class="action-btn cancel-btn">Скасувати</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

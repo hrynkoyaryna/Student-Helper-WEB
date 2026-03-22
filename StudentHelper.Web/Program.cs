@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using MailKit.Net.Smtp;
 using System.Net.Mail;
+using StudentHelper.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,7 +66,8 @@ else
 }
 
 builder.Services.AddScoped<ITaskService, TaskService>();
-
+builder.Services.AddScoped<ICalendarService, CalendarService>();
+builder.Services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

@@ -24,6 +24,7 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
+	
     </PackageReference>
   </ItemGroup>
 
@@ -33,6 +34,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>cfae5a4e-081b-43bd-ae9a-3eba14358b8c</UserSecretsId>
+	<NoWarn>$(NoWarn);SA1600</NoWarn>
   </PropertyGroup>
 
 </Project>
