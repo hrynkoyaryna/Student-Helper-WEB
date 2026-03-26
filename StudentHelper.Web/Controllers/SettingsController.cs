@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 using StudentHelper.Web.Models.Settings;
 
 namespace StudentHelper.Web.Controllers;
@@ -11,16 +10,16 @@ namespace StudentHelper.Web.Controllers;
 [Authorize]
 public class SettingsController : Controller
 {
-    private readonly UserManager<User> _userManager;
+    private readonly IUserService _userService;
     private readonly IAccountService _accountService;
     private readonly ILogger<SettingsController> _logger;
 
     public SettingsController(
-        UserManager<User> userManager,
+        IUserService userService,
         IAccountService accountService,
         ILogger<SettingsController> logger)
     {
-        _userManager = userManager;
+        _userService = userService;
         _accountService = accountService;
         _logger = logger;
     }
@@ -40,7 +39,7 @@ public class SettingsController : Controller
     private async Task<User> GetCurrentUserAsync()
     {
         var userId = GetCurrentUserId();
-        var user = await _userManager.FindByIdAsync(userId.ToString());
+        var user = await _userService.GetUserByIdAsync(userId);
 
         if (user == null)
         {
@@ -81,36 +80,27 @@ public class SettingsController : Controller
             return View(model);
         }
 
-        try
+        if (model.NewPassword != model.ConfirmPassword)
         {
-            if (model.NewPassword != model.ConfirmPassword)
-            {
-                ModelState.AddModelError("ConfirmPassword", "Паролі не збігаються");
-                return View(model);
-            }
-
-            var user = await GetCurrentUserAsync();
-
-            var (success, message) = await _accountService.ChangePasswordAsync(
-                user,
-                model.CurrentPassword,
-                model.NewPassword);
-
-            if (success)
-            {
-                _logger.LogInformation($"Користувач {user.Email} успішно змінив пароль");
-                TempData["SuccessMessage"] = message;
-                return RedirectToAction("Index");
-            }
-
-            ModelState.AddModelError("", message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Помилка при зміні пароля");
-            ModelState.AddModelError("", "При зміні пароля сталась помилка. Спробуйте ще раз.");
+            ModelState.AddModelError("ConfirmPassword", "Паролі не збігаються");
+            return View(model);
         }
 
+        var user = await GetCurrentUserAsync();
+
+        var (success, message) = await _accountService.ChangePasswordAsync(
+            user,
+            model.CurrentPassword,
+            model.NewPassword);
+
+        if (success)
+        {
+            _logger.LogInformation($"Користувач {user.Email} успішно змінив пароль");
+            TempData["SuccessMessage"] = message;
+            return RedirectToAction("Index");
+        }
+
+        ModelState.AddModelError("", message);
         return View(model);
     }
 }

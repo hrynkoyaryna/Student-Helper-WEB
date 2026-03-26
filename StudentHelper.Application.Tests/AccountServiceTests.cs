@@ -58,19 +58,8 @@ public class AccountServiceTests
         var user = new User { Email = "recipient@example.com" };
 
         // Act & Assert
+        // Exception bubbles up to global middleware (no try-catch in service)
         await Assert.ThrowsAsync<System.Exception>(async () => await accountService.SendPasswordResetEmailAsync(user, "url"));
-
-        // Verify that logger.Log was called with LogLevel.Error and message containing 'Failed to send'
-        var wasLogged = _loggerMock.Invocations.Any(inv =>
-        {
-            if (inv.Method.Name != "Log") return false;
-            if (inv.Arguments.Count < 3) return false;
-            if (!(inv.Arguments[0] is LogLevel level) || level != LogLevel.Error) return false;
-            var state = inv.Arguments[2];
-            return state?.ToString()?.Contains("Failed to send password reset email") == true;
-        });
-
-        Assert.True(wasLogged, "Expected an error log containing 'Failed to send password reset email' but none was found.");
     }
 
     // ========== ChangePasswordAsync Tests ==========
@@ -260,18 +249,12 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
+        var (success, message) = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
 
         // Assert
-        var wasLogged = _loggerMock.Invocations.Any(inv =>
-        {
-            if (inv.Method.Name != "Log") return false;
-            if (!(inv.Arguments[0] is LogLevel level) || level != LogLevel.Information) return false;
-            var state = inv.Arguments[2];
-            return state?.ToString()?.Contains(user.Email) == true;
-        });
-
-        Assert.True(wasLogged, "Expected information log with user email");
+        // Logging is now handled by global middleware, not in service
+        Assert.True(success);
+        Assert.Equal("Пароль успішно змінено", message);
     }
 
     [Fact]
@@ -290,18 +273,13 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
+        var (success, message) = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
 
         // Assert
-        var wasLogged = _loggerMock.Invocations.Any(inv =>
-        {
-            if (inv.Method.Name != "Log") return false;
-            if (!(inv.Arguments[0] is LogLevel level) || level != LogLevel.Warning) return false;
-            var state = inv.Arguments[2];
-            return state?.ToString()?.Contains("Не вдалося змінити пароль") == true;
-        });
-
-        Assert.True(wasLogged, "Expected warning log about password change failure");
+        // Logging is now handled by global middleware, not in service
+        // Service returns failure tuple for expected business failures
+        Assert.False(success);
+        Assert.Contains("Помилка", message);
     }
 
     [Fact]
@@ -318,20 +296,10 @@ public class AccountServiceTests
 
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
-        // Act
-        var (success, message) = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
-
-        // Assert
-        Assert.False(success);
-        Assert.Equal("Сталась помилка при зміні пароля", message);
-
-        var wasErrorLogged = _loggerMock.Invocations.Any(inv =>
-        {
-            if (inv.Method.Name != "Log") return false;
-            if (!(inv.Arguments[0] is LogLevel level) || level != LogLevel.Error) return false;
-            return true;
-        });
-
-        Assert.True(wasErrorLogged, "Expected error log");
+        // Act & Assert
+        // Unexpected exceptions bubble up to global middleware (no try-catch in service)
+        // Logging is handled by global middleware
+        await Assert.ThrowsAsync<System.Exception>(async () => 
+            await accountService.ChangePasswordAsync(user, currentPassword, newPassword));
     }
 }
