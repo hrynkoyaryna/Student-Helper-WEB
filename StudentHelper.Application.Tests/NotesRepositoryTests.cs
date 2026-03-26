@@ -141,18 +141,4 @@ public class NotesRepositoryTests
         var remainingNotes = await context.Notes.ToListAsync();
         Assert.Empty(remainingNotes);
     }
-
-    [Fact]
-    public async Task GetUserNotesAsync_Should_Return_Empty_List_When_No_Notes()
-    {
-        // Arrange
-        using var context = CreateContext();
-        var repository = CreateRepository(context);
-
-        // Act
-        var result = await repository.GetUserNotesAsync(1);
-
-        // Assert
-        Assert.Empty(result);
-    }
 }

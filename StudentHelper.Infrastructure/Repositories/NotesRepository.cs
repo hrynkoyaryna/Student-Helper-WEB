@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using StudentHelper.Application.Interfaces;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Infrastructure.Data;
-using StudentHelper.Infrastructure.Repositories.Interfaces;
 
 namespace StudentHelper.Infrastructure.Repositories;
 

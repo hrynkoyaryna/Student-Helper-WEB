@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Web.Models;
-using System.Text;
-using Microsoft.AspNetCore.WebUtilities;
 using StudentHelper.Application.Interfaces;
 
 namespace StudentHelper.Web.Controllers;
@@ -11,19 +9,16 @@ namespace StudentHelper.Web.Controllers;
 public class AccountController : Controller
 {
     private readonly SignInManager<User> _signInManager;
-    private readonly UserManager<User> _userManager;
-    private readonly IAccountService _accountService;
+    private readonly IAuthService _authService;
     private readonly ILogger<AccountController> _logger;
 
     public AccountController(
         SignInManager<User> signInManager,
-        UserManager<User> userManager,
-        IAccountService accountService,
+        IAuthService authService,
         ILogger<AccountController> logger)
     {
         _signInManager = signInManager;
-        _userManager = userManager;
-        _accountService = accountService;
+        _authService = authService;
         _logger = logger;
     }
 
@@ -42,42 +37,24 @@ public class AccountController : Controller
             return View(model);
         }
 
-        try
+        // USE-CASE: Login - делегуємо всю логіку до сервісу
+        var (success, userId, message) = await _authService.LoginAsync(model.Email, model.Password);
+
+        if (!success || !userId.HasValue)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                ModelState.AddModelError("", "Невірний email або пароль");
-                return View(model);
-            }
-
-            var result = await _signInManager.PasswordSignInAsync(
-                user,
-                model.Password,
-                model.RememberMe,
-                lockoutOnFailure: false);
-
-            if (result.Succeeded)
-            {
-                _logger.LogInformation($"Користувач {user.Email} успішно увійшов");
-                return RedirectToAction("Index", "Calendar");
-            }
-
-            if (result.IsLockedOut)
-            {
-                ModelState.AddModelError("", "Акаунт заблокований. Спробуйте пізніше");
-                return View(model);
-            }
-
-            ModelState.AddModelError("", "Невірний email або пароль");
-        }
-        catch (System.Exception ex)
-        {
-            _logger.LogError(ex, "Помилка під час входу");
-            ModelState.AddModelError("", "При вході сталась помилка. Спробуйте ще раз.");
+            ModelState.AddModelError("", message);
+            return View(model);
         }
 
-        return View(model);
+        // Логіка сесії залишається в контролері (це не use-case)
+        var user = await _signInManager.UserManager.FindByIdAsync(userId.Value.ToString());
+        if (user != null)
+        {
+            await _signInManager.SignInAsync(user, model.RememberMe);
+        }
+
+        _logger.LogInformation($"Користувач з ID {userId} успішно увійшов");
+        return RedirectToAction("Index", "Calendar");
     }
 
     // ========== LOGOUT ==========
@@ -104,45 +81,31 @@ public class AccountController : Controller
             return View(model);
         }
 
-        try
+        // USE-CASE: Register - делегуємо всю логіку до сервісу
+        var (success, message, errors) = await _authService.RegisterAsync(
+            model.FirstName,
+            model.LastName,
+            model.Email,
+            model.Password);
+
+        if (!success)
         {
-            var existingUser = await _userManager.FindByEmailAsync(model.Email);
-            if (existingUser != null)
+            foreach (var error in errors)
             {
-                ModelState.AddModelError("Email", "Користувач з таким email вже зареєстрований");
-                return View(model);
+                ModelState.AddModelError("", error);
             }
-
-            var user = new User
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (result.Succeeded)
-            {
-                _logger.LogInformation($"Користувач {user.Email} успішно зареєстрований");
-
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Calendar");
-            }
-
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
-            }
-        }
-        catch (System.Exception ex)
-        {
-            _logger.LogError(ex, "Помилка під час реєстрації користувача");
-            ModelState.AddModelError("", "При реєстрації сталась помилка. Спробуйте ще раз.");
+            return View(model);
         }
 
-        return View(model);
+        // Логіка сесії залишається в контролері (це не use-case)
+        var user = await _signInManager.UserManager.FindByEmailAsync(model.Email);
+        if (user != null)
+        {
+            await _signInManager.SignInAsync(user, isPersistent: false);
+        }
+
+        _logger.LogInformation($"Користувач {model.Email} успішно зареєстрований");
+        return RedirectToAction("Index", "Calendar");
     }
 
     // ========== FORGOT PASSWORD ==========
@@ -160,25 +123,14 @@ public class AccountController : Controller
             return View(model);
         }
 
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null)
-        {
-            return View("ForgotPasswordConfirmation");
-        }
+        // USE-CASE: ForgotPassword - делегуємо всю логіку до сервісу
+        var (success, message, _) = await _authService.ForgotPasswordAsync(
+            model.Email,
+            (userId, code) => Url.Action("ResetPassword", "Account",
+                new { userId, code },
+                protocol: Request.Scheme) ?? string.Empty);
 
-        var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-        // Encode the token to make it safe for URLs
-        var codeBytes = Encoding.UTF8.GetBytes(code);
-        var codeEncoded = WebEncoders.Base64UrlEncode(codeBytes);
-
-        var callbackUrl = Url.Action("ResetPassword", "Account",
-            new { userId = user.Id, code = codeEncoded },
-            protocol: Request.Scheme);
-
-        await _accountService.SendPasswordResetEmailAsync(user, callbackUrl ?? string.Empty);
-
-        _logger.LogInformation($"Для користувача {user.Email} надіслано посилання для скидання пароля");
-
+        _logger.LogInformation($"Запит на скидання пароля для email: {model.Email}");
         return View("ForgotPasswordConfirmation");
     }
 
@@ -191,7 +143,6 @@ public class AccountController : Controller
             return RedirectToAction("ForgotPassword");
         }
 
-        // Keep the encoded token in the hidden field to avoid HTML encoding issues
         var model = new ResetPasswordViewModel { UserId = userId.Value, Code = code };
         return View(model);
     }
@@ -204,39 +155,19 @@ public class AccountController : Controller
             return View(model);
         }
 
-        var user = await _userManager.FindByIdAsync(model.UserId.ToString());
-        if (user == null)
-        {
-            ModelState.AddModelError("", "Користувача не знайдено");
-            return View(model);
-        }
+        // USE-CASE: ResetPassword - делегуємо всю логіку до сервісу
+        var (success, message) = await _authService.ResetPasswordAsync(
+            model.UserId,
+            model.Code,
+            model.Password);
 
-        // Decode the token from the form (it was encoded with Base64UrlEncode)
-        string decodedCode;
-        try
+        if (success)
         {
-            var codeBytes = WebEncoders.Base64UrlDecode(model.Code);
-            decodedCode = Encoding.UTF8.GetString(codeBytes);
-        }
-        catch
-        {
-            ModelState.AddModelError("", "Неприпустимий токен");
-            return View(model);
-        }
-
-        var result = await _userManager.ResetPasswordAsync(user, decodedCode, model.Password);
-
-        if (result.Succeeded)
-        {
-            _logger.LogInformation($"Користувач {user.Email} скинув пароль");
+            _logger.LogInformation($"Користувач з ID {model.UserId} успішно скинув пароль");
             return View("ResetPasswordConfirmation");
         }
 
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError("", error.Description);
-        }
-
+        ModelState.AddModelError("", message);
         return View(model);
     }
 }
