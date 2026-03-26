@@ -1,0 +1,58 @@
+@using StudentHelper.Web.Models.Settings;
+@model SettingsIndexViewModel
+@{
+    ViewData["Title"] = "Налаштування";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="mb-4">Налаштування профілю</h1>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Безпека</h5>
+                    <p class="text-muted mb-3">Керуйте безпекою вашого акаунту</p>
+                    <a href="@Url.Action("ChangePassword", "Settings")" class="btn btn-primary">
+                        <i class="bi bi-key"></i> Змінити пароль
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-radius: 8px;
+    }
+
+    .card-body {
+        padding: 25px;
+    }
+
+    .card-title {
+        color: rgb(26, 26, 26);
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background-color: rgb(91, 200, 216);
+        border-color: rgb(91, 200, 216);
+    }
+
+    .btn-primary:hover {
+        background-color: rgb(68, 184, 200);
+        border-color: rgb(68, 184, 200);
+    }
+</style>

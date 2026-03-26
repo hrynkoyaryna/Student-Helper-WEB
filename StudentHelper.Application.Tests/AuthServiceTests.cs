@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Moq;
+using StudentHelper.Application.Interfaces;
 using StudentHelper.Application.Services;
 using StudentHelper.Domain.Entities;
 using Xunit;
@@ -9,6 +10,7 @@ namespace StudentHelper.Application.Tests;
 public class AuthServiceTests
 {
     private readonly Mock<UserManager<User>> _mockUserManager;
+    private readonly Mock<IEmailSender> _mockEmailSender;
     private readonly AuthService _authService;
 
     public AuthServiceTests()
@@ -16,7 +18,8 @@ public class AuthServiceTests
         var store = new Mock<IUserStore<User>>();
         _mockUserManager = new Mock<UserManager<User>>(
             store.Object, null, null, null, null, null, null, null, null);
-        _authService = new AuthService(_mockUserManager.Object);
+        _mockEmailSender = new Mock<IEmailSender>();
+        _authService = new AuthService(_mockUserManager.Object, _mockEmailSender.Object);
     }
 
     #region LoginAsync Tests
@@ -195,13 +198,13 @@ public class AuthServiceTests
         var registrationResult = await _authService.RegisterAsync(firstName, lastName, email, password, groupId);
 
         // Assert
-        Assert.True(registrationResult);
+        Assert.True(registrationResult.Success);
         _mockUserManager.Verify(um => um.CreateAsync(It.IsAny<User>(), password), Times.Once);
     }
 
     /// <summary>
     /// Test: Registration with duplicate email
-    /// Expected: Should return false (Identity will reject)
+    /// Expected: Should return false (duplicate email check)
     /// </summary>
     [Fact]
     public async Task RegisterAsync_DuplicateEmail_ReturnsFail()
@@ -212,18 +215,17 @@ public class AuthServiceTests
         var email = "duplicate@example.com";
         var password = "SecurePassword123!";
 
-        var errors = new[] { new IdentityError { Description = "Email already exists" } };
-        var identityResult = IdentityResult.Failed(errors);
+        var duplicateUser = new User { Email = email };
 
         _mockUserManager
-            .Setup(um => um.CreateAsync(It.IsAny<User>(), password))
-            .ReturnsAsync(identityResult);
+            .Setup(um => um.FindByEmailAsync(email))
+            .ReturnsAsync(duplicateUser);
 
         // Act
         var registrationResult = await _authService.RegisterAsync(firstName, lastName, email, password);
 
         // Assert
-        Assert.False(registrationResult);
+        Assert.False(registrationResult.Success);
     }
 
     /// <summary>
@@ -242,6 +244,10 @@ public class AuthServiceTests
         var result = IdentityResult.Success;
 
         _mockUserManager
+            .Setup(um => um.FindByEmailAsync(email))
+            .ReturnsAsync(default(User));
+
+        _mockUserManager
             .Setup(um => um.CreateAsync(It.IsAny<User>(), password))
             .ReturnsAsync(result);
 
@@ -249,7 +255,7 @@ public class AuthServiceTests
         var registrationResult = await _authService.RegisterAsync(firstName, lastName, email, password);
 
         // Assert
-        Assert.True(registrationResult);
+        Assert.True(registrationResult.Success);
     }
 
     #endregion

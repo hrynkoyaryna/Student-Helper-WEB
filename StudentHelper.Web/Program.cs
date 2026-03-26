@@ -11,7 +11,6 @@ using MimeKit;
 using MailKit.Net.Smtp;
 using System.Net.Mail;
 using StudentHelper.Infrastructure.Repositories;
-using StudentHelper.Infrastructure.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +49,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 
+builder.Services.AddScoped<IUserService, UserService>();
+
 // 7. Email Sender - bind SMTP settings and register SMTP implementation
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 
@@ -69,9 +70,12 @@ else
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
-builder.Services.AddScoped<INotesRepository, NotesRepository>();
+builder.Services.AddScoped<StudentHelper.Application.Interfaces.INotesRepository, NotesRepository>();
 builder.Services.AddScoped<INotesService, NotesService>();
 var app = builder.Build();
+
+// ========== GLOBAL EXCEPTION HANDLER ==========
+app.UseMiddleware<StudentHelper.Web.Middleware.GlobalExceptionHandlerMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
