@@ -1,6 +1,7 @@
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
 
 namespace StudentHelper.Application.Services;
 
@@ -8,11 +9,13 @@ public class AccountService : IAccountService
 {
     private readonly IEmailSender _emailSender;
     private readonly ILogger<AccountService> _logger;
+    private readonly UserManager<User> _userManager;
 
-    public AccountService(IEmailSender emailSender, ILogger<AccountService> logger)
+    public AccountService(IEmailSender emailSender, ILogger<AccountService> logger, UserManager<User> userManager)
     {
         _emailSender = emailSender;
         _logger = logger;
+        _userManager = userManager;
     }
 
     public async Task SendPasswordResetEmailAsync(User user, string callbackUrl)
@@ -30,6 +33,38 @@ public class AccountService : IAccountService
         {
             _logger.LogError(ex, "Failed to send password reset email to {Email}", to);
             throw;
+        }
+    }
+
+    public async Task<(bool Success, string Message)> ChangePasswordAsync(User user, string currentPassword, string newPassword)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(currentPassword))
+                return (false, "Поточний пароль не може бути пустим");
+
+            if (string.IsNullOrWhiteSpace(newPassword))
+                return (false, "Новий пароль не може бути пустим");
+
+            if (currentPassword == newPassword)
+                return (false, "Новий пароль має відрізнятися від поточного");
+
+            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("Користувач {Email} успішно змінив пароль", user.Email);
+                return (true, "Пароль успішно змінено");
+            }
+
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            _logger.LogWarning("Не вдалося змінити пароль для користувача {Email}: {Errors}", user.Email, errors);
+            return (false, errors);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Сталась помилка при зміні пароля для користувача {Email}", user.Email);
+            return (false, "Сталась помилка при зміні пароля");
         }
     }
 }

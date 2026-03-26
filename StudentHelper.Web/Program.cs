@@ -11,7 +11,6 @@ using MimeKit;
 using MailKit.Net.Smtp;
 using System.Net.Mail;
 using StudentHelper.Infrastructure.Repositories;
-using StudentHelper.Infrastructure.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,7 +68,7 @@ else
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
-builder.Services.AddScoped<INotesRepository, NotesRepository>();
+builder.Services.AddScoped<StudentHelper.Application.Interfaces.INotesRepository, NotesRepository>();
 builder.Services.AddScoped<INotesService, NotesService>();
 var app = builder.Build();
 

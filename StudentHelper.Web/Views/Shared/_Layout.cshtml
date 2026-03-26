@@ -130,10 +130,26 @@
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <div class="d-flex align-items-center gap-3">
-                            <span class="text-secondary" style="font-size: 14px;">@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value</span>
-                            <form method="post" asp-controller="Account" asp-action="Logout" style="margin: 0;">
-                                <button type="submit" class="btn btn-outline-secondary btn-sm">Вихід</button>
-                            </form>
+                            <div class="dropdown">
+                                <button class="btn btn-link dropdown-toggle text-secondary" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 14px; text-decoration: none;">
+                                    @User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Settings" asp-action="Index">
+                                            <i class="bi bi-gear"></i> Налаштування
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="post" asp-controller="Account" asp-action="Logout" style="margin: 0;">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="bi bi-box-arrow-right"></i> Вихід
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     }
                     else
