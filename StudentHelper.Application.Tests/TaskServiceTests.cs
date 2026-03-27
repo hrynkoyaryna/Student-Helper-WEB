@@ -65,7 +65,7 @@ public class TaskServiceTests
 		await service.CreateTaskAsync(task);
 
 		var savedTask = await context.Tasks.FirstAsync();
-		Assert.Equal("�����������", savedTask.Status);
+		Assert.Equal("Прострочене", savedTask.Status);
 	}
 
 	[Fact]

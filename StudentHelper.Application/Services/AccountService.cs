@@ -21,21 +21,13 @@ public class AccountService : IAccountService
 
     public async Task<Result> SendPasswordResetEmailAsync(User user, string callbackUrl)
     {
-        try
-        {
-            var to = user.Email ?? string.Empty;
-            var subject = "Скидання пароля";
-            var html = $"Клацніть на посилання для скидання пароля: <a href=\"{callbackUrl}\">тут</a>";
+        var to = user.Email ?? string.Empty;
+        var subject = "Скидання пароля";
+        var html = $"Клацніть на посилання для скидання пароля: <a href=\"{callbackUrl}\">тут</a>";
 
-            await _emailSender.SendEmailAsync(to, subject, html);
-            _logger.LogInformation("Password reset email sent to {Email}", to);
-            return Result.Ok("Посилання для скидання пароля надіслано");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to send password reset email to {UserId}", user.Id);
-            return Result.Fail("Не вдалося надіслати лист. Спробуйте пізніше.");
-        }
+        await _emailSender.SendEmailAsync(to, subject, html);
+        _logger.LogInformation("Password reset email sent to {Email}", to);
+        return Result.Ok("Посилання для скидання пароля надіслано");
     }
 
     public async Task<Result> ChangePasswordAsync(User user, string currentPassword, string newPassword)

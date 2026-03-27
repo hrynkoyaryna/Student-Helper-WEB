@@ -101,11 +101,11 @@ public class CalendarController : Controller
 
         if (!result.Success)
         {
-            this.ModelState.AddModelError(string.Empty, result.ErrorMessage);
+            this.ModelState.AddModelError(string.Empty, result.Message);
             return this.View(model);
         }
 
-        this.logger.LogInformation("Користувач {UserId} створив подію {Title}", userId, model.Title);
+        this.logger.LogInformation("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ {UserId} пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ {Title}", userId, model.Title);
 
         return this.RedirectToAction(nameof(this.Index));
     }

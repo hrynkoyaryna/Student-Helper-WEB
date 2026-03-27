@@ -40,7 +40,7 @@ public class CalendarServiceTests
         var result = await this.calendarService.CreateEventAsync(request);
 
         Assert.False(result.Success);
-        Assert.Equal("Некоректний користувач.", result.ErrorMessage);
+        Assert.Equal("Некоректний користувач.", result.Message);
 
         this.personalEventRepositoryMock.Verify(
             x => x.GetByUserIdAndDateAsync(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()),
@@ -71,7 +71,7 @@ public class CalendarServiceTests
         var result = await this.calendarService.CreateEventAsync(request);
 
         Assert.False(result.Success);
-        Assert.Equal("Назва події є обов’язковою.", result.ErrorMessage);
+        Assert.Equal("Назва події є обов'язковою.", result.Message);
 
         this.personalEventRepositoryMock.Verify(
             x => x.GetByUserIdAndDateAsync(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()),
@@ -102,7 +102,7 @@ public class CalendarServiceTests
         var result = await this.calendarService.CreateEventAsync(request);
 
         Assert.False(result.Success);
-        Assert.Equal("Час завершення має бути пізніше за час початку.", result.ErrorMessage);
+        Assert.Equal("Час завершення має бути пізніше за час початку.", result.Message);
 
         this.personalEventRepositoryMock.Verify(
             x => x.GetByUserIdAndDateAsync(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()),
@@ -149,7 +149,7 @@ public class CalendarServiceTests
         var result = await this.calendarService.CreateEventAsync(request);
 
         Assert.False(result.Success);
-        Assert.Equal("Подія перетинається з уже існуючою подією.", result.ErrorMessage);
+        Assert.Equal("Подія перетинається з уже існуючою подією.", result.Message);
 
         this.personalEventRepositoryMock.Verify(
             x => x.GetByUserIdAndDateAsync(1, date, It.IsAny<CancellationToken>()),
@@ -193,7 +193,7 @@ public class CalendarServiceTests
         var result = await this.calendarService.CreateEventAsync(request);
 
         Assert.True(result.Success);
-        Assert.Equal(string.Empty, result.ErrorMessage);
+        Assert.NotEmpty(result.Message);
 
         Assert.NotNull(addedEvent);
         Assert.Equal("Valid event", addedEvent!.Title);

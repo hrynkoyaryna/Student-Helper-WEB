@@ -1,11 +1,12 @@
 using StudentHelper.Application.Models.Calendar;
+using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
 
 namespace StudentHelper.Application.Services;
 
 public interface ICalendarService
 {
-    Task<CalendarOperationResult> CreateEventAsync(
+    Task<Result> CreateEventAsync(
         CreatePersonalEventRequest request,
         CancellationToken cancellationToken = default);
 

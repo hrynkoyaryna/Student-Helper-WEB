@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using StudentHelper.Application.Interfaces;
+using StudentHelper.Application.Models;
 using StudentHelper.Application.Models.Calendar;
 using StudentHelper.Domain.Entities;
 
@@ -18,23 +19,23 @@ public class CalendarService : ICalendarService
         this.logger = logger;
     }
 
-    public async Task<CalendarOperationResult> CreateEventAsync(
+    public async Task<Result> CreateEventAsync(
         CreatePersonalEventRequest request,
         CancellationToken cancellationToken = default)
     {
         if (request.UserId <= 0)
         {
-            return CalendarOperationResult.Fail("Некоректний користувач.");
+            return Result.Fail("Некоректний користувач.");
         }
 
         if (string.IsNullOrWhiteSpace(request.Title))
         {
-            return CalendarOperationResult.Fail("Назва події є обов’язковою.");
+            return Result.Fail("Назва події є обов'язковою.");
         }
 
         if (request.EndTime <= request.StartTime)
         {
-            return CalendarOperationResult.Fail("Час завершення має бути пізніше за час початку.");
+            return Result.Fail("Час завершення має бути пізніше за час початку.");
         }
 
         var sameDayEvents = await this.personalEventRepository.GetByUserIdAndDateAsync(
@@ -58,7 +59,7 @@ public class CalendarService : ICalendarService
                 request.UserId,
                 request.Title);
 
-            return CalendarOperationResult.Fail("Подія перетинається з уже існуючою подією.");
+            return Result.Fail("Подія перетинається з уже існуючою подією.");
         }
 
         var personalEvent = new PersonalEvent
@@ -78,7 +79,7 @@ public class CalendarService : ICalendarService
             request.UserId,
             personalEvent.Title);
 
-        return CalendarOperationResult.Ok();
+        return Result.Ok("Подія успішно створена");
     }
 
     public Task<IReadOnlyCollection<PersonalEvent>> GetUserEventsAsync(
