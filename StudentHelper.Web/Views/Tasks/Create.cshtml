@@ -1,47 +1,47 @@
 @model StudentHelper.Web.Models.Tasks.TaskCreateEditViewModel
 
 @{
-    ViewData["Title"] = "Створити завдання";
+    ViewData["Title"] = "РЎС‚РІРѕСЂРёС‚Рё Р·Р°РІРґР°РЅРЅСЏ";
 }
 
 <div class="container py-5">
     <div class="bg-white rounded-4 shadow-sm p-4 mx-auto" style="max-width: 700px;">
-        <h2 class="fw-bold mb-4">Створити завдання</h2>
+        <h2 class="fw-bold mb-4">РЎС‚РІРѕСЂРёС‚Рё Р·Р°РІРґР°РЅРЅСЏ</h2>
 
         <form asp-action="Create" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="mb-3">
-                <label asp-for="Title" class="form-label fw-semibold">Назва</label>
+                <label asp-for="Title" class="form-label fw-semibold">РќР°Р·РІР°</label>
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Subject" class="form-label fw-semibold">Предмет</label>
+                <label asp-for="Subject" class="form-label fw-semibold">РџСЂРµРґРјРµС‚</label>
                 <input asp-for="Subject" class="form-control" />
                 <span asp-validation-for="Subject" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Deadline" class="form-label fw-semibold">Дедлайн</label>
-                <input asp-for="Deadline" type="datetime-local" class="form-control" />
-                <span asp-validation-for="Deadline" class="text-danger"></span>
+                <label asp-for="Deadline" class="form-label fw-semibold">Р”РµРґР»Р°Р№РЅ</label>
+				<input asp-for="Deadline" type="datetime-local" class="form-control" value="@Model.Deadline.ToString("yyyy-MM-ddTHH:mm")" />
+				<span asp-validation-for="Deadline" class="text-danger"></span>
             </div>
 
             <div class="mb-4">
-                <label asp-for="Status" class="form-label fw-semibold">Статус</label>
+                <label asp-for="Status" class="form-label fw-semibold">РЎС‚Р°С‚СѓСЃ</label>
                 <select asp-for="Status" class="form-select">
-                    <option value="Поточне">Поточне</option>
-                    <option value="Виконане">Виконане</option>
-                    <option value="Прострочене">Прострочене</option>
+                    <option value="РџРѕС‚РѕС‡РЅРµ">РџРѕС‚РѕС‡РЅРµ</option>
+                    <option value="Р’РёРєРѕРЅР°РЅРµ">Р’РёРєРѕРЅР°РЅРµ</option>
+                    <option value="РџСЂРѕСЃС‚СЂРѕС‡РµРЅРµ">РџСЂРѕСЃС‚СЂРѕС‡РµРЅРµ</option>
                 </select>
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
 
             <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Зберегти</button>
-                <a asp-action="Index" class="btn btn-outline-secondary">Скасувати</a>
+                <button type="submit" class="btn btn-primary">Р—Р±РµСЂРµРіС‚Рё</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">РЎРєР°СЃСѓРІР°С‚Рё</a>
             </div>
         </form>
     </div>

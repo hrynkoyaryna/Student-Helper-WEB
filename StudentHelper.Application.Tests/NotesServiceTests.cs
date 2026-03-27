@@ -30,9 +30,10 @@ public class NotesServiceTests
         };
 
         // Act
-        await service.CreateNoteAsync(note);
+        var result = await service.CreateNoteAsync(note);
 
         // Assert
+        Assert.True(result.Success);
         repositoryMock.Verify(r => r.AddAsync(note), Times.Once);
         repositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
@@ -147,7 +148,7 @@ public class NotesServiceTests
         var result = await service.UpdateNoteAsync(updatedNote, 1);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Success);
         repositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Note>()), Times.Once);
     }
 
@@ -169,7 +170,7 @@ public class NotesServiceTests
         var result = await service.UpdateNoteAsync(updatedNote, 2);
 
         // Assert
-        Assert.False(result);
+        Assert.False(result.Success);
     }
 
     [Fact]
@@ -188,7 +189,7 @@ public class NotesServiceTests
         var result = await service.DeleteNoteAsync(1, 1);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Success);
         repositoryMock.Verify(r => r.DeleteAsync(note), Times.Once);
     }
 
@@ -208,7 +209,7 @@ public class NotesServiceTests
         var result = await service.DeleteNoteAsync(1, 2);
 
         // Assert
-        Assert.False(result);
+        Assert.False(result.Success);
         repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Note>()), Times.Never);
     }
 
@@ -228,7 +229,7 @@ public class NotesServiceTests
         var result = await service.PinNoteAsync(1, 1);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Success);
         Assert.True(note.Pinned);
         repositoryMock.Verify(r => r.UpdateAsync(note), Times.Once);
     }
@@ -249,7 +250,7 @@ public class NotesServiceTests
         var result = await service.UnpinNoteAsync(1, 1);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Success);
         Assert.False(note.Pinned);
         repositoryMock.Verify(r => r.UpdateAsync(note), Times.Once);
     }

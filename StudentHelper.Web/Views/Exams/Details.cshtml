@@ -1,0 +1,23 @@
+@model StudentHelper.Domain.Entities.Exam
+
+@{
+    ViewData["Title"] = "Деталі екзамену";
+}
+
+<div class="container mt-5">
+    <h1>Деталі екзамену</h1>
+
+    <dl class="row">
+        <dt class="col-sm-3">Предмет</dt>
+        <dd class="col-sm-9">@Model.Subject</dd>
+
+        <dt class="col-sm-3">Дата та час</dt>
+        <dd class="col-sm-9">@Model.DateTime.ToString("dd.MM.yyyy HH:mm")</dd>
+
+        <dt class="col-sm-3">Викладач</dt>
+        <dd class="col-sm-9">@Model.Teacher?.FullName</dd>
+    </dl>
+
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редагувати</a>
+    <a asp-action="Index" class="btn btn-link">Назад до списку</a>
+</div>

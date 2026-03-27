@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Infrastructure.Data;
+using StudentHelper.Application.Models;
 
 namespace StudentHelper.Infrastructure.Services;
 
@@ -60,7 +61,7 @@ public class TaskService : ITaskService
         return task;
     }
 
-    public async Task CreateTaskAsync(TaskItem task)
+    public async Task<Result> CreateTaskAsync(TaskItem task)
     {
         task.Deadline = NormalizeToUtc(task.Deadline);
         UpdateOverdueStatusIfNeeded(task);
@@ -69,9 +70,10 @@ public class TaskService : ITaskService
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Created task {TaskId} for user {UserId}", task.Id, task.UserId);
+        return Result.Ok("Завдання успішно створено");
     }
 
-    public async Task<bool> UpdateTaskAsync(TaskItem task, int userId)
+    public async Task<Result> UpdateTaskAsync(TaskItem task, int userId)
     {
         var existingTask = await _context.Tasks
             .FirstOrDefaultAsync(t => t.Id == task.Id && t.UserId == userId);
@@ -79,7 +81,7 @@ public class TaskService : ITaskService
         if (existingTask is null)
         {
             _logger.LogWarning("Task {TaskId} was not found for user {UserId}", task.Id, userId);
-            return false;
+            return Result.Fail("Завдання не знайдено");
         }
 
         existingTask.Title = task.Title;
@@ -92,10 +94,10 @@ public class TaskService : ITaskService
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Updated task {TaskId}", task.Id);
-        return true;
+        return Result.Ok("Завдання успішно оновлено");
     }
 
-    public async Task<bool> DeleteTaskAsync(int id, int userId)
+    public async Task<Result> DeleteTaskAsync(int id, int userId)
     {
         var task = await _context.Tasks
             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
@@ -103,17 +105,17 @@ public class TaskService : ITaskService
         if (task is null)
         {
             _logger.LogWarning("Task {TaskId} was not found for deletion for user {UserId}", id, userId);
-            return false;
+            return Result.Fail("Завдання не знайдено");
         }
 
         _context.Tasks.Remove(task);
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Deleted task {TaskId}", id);
-        return true;
+        return Result.Ok("Завдання успішно видалено");
     }
 
-    public async Task<bool> ChangeStatusAsync(int id, int userId, string status)
+    public async Task<Result> ChangeStatusAsync(int id, int userId, string status)
     {
         var task = await _context.Tasks
             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
@@ -121,7 +123,7 @@ public class TaskService : ITaskService
         if (task is null)
         {
             _logger.LogWarning("Task {TaskId} was not found for status change for user {UserId}", id, userId);
-            return false;
+            return Result.Fail("Завдання не знайдено");
         }
 
         task.Status = status;
@@ -130,7 +132,7 @@ public class TaskService : ITaskService
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Changed task {TaskId} status to {Status}", id, task.Status);
-        return true;
+        return Result.Ok("Статус завдання оновлено");
     }
 
     public async Task<List<string>> GetUserSubjectsAsync(int userId)
@@ -145,9 +147,9 @@ public class TaskService : ITaskService
 
     private static void UpdateOverdueStatusIfNeeded(TaskItem task)
     {
-        if (task.Status != "��������" && task.Deadline < DateTime.Now)
+        if (task.Status != "Виконане" && task.Deadline < DateTime.Now)
         {
-            task.Status = "�����������";
+            task.Status = "Прострочене";
         }
     }
     private static DateTime NormalizeToUtc(DateTime value)

@@ -67,9 +67,15 @@ public class NotesController : Controller
             Pinned = false
         };
 
-        await _notesService.CreateNoteAsync(note);
+        var result = await _notesService.CreateNoteAsync(note);
 
-        TempData["SuccessMessage"] = "Нотатка підтримати успішно створена.";
+        if (!result.Success)
+        {
+            ModelState.AddModelError("", result.Message);
+            return View(model);
+        }
+
+        TempData["SuccessMessage"] = result.Message;
         return RedirectToAction(nameof(Index));
     }
 
@@ -109,14 +115,17 @@ public class NotesController : Controller
             Body = model.Body
         };
 
-        var success = await _notesService.UpdateNoteAsync(note, GetCurrentUserId());
+        var result = await _notesService.UpdateNoteAsync(note, GetCurrentUserId());
 
-        if (!success)
+        if (!result.Success)
         {
-            return NotFound();
+            // show error to user on the same page
+            ModelState.AddModelError("", result.Message);
+            ViewBag.NoteId = id;
+            return View(model);
         }
 
-        TempData["SuccessMessage"] = "Нотатка успішно оновлена.";
+        TempData["SuccessMessage"] = result.Message;
         return RedirectToAction(nameof(Index));
     }
 
@@ -124,14 +133,16 @@ public class NotesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var success = await _notesService.DeleteNoteAsync(id, GetCurrentUserId());
+        var result = await _notesService.DeleteNoteAsync(id, GetCurrentUserId());
 
-        if (!success)
+        if (!result.Success)
         {
-            return NotFound();
+            // Redirect to index with error message so user sees it
+            TempData["ErrorMessage"] = result.Message;
+            return RedirectToAction(nameof(Index));
         }
 
-        TempData["SuccessMessage"] = "Нотатка успішно видалена.";
+        TempData["SuccessMessage"] = result.Message;
         return RedirectToAction(nameof(Index));
     }
 
@@ -139,11 +150,18 @@ public class NotesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Pin(int id)
     {
-        var success = await _notesService.PinNoteAsync(id, GetCurrentUserId());
+        var result = await _notesService.PinNoteAsync(id, GetCurrentUserId());
 
-        if (!success)
+        if (!result.Success)
         {
-            return NotFound();
+            // If AJAX, return bad request with error message so frontend can show it
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return BadRequest(result.Message);
+            }
+
+            TempData["ErrorMessage"] = result.Message;
+            return RedirectToAction(nameof(Index));
         }
 
         return RedirectToAction(nameof(Index));
@@ -153,11 +171,17 @@ public class NotesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Unpin(int id)
     {
-        var success = await _notesService.UnpinNoteAsync(id, GetCurrentUserId());
+        var result = await _notesService.UnpinNoteAsync(id, GetCurrentUserId());
 
-        if (!success)
+        if (!result.Success)
         {
-            return NotFound();
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return BadRequest(result.Message);
+            }
+
+            TempData["ErrorMessage"] = result.Message;
+            return RedirectToAction(nameof(Index));
         }
 
         return RedirectToAction(nameof(Index));

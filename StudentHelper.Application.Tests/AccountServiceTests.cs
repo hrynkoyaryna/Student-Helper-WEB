@@ -39,14 +39,15 @@ public class AccountServiceTests
         var callbackUrl = "https://example.com/reset?code=abc";
 
         // Act
-        await accountService.SendPasswordResetEmailAsync(user, callbackUrl);
+        var result = await accountService.SendPasswordResetEmailAsync(user, callbackUrl);
 
         // Assert
+        Assert.True(result.Success);
         _emailSenderMock.Verify(es => es.SendEmailAsync("recipient@example.com", It.IsAny<string>(), It.Is<string>(s => s.Contains(callbackUrl))), Times.Once);
     }
 
     [Fact]
-    public async Task SendPasswordResetEmailAsync_LogsAndThrows_WhenEmailSenderFails()
+    public async Task SendPasswordResetEmailAsync_Returns_Fail_WhenEmailSenderFails()
     {
         // Arrange
         _emailSenderMock
@@ -57,9 +58,12 @@ public class AccountServiceTests
 
         var user = new User { Email = "recipient@example.com" };
 
-        // Act & Assert
-        // Exception bubbles up to global middleware (no try-catch in service)
-        await Assert.ThrowsAsync<System.Exception>(async () => await accountService.SendPasswordResetEmailAsync(user, "url"));
+        // Act
+        var result = await accountService.SendPasswordResetEmailAsync(user, "url");
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal("Не вдалося надіслати лист. Спробуйте пізніше.", result.Message);
     }
 
     // ========== ChangePasswordAsync Tests ==========
@@ -79,11 +83,11 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        var (success, message) = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
+        var result = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
 
         // Assert
-        Assert.True(success);
-        Assert.Equal("Пароль успішно змінено", message);
+        Assert.True(result.Success);
+        Assert.Equal("Пароль успішно змінено", result.Message);
         _userManagerMock.Verify(um => um.ChangePasswordAsync(user, currentPassword, newPassword), Times.Once);
     }
 
@@ -95,11 +99,11 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        var (success, message) = await accountService.ChangePasswordAsync(user, "", "NewPass123!");
+        var result = await accountService.ChangePasswordAsync(user, "", "NewPass123!");
 
         // Assert
-        Assert.False(success);
-        Assert.Equal("Поточний пароль не може бути пустим", message);
+        Assert.False(result.Success);
+        Assert.Equal("Поточний пароль не може бути пустим", result.Message);
         _userManagerMock.Verify(um => um.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
@@ -111,11 +115,11 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        var (success, message) = await accountService.ChangePasswordAsync(user, null, "NewPass123!");
+        var result = await accountService.ChangePasswordAsync(user, null, "NewPass123!");
 
         // Assert
-        Assert.False(success);
-        Assert.Equal("Поточний пароль не може бути пустим", message);
+        Assert.False(result.Success);
+        Assert.Equal("Поточний пароль не може бути пустим", result.Message);
         _userManagerMock.Verify(um => um.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
@@ -127,11 +131,11 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        var (success, message) = await accountService.ChangePasswordAsync(user, "   ", "NewPass123!");
+        var result = await accountService.ChangePasswordAsync(user, "   ", "NewPass123!");
 
         // Assert
-        Assert.False(success);
-        Assert.Equal("Поточний пароль не може бути пустим", message);
+        Assert.False(result.Success);
+        Assert.Equal("Поточний пароль не може бути пустим", result.Message);
     }
 
     [Fact]
@@ -142,11 +146,11 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        var (success, message) = await accountService.ChangePasswordAsync(user, "CurrentPass123!", "");
+        var result = await accountService.ChangePasswordAsync(user, "CurrentPass123!", "");
 
         // Assert
-        Assert.False(success);
-        Assert.Equal("Новий пароль не може бути пустим", message);
+        Assert.False(result.Success);
+        Assert.Equal("Новий пароль не може бути пустим", result.Message);
         _userManagerMock.Verify(um => um.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
@@ -158,11 +162,11 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        var (success, message) = await accountService.ChangePasswordAsync(user, "CurrentPass123!", null);
+        var result = await accountService.ChangePasswordAsync(user, "CurrentPass123!", null);
 
         // Assert
-        Assert.False(success);
-        Assert.Equal("Новий пароль не може бути пустим", message);
+        Assert.False(result.Success);
+        Assert.Equal("Новий пароль не може бути пустим", result.Message);
     }
 
     [Fact]
@@ -174,11 +178,11 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        var (success, message) = await accountService.ChangePasswordAsync(user, samePassword, samePassword);
+        var result = await accountService.ChangePasswordAsync(user, samePassword, samePassword);
 
         // Assert
-        Assert.False(success);
-        Assert.Equal("Новий пароль має відрізнятися від поточного", message);
+        Assert.False(result.Success);
+        Assert.Equal("Новий пароль має відрізнятися від поточного", result.Message);
         _userManagerMock.Verify(um => um.ChangePasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
@@ -198,11 +202,11 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        var (success, message) = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
+        var result = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
 
         // Assert
-        Assert.False(success);
-        Assert.Contains("Невірний пароль", message);
+        Assert.False(result.Success);
+        Assert.Contains("Невірний пароль", result.Message);
     }
 
     [Fact]
@@ -226,12 +230,12 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        var (success, message) = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
+        var result = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
 
         // Assert
-        Assert.False(success);
-        Assert.Contains("Пароль завкороткий", message);
-        Assert.Contains("Пароль повинен містити спеціальні символи", message);
+        Assert.False(result.Success);
+        Assert.Contains("Пароль завкороткий", result.Message);
+        Assert.Contains("Пароль повинен містити спеціальні символи", result.Message);
     }
 
     [Fact]
@@ -249,12 +253,12 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        var (success, message) = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
+        var result = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
 
         // Assert
         // Logging is now handled by global middleware, not in service
-        Assert.True(success);
-        Assert.Equal("Пароль успішно змінено", message);
+        Assert.True(result.Success);
+        Assert.Equal("Пароль успішно змінено", result.Message);
     }
 
     [Fact]
@@ -273,13 +277,13 @@ public class AccountServiceTests
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
         // Act
-        var (success, message) = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
+        var result = await accountService.ChangePasswordAsync(user, currentPassword, newPassword);
 
         // Assert
         // Logging is now handled by global middleware, not in service
         // Service returns failure tuple for expected business failures
-        Assert.False(success);
-        Assert.Contains("Помилка", message);
+        Assert.False(result.Success);
+        Assert.Contains("Помилка", result.Message);
     }
 
     [Fact]

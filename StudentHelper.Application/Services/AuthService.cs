@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using StudentHelper.Application.Interfaces;
+using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
 using System.Text;
 
@@ -18,30 +19,30 @@ public class AuthService : IAuthService
     }
 
     // ========== LOGIN USE-CASE ==========
-    public async Task<(bool Success, int? UserId, string Message)> LoginAsync(string email, string password)
+    public async Task<Result<int?>> LoginAsync(string email, string password)
     {
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
-            return (false, null, "Невірний email або пароль");
+            return Result<int?>.Fail("Невірний email або пароль");
         }
 
         var passwordValid = await _userManager.CheckPasswordAsync(user, password);
         if (!passwordValid)
         {
-            return (false, null, "Невірний email або пароль");
+            return Result<int?>.Fail("Невірний email або пароль");
         }
 
-        return (true, user.Id, "");
+        return Result<int?>.Ok(user.Id);
     }
 
     // ========== REGISTER USE-CASE ==========
-    public async Task<(bool Success, string Message, List<string> Errors)> RegisterAsync(string firstName, string lastName, string email, string password, int? groupId = null)
+    public async Task<Result<List<string>>> RegisterAsync(string firstName, string lastName, string email, string password, int? groupId = null)
     {
         var existingUser = await _userManager.FindByEmailAsync(email);
         if (existingUser != null)
         {
-            return (false, "", new List<string> { "Користувач з таким email вже зареєстрований" });
+            return Result<List<string>>.Fail("Користувач з таким email вже зареєстрований");
         }
 
         var user = new User
@@ -56,21 +57,21 @@ public class AuthService : IAuthService
         var result = await _userManager.CreateAsync(user, password);
         if (result.Succeeded)
         {
-            return (true, "Реєстрація успішна", new List<string>());
+            return Result<List<string>>.Ok(new List<string>());
         }
 
         var errors = result.Errors.Select(e => e.Description).ToList();
-        return (false, "", errors);
+        return Result<List<string>>.Fail(string.Join(", ", errors));
     }
 
     // ========== FORGOT PASSWORD USE-CASE ==========
-    public async Task<(bool Success, string Message, string? ResetLink)> ForgotPasswordAsync(string email, Func<string, string, string> generateResetLink)
+    public async Task<Result<string?>> ForgotPasswordAsync(string email, Func<string, string, string> generateResetLink)
     {
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
             // Не розкриваємо, що користувача не існує (безпека)
-            return (true, "Якщо цей email зареєстрований, ви отримаєте посилання для скидання пароля", null);
+            return Result<string?>.Ok(null, "Якщо цей email зареєстрований, ви отримаєте посилання для скидання пароля");
         }
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -84,16 +85,16 @@ public class AuthService : IAuthService
             "Скидання пароля",
             $"Клацніть на посилання для скидання пароля: <a href=\"{resetLink}\">тут</a>");
 
-        return (true, "Посилання для скидання пароля надіслано на вашу email", null);
+        return Result<string?>.Ok(null, "Посилання для скидання пароля надіслано на вашу email");
     }
 
     // ========== RESET PASSWORD USE-CASE ==========
-    public async Task<(bool Success, string Message)> ResetPasswordAsync(int userId, string encodedToken, string newPassword)
+    public async Task<Result> ResetPasswordAsync(int userId, string encodedToken, string newPassword)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user == null)
         {
-            return (false, "Користувача не знайдено");
+            return Result.Fail("Користувача не знайдено");
         }
 
         // Декодування токена
@@ -103,10 +104,10 @@ public class AuthService : IAuthService
         var result = await _userManager.ResetPasswordAsync(user, decodedToken, newPassword);
         if (result.Succeeded)
         {
-            return (true, "Пароль успішно скинуто");
+            return Result.Ok("Пароль успішно скинуто");
         }
 
         var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-        return (false, errors);
+        return Result.Fail(errors);
     }
 }

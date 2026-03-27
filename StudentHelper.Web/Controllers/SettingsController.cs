@@ -88,19 +88,19 @@ public class SettingsController : Controller
 
         var user = await GetCurrentUserAsync();
 
-        var (success, message) = await _accountService.ChangePasswordAsync(
+        var result = await _accountService.ChangePasswordAsync(
             user,
             model.CurrentPassword,
             model.NewPassword);
 
-        if (success)
+        if (result.Success)
         {
             _logger.LogInformation($"Користувач {user.Email} успішно змінив пароль");
-            TempData["SuccessMessage"] = message;
+            TempData["SuccessMessage"] = result.Message;
             return RedirectToAction("Index");
         }
 
-        ModelState.AddModelError("", message);
+        ModelState.AddModelError("", result.Message);
         return View(model);
     }
 }

@@ -50,7 +50,7 @@ public class AuthServiceTests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(userId, result.UserId);
+        Assert.Equal(userId, result.Value);
         _mockUserManager.Verify(um => um.FindByEmailAsync(email), Times.Once);
         _mockUserManager.Verify(um => um.CheckPasswordAsync(user, password), Times.Once);
     }
@@ -75,7 +75,7 @@ public class AuthServiceTests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Null(result.UserId);
+        Assert.Null(result.Value);
         _mockUserManager.Verify(um => um.FindByEmailAsync(email), Times.Once);
         _mockUserManager.Verify(um => um.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
     }
@@ -105,7 +105,7 @@ public class AuthServiceTests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Null(result.UserId);
+        Assert.Null(result.Value);
         _mockUserManager.Verify(um => um.FindByEmailAsync(email), Times.Once);
         _mockUserManager.Verify(um => um.CheckPasswordAsync(user, wrongPassword), Times.Once);
     }
@@ -130,7 +130,7 @@ public class AuthServiceTests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Null(result.UserId);
+        Assert.Null(result.Value);
     }
 
     /// <summary>
@@ -158,7 +158,7 @@ public class AuthServiceTests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Null(result.UserId);
+        Assert.Null(result.Value);
     }
 
     #endregion

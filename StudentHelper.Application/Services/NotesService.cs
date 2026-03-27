@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Domain.Entities;
+using StudentHelper.Application.Models;
 
 namespace StudentHelper.Application.Services;
 
@@ -42,19 +43,20 @@ public class NotesService : INotesService
         return note;
     }
 
-    public async Task CreateNoteAsync(Note note)
+    public async Task<Result> CreateNoteAsync(Note note)
     {
         await _repository.AddAsync(note);
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Note {NoteId} created for user {UserId}", note.Id, note.UserId);
+        return Result.Ok("Нотатка успішно створена");
     }
 
-    public async Task<bool> UpdateNoteAsync(Note note, int userId)
+    public async Task<Result> UpdateNoteAsync(Note note, int userId)
     {
         var existingNote = await GetNoteByIdAsync(note.Id, userId);
         if (existingNote == null)
         {
-            return false;
+            return Result.Fail("Нотатку не знайдено");
         }
 
         existingNote.Title = note.Title;
@@ -64,30 +66,30 @@ public class NotesService : INotesService
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Note {NoteId} updated for user {UserId}", note.Id, userId);
 
-        return true;
+        return Result.Ok("Нотатка успішно оновлена");
     }
 
-    public async Task<bool> DeleteNoteAsync(int id, int userId)
+    public async Task<Result> DeleteNoteAsync(int id, int userId)
     {
         var note = await GetNoteByIdAsync(id, userId);
         if (note == null)
         {
-            return false;
+            return Result.Fail("Нотатку не знайдено");
         }
 
         await _repository.DeleteAsync(note);
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Note {NoteId} deleted for user {UserId}", id, userId);
 
-        return true;
+        return Result.Ok("Нотатка успішно видалена");
     }
 
-    public async Task<bool> PinNoteAsync(int id, int userId)
+    public async Task<Result> PinNoteAsync(int id, int userId)
     {
         var note = await GetNoteByIdAsync(id, userId);
         if (note == null)
         {
-            return false;
+            return Result.Fail("Нотатку не знайдено");
         }
 
         note.Pinned = true;
@@ -95,15 +97,15 @@ public class NotesService : INotesService
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Note {NoteId} pinned for user {UserId}", id, userId);
 
-        return true;
+        return Result.Ok("Нотатка закріплена");
     }
 
-    public async Task<bool> UnpinNoteAsync(int id, int userId)
+    public async Task<Result> UnpinNoteAsync(int id, int userId)
     {
         var note = await GetNoteByIdAsync(id, userId);
         if (note == null)
         {
-            return false;
+            return Result.Fail("Нотатку не знайдено");
         }
 
         note.Pinned = false;
@@ -111,6 +113,6 @@ public class NotesService : INotesService
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Note {NoteId} unpinned for user {UserId}", id, userId);
 
-        return true;
+        return Result.Ok("Нотатка відкріплена");
     }
 }

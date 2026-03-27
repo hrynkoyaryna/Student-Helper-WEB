@@ -28,19 +28,22 @@ public class NotesRepository : INotesRepository
         return await _context.Notes.FirstOrDefaultAsync(n => n.Id == id);
     }
 
-    public async Task AddAsync(Note note)
+    public Task AddAsync(Note note)
     {
         _context.Notes.Add(note);
+        return Task.CompletedTask;
     }
 
-    public async Task UpdateAsync(Note note)
+    public Task UpdateAsync(Note note)
     {
         _context.Notes.Update(note);
+        return Task.CompletedTask;
     }
 
-    public async Task DeleteAsync(Note note)
+    public Task DeleteAsync(Note note)
     {
         _context.Notes.Remove(note);
+        return Task.CompletedTask;
     }
 
     public async Task SaveChangesAsync()

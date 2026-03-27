@@ -72,6 +72,10 @@ builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
 builder.Services.AddScoped<StudentHelper.Application.Interfaces.INotesRepository, NotesRepository>();
 builder.Services.AddScoped<INotesService, NotesService>();
+builder.Services.AddScoped<IExamsService, ExamsService>();
+builder.Services.AddScoped<StudentHelper.Application.Interfaces.IExamsRepository, StudentHelper.Infrastructure.Repositories.ExamsRepository>();
+// register teacher repository
+builder.Services.AddScoped<StudentHelper.Application.Interfaces.ITeacherRepository, StudentHelper.Infrastructure.Repositories.TeacherRepository>();
 var app = builder.Build();
 
 // ========== GLOBAL EXCEPTION HANDLER ==========

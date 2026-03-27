@@ -25,13 +25,13 @@ public class TasksController : Controller
 
         if (string.IsNullOrWhiteSpace(userId))
         {
-            throw new UnauthorizedAccessException("Користувач не авторизований.");
+            throw new UnauthorizedAccessException("РљРѕСЂРёСЃС‚СѓРІР°С‡ РЅРµ Р°СѓС‚РµРЅС‚РёС„С–РєРѕРІР°РЅРёР№.");
         }
 
         return int.Parse(userId);
     }
 
-    public async Task<IActionResult> Index(string status = "Поточне", string? subject = null)
+    public async Task<IActionResult> Index(string status = "РџРѕС‚РѕС‡РЅРµ", string? subject = null)
     {
         var userId = GetCurrentUserId();
 
@@ -51,7 +51,7 @@ public class TasksController : Controller
         var model = new TaskCreateEditViewModel
         {
             Deadline = DateTime.Now.AddDays(1),
-            Status = "Поточне"
+            Status = "РџРѕС‚РѕС‡РЅРµ"
         };
 
         return View(model);
@@ -75,9 +75,15 @@ public class TasksController : Controller
             UserId = GetCurrentUserId()
         };
 
-        await _taskService.CreateTaskAsync(task);
+        var result = await _taskService.CreateTaskAsync(task);
 
-        TempData["SuccessMessage"] = "Завдання успішно створено.";
+        if (!result.Success)
+        {
+            ModelState.AddModelError("", result.Message);
+            return View(model);
+        }
+
+        TempData["SuccessMessage"] = result.Message;
         return RedirectToAction(nameof(Index));
     }
 
@@ -134,12 +140,12 @@ public class TasksController : Controller
 
         var updated = await _taskService.UpdateTaskAsync(task, GetCurrentUserId());
 
-        if (!updated)
+        if (!updated.Success)
         {
             return NotFound();
         }
 
-        TempData["SuccessMessage"] = "Завдання успішно оновлено.";
+        TempData["SuccessMessage"] = updated.Message;
         return RedirectToAction(nameof(Index));
     }
 
@@ -161,12 +167,12 @@ public class TasksController : Controller
     {
         var deleted = await _taskService.DeleteTaskAsync(id, GetCurrentUserId());
 
-        if (!deleted)
+        if (!deleted.Success)
         {
             return NotFound();
         }
 
-        TempData["SuccessMessage"] = "Завдання успішно видалено.";
+        TempData["SuccessMessage"] = deleted.Message;
         return RedirectToAction(nameof(Index));
     }
 
@@ -176,12 +182,12 @@ public class TasksController : Controller
     {
         var changed = await _taskService.ChangeStatusAsync(id, GetCurrentUserId(), status);
 
-        if (!changed)
+        if (!changed.Success)
         {
             return NotFound();
         }
 
-        TempData["SuccessMessage"] = "Статус завдання змінено.";
+        TempData["SuccessMessage"] = changed.Message;
         return RedirectToAction(nameof(Index), new { status });
     }
 }

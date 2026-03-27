@@ -38,16 +38,18 @@ public class AccountController : Controller
         }
 
         // USE-CASE: Login - делегуємо всю логіку до сервісу
-        var (success, userId, message) = await _authService.LoginAsync(model.Email, model.Password);
+        var loginResult = await _authService.LoginAsync(model.Email, model.Password);
 
-        if (!success || !userId.HasValue)
+        if (!loginResult.Success || !loginResult.Value.HasValue)
         {
-            ModelState.AddModelError("", message);
+            ModelState.AddModelError("", loginResult.Message ?? "Невірний email або пароль");
             return View(model);
         }
 
+        var userId = loginResult.Value.Value;
+
         // Логіка сесії залишається в контролері (це не use-case)
-        var user = await _signInManager.UserManager.FindByIdAsync(userId.Value.ToString());
+        var user = await _signInManager.UserManager.FindByIdAsync(userId.ToString());
         if (user != null)
         {
             await _signInManager.SignInAsync(user, model.RememberMe);
@@ -82,18 +84,27 @@ public class AccountController : Controller
         }
 
         // USE-CASE: Register - делегуємо всю логіку до сервісу
-        var (success, message, errors) = await _authService.RegisterAsync(
+        var regResult = await _authService.RegisterAsync(
             model.FirstName,
             model.LastName,
             model.Email,
             model.Password);
 
-        if (!success)
+        if (!regResult.Success)
         {
-            foreach (var error in errors)
+            // If the service returned structured errors in Value, use them; otherwise use Message
+            if (regResult.Value != null && regResult.Value.Any())
             {
-                ModelState.AddModelError("", error);
+                foreach (var error in regResult.Value)
+                {
+                    ModelState.AddModelError("", error);
+                }
             }
+            else
+            {
+                ModelState.AddModelError("", regResult.Message);
+            }
+
             return View(model);
         }
 
@@ -124,13 +135,14 @@ public class AccountController : Controller
         }
 
         // USE-CASE: ForgotPassword - делегуємо всю логіку до сервісу
-        var (success, message, _) = await _authService.ForgotPasswordAsync(
+        var result = await _authService.ForgotPasswordAsync(
             model.Email,
             (userId, code) => Url.Action("ResetPassword", "Account",
                 new { userId, code },
                 protocol: Request.Scheme) ?? string.Empty);
 
         _logger.LogInformation($"Запит на скидання пароля для email: {model.Email}");
+        // We show confirmation regardless to avoid user enumeration. Optionally display message from result.
         return View("ForgotPasswordConfirmation");
     }
 
@@ -156,18 +168,18 @@ public class AccountController : Controller
         }
 
         // USE-CASE: ResetPassword - делегуємо всю логіку до сервісу
-        var (success, message) = await _authService.ResetPasswordAsync(
+        var result = await _authService.ResetPasswordAsync(
             model.UserId,
             model.Code,
             model.Password);
 
-        if (success)
+        if (result.Success)
         {
             _logger.LogInformation($"Користувач з ID {model.UserId} успішно скинув пароль");
             return View("ResetPasswordConfirmation");
         }
 
-        ModelState.AddModelError("", message);
+        ModelState.AddModelError("", result.Message);
         return View(model);
     }
 }
