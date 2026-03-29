@@ -12,6 +12,8 @@ using MailKit.Net.Smtp;
 using System.Net.Mail;
 using StudentHelper.Infrastructure.Repositories;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, configuration) =>

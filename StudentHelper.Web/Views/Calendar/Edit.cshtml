@@ -1,7 +1,7 @@
-@model StudentHelper.Web.Models.Calendar.CreatePersonalEventViewModel
+@model StudentHelper.Web.Models.Calendar.EditPersonalEventViewModel
 
 @{
-    ViewData["Title"] = "Додати подію";
+    ViewData["Title"] = "Редагування події";
 }
 
 <style>
@@ -28,21 +28,23 @@
 
 <div class="create-event-container">
     <div class="create-event-card">
-        <h1 class="create-event-title">Додати нову подію</h1>
+        <h1 class="create-event-title">Редагування події</h1>
 
-        <form asp-action="Create" method="post">
+        <form asp-action="Edit" method="post">
             @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
             <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
             <div class="form-group">
                 <label asp-for="Title">Назва події</label>
-                <input asp-for="Title" placeholder="Наприклад: Лекція з програмування" />
+                <input asp-for="Title" />
                 <span asp-validation-for="Title" class="validation-error"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="Description">Опис</label>
-                <textarea asp-for="Description" placeholder="Деталі події..."></textarea>
+                <textarea asp-for="Description"></textarea>
                 <span asp-validation-for="Description" class="validation-error"></span>
             </div>
 
@@ -73,8 +75,8 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="action-btn save-btn">Створити подію</button>
-                <a asp-action="Index" class="action-btn cancel-btn">Скасувати</a>
+                <button type="submit" class="action-btn save-btn">Зберегти зміни</button>
+                <a asp-action="Details" asp-route-id="@Model.Id" class="action-btn cancel-btn">Скасувати</a>
             </div>
         </form>
     </div>

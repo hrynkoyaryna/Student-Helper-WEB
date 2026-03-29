@@ -1,7 +1,8 @@
 namespace StudentHelper.Application.Models.Calendar;
 
-public class CreatePersonalEventRequest
+public class EditPersonalEventRequest
 {
+    public int Id { get; set; }
     public int UserId { get; set; }
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }

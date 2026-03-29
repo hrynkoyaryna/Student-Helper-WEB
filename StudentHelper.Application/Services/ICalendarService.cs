@@ -13,4 +13,10 @@ public interface ICalendarService
     Task<IReadOnlyCollection<PersonalEvent>> GetUserEventsAsync(
         int userId,
         CancellationToken cancellationToken = default);
+
+    Task<PersonalEvent?> GetEventByIdAsync(int eventId, CancellationToken cancellationToken = default);
+
+    Task<Result> DeleteEventAsync(int eventId, int userId, CancellationToken cancellationToken = default);
+
+    Task<Result> UpdateEventAsync(EditPersonalEventRequest request, CancellationToken cancellationToken = default);
 }

@@ -15,4 +15,6 @@ public class PersonalEvent
     public int UserId { get; set; }
 
     public User User { get; set; } = null!;
+
+    public string Color { get; set; } = "#5bc8d8"; 
 }

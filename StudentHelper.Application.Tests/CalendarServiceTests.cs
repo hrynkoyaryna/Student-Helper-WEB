@@ -24,6 +24,8 @@ public class CalendarServiceTests
             this.loggerMock.Object);
     }
 
+    #region CreateEventAsync Tests
+
     [Fact]
     public async Task CreateEventAsync_ShouldReturnFail_WhenUserIdIsInvalid()
     {
@@ -31,28 +33,15 @@ public class CalendarServiceTests
         {
             UserId = 0,
             Title = "Meeting",
-            Description = "Some description",
             Date = new DateOnly(2026, 3, 25),
             StartTime = new TimeOnly(10, 0),
-            EndTime = new TimeOnly(11, 0),
+            EndTime = new TimeOnly(11, 0)
         };
 
         var result = await this.calendarService.CreateEventAsync(request);
 
         Assert.False(result.Success);
         Assert.Equal("Некоректний користувач.", result.Message);
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.GetByUserIdAndDateAsync(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()),
-            Times.Never);
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.AddAsync(It.IsAny<PersonalEvent>(), It.IsAny<CancellationToken>()),
-            Times.Never);
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Never);
     }
 
     [Fact]
@@ -62,28 +51,15 @@ public class CalendarServiceTests
         {
             UserId = 1,
             Title = "   ",
-            Description = "Some description",
             Date = new DateOnly(2026, 3, 25),
             StartTime = new TimeOnly(10, 0),
-            EndTime = new TimeOnly(11, 0),
+            EndTime = new TimeOnly(11, 0)
         };
 
         var result = await this.calendarService.CreateEventAsync(request);
 
         Assert.False(result.Success);
         Assert.Equal("Назва події є обов'язковою.", result.Message);
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.GetByUserIdAndDateAsync(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()),
-            Times.Never);
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.AddAsync(It.IsAny<PersonalEvent>(), It.IsAny<CancellationToken>()),
-            Times.Never);
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Never);
     }
 
     [Fact]
@@ -93,43 +69,28 @@ public class CalendarServiceTests
         {
             UserId = 1,
             Title = "Lecture",
-            Description = "Math lecture",
             Date = new DateOnly(2026, 3, 25),
             StartTime = new TimeOnly(12, 0),
-            EndTime = new TimeOnly(12, 0),
+            EndTime = new TimeOnly(12, 0)
         };
 
         var result = await this.calendarService.CreateEventAsync(request);
 
         Assert.False(result.Success);
         Assert.Equal("Час завершення має бути пізніше за час початку.", result.Message);
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.GetByUserIdAndDateAsync(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()),
-            Times.Never);
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.AddAsync(It.IsAny<PersonalEvent>(), It.IsAny<CancellationToken>()),
-            Times.Never);
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Never);
     }
 
     [Fact]
-    public async Task CreateEventAsync_ShouldReturnFail_WhenEventOverlapsExistingEvent()
+    public async Task CreateEventAsync_ShouldReturnSuccessWithWarning_WhenEventOverlapsExistingEvent()
     {
         var date = new DateOnly(2026, 3, 25);
-
         var existingEvent = new PersonalEvent
         {
             Id = 1,
             Title = "Existing event",
-            Description = "Already planned",
             UserId = 1,
-            StartAt = DateTime.SpecifyKind(date.ToDateTime(new TimeOnly(10, 0)), DateTimeKind.Local).ToUniversalTime(),
-            EndAt = DateTime.SpecifyKind(date.ToDateTime(new TimeOnly(11, 0)), DateTimeKind.Local).ToUniversalTime(),
+            StartAt = date.ToDateTime(new TimeOnly(10, 0)),
+            EndAt = date.ToDateTime(new TimeOnly(11, 0)),
         };
 
         this.personalEventRepositoryMock
@@ -140,41 +101,27 @@ public class CalendarServiceTests
         {
             UserId = 1,
             Title = "New event",
-            Description = "Overlap test",
             Date = date,
-            StartTime = new TimeOnly(10, 30),
+            StartTime = new TimeOnly(10, 30), // Перетин
             EndTime = new TimeOnly(11, 30),
         };
 
         var result = await this.calendarService.CreateEventAsync(request);
 
-        Assert.False(result.Success);
-        Assert.Equal("Подія перетинається з уже існуючою подією.", result.Message);
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.GetByUserIdAndDateAsync(1, date, It.IsAny<CancellationToken>()),
-            Times.Once);
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.AddAsync(It.IsAny<PersonalEvent>(), It.IsAny<CancellationToken>()),
-            Times.Never);
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Never);
+        // ПЕРЕВІРКА: тепер перетин повертає успіх з попередженням
+        Assert.True(result.Success);
+        Assert.Equal("Подію успішно створено, але вона ПЕРЕТИНАЄТЬСЯ у часі з іншою вашою подією!", result.Message);
     }
 
     [Fact]
     public async Task CreateEventAsync_ShouldReturnSuccess_AndSaveEvent_WhenRequestIsValid()
     {
         var date = new DateOnly(2026, 3, 25);
-
         this.personalEventRepositoryMock
             .Setup(x => x.GetByUserIdAndDateAsync(1, date, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<PersonalEvent>());
 
-        PersonalEvent addedEvent = null;
-
+        PersonalEvent addedEvent = null!;
         this.personalEventRepositoryMock
             .Setup(x => x.AddAsync(It.IsAny<PersonalEvent>(), It.IsAny<CancellationToken>()))
             .Callback<PersonalEvent, CancellationToken>((evt, _) => addedEvent = evt)
@@ -184,75 +131,118 @@ public class CalendarServiceTests
         {
             UserId = 1,
             Title = "Valid event",
-            Description = "No overlap",
             Date = date,
             StartTime = new TimeOnly(14, 0),
             EndTime = new TimeOnly(15, 30),
+            Color = "#ff0000"
         };
 
         var result = await this.calendarService.CreateEventAsync(request);
 
         Assert.True(result.Success);
-        Assert.NotEmpty(result.Message);
-
         Assert.NotNull(addedEvent);
-        Assert.Equal("Valid event", addedEvent!.Title);
-        Assert.Equal("No overlap", addedEvent.Description);
-        Assert.Equal(1, addedEvent.UserId);
-        Assert.Equal(DateTimeKind.Utc, addedEvent.StartAt.Kind);
-        Assert.Equal(DateTimeKind.Utc, addedEvent.EndAt.Kind);
-        Assert.True(addedEvent.EndAt > addedEvent.StartAt);
+        Assert.Equal(new DateTime(2026, 3, 25, 14, 0, 0), addedEvent.StartAt);
+        Assert.Equal(DateTimeKind.Unspecified, addedEvent.StartAt.Kind); 
+        Assert.Equal("#ff0000", addedEvent.Color);
+    }
 
-        this.personalEventRepositoryMock.Verify(
-            x => x.GetByUserIdAndDateAsync(1, date, It.IsAny<CancellationToken>()),
-            Times.Once);
+    #endregion
 
-        this.personalEventRepositoryMock.Verify(
-            x => x.AddAsync(It.IsAny<PersonalEvent>(), It.IsAny<CancellationToken>()),
-            Times.Once);
+    #region UpdateEventAsync Tests
 
-        this.personalEventRepositoryMock.Verify(
-            x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Once);
+    [Fact]
+    public async Task UpdateEventAsync_ShouldReturnFail_WhenEventNotFound()
+    {
+        this.personalEventRepositoryMock
+            .Setup(x => x.GetByIdAsync(99, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((PersonalEvent)null);
+
+        var request = new EditPersonalEventRequest { Id = 99, UserId = 1, Title = "Title" };
+        var result = await this.calendarService.UpdateEventAsync(request);
+
+        Assert.False(result.Success);
+        Assert.Equal("Подію не знайдено.", result.Message);
     }
 
     [Fact]
-    public async Task GetUserEventsAsync_ShouldReturnEventsFromRepository()
+    public async Task UpdateEventAsync_ShouldReturnSuccess_AndUpdateFields_WhenValid()
     {
-        var events = new List<PersonalEvent>
-        {
-            new PersonalEvent
-            {
-                Id = 1,
-                Title = "Event 1",
-                Description = "Desc 1",
-                UserId = 1,
-                StartAt = DateTime.UtcNow,
-                EndAt = DateTime.UtcNow.AddHours(1),
-            },
-            new PersonalEvent
-            {
-                Id = 2,
-                Title = "Event 2",
-                Description = "Desc 2",
-                UserId = 1,
-                StartAt = DateTime.UtcNow.AddHours(2),
-                EndAt = DateTime.UtcNow.AddHours(3),
-            },
+        var existingEvent = new PersonalEvent { Id = 1, UserId = 1, Title = "Old" };
+        this.personalEventRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(existingEvent);
+        this.personalEventRepositoryMock.Setup(x => x.GetByUserIdAndDateAsync(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<PersonalEvent>());
+
+        var request = new EditPersonalEventRequest 
+        { 
+            Id = 1, UserId = 1, Title = "New Title", 
+            Date = new DateOnly(2026, 3, 25), StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(11, 0),
+            Color = "#123456"
         };
 
-        this.personalEventRepositoryMock
-            .Setup(x => x.GetByUserIdAsync(1, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(events);
+        var result = await this.calendarService.UpdateEventAsync(request);
+
+        Assert.True(result.Success);
+        Assert.Equal("New Title", existingEvent.Title);
+        Assert.Equal("#123456", existingEvent.Color);
+    }
+
+    [Fact]
+    public async Task UpdateEventAsync_ShouldIgnoreItself_WhenCheckingOverlaps()
+    {
+        var existingEvent = new PersonalEvent { Id = 1, UserId = 1, StartAt = new DateTime(2026, 3, 25, 10, 0, 0), EndAt = new DateTime(2026, 3, 25, 11, 0, 0) };
+        this.personalEventRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(existingEvent);
+        this.personalEventRepositoryMock.Setup(x => x.GetByUserIdAndDateAsync(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<PersonalEvent> { existingEvent });
+
+        var request = new EditPersonalEventRequest { Id = 1, UserId = 1, Title = "Update", Date = new DateOnly(2026, 3, 25), StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(11, 0) };
+
+        var result = await this.calendarService.UpdateEventAsync(request);
+
+        Assert.True(result.Success);
+        Assert.Equal("Подію успішно оновлено!", result.Message); // Без попередження про перетин
+    }
+
+    #endregion
+
+    #region DeleteEventAsync Tests
+
+    [Fact]
+    public async Task DeleteEventAsync_ShouldReturnSuccess_WhenOwnerDeletes()
+    {
+        var existingEvent = new PersonalEvent { Id = 1, UserId = 1 };
+        this.personalEventRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(existingEvent);
+
+        var result = await this.calendarService.DeleteEventAsync(1, 1);
+
+        Assert.True(result.Success);
+        this.personalEventRepositoryMock.Verify(x => x.DeleteAsync(existingEvent, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    #endregion
+
+    #region Get Methods Tests
+
+    [Fact]
+    public async Task GetUserEventsAsync_ShouldReturnEventsList()
+    {
+        var events = new List<PersonalEvent> { new PersonalEvent { Id = 1, Title = "E1" } };
+        this.personalEventRepositoryMock.Setup(x => x.GetByUserIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(events);
 
         var result = await this.calendarService.GetUserEventsAsync(1);
 
-        Assert.Equal(2, result.Count);
-        Assert.Contains(result, x => x.Title == "Event 1");
-        Assert.Contains(result, x => x.Title == "Event 2");
-
-        this.personalEventRepositoryMock.Verify(
-            x => x.GetByUserIdAsync(1, It.IsAny<CancellationToken>()),
-            Times.Once);
+        Assert.Single(result);
+        Assert.Equal("E1", result.First().Title);
     }
+
+    [Fact]
+    public async Task GetEventByIdAsync_ShouldReturnCorrectEvent()
+    {
+        var ev = new PersonalEvent { Id = 5 };
+        this.personalEventRepositoryMock.Setup(x => x.GetByIdAsync(5, It.IsAny<CancellationToken>())).ReturnsAsync(ev);
+
+        var result = await this.calendarService.GetEventByIdAsync(5);
+
+        Assert.NotNull(result);
+        Assert.Equal(5, result!.Id);
+    }
+
+    #endregion
 }

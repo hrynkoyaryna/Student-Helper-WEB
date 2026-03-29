@@ -2,10 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace StudentHelper.Web.Models.Calendar;
 
-public class EditPersonalEventViewModel
+public class CreatePersonalEventViewModel
 {
-    public int Id { get; set; }
-
     [Required(ErrorMessage = "Вкажіть назву.")]
     [StringLength(100)]
     public string Title { get; set; } = string.Empty;
