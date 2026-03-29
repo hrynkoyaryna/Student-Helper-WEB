@@ -1,23 +1,125 @@
 @model StudentHelper.Domain.Entities.TaskItem
 
 @{
-    ViewData["Title"] = "����� ��������";
+    ViewData["Title"] = "Деталі завдання";
+
+    // Логіка для виправлення знаків питання та розфарбовування статусів
+    string statusDisplay;
+    string badgeClass;
+
+    switch (Model.Status)
+    {
+        case "Done":
+        case "Виконано":
+            statusDisplay = "Виконано";
+            badgeClass = "bg-success text-white";
+            break;
+        case "InProgress":
+        case "У процесі":
+            statusDisplay = "У процесі";
+            badgeClass = "bg-info text-dark";
+            break;
+        case "ToDo":
+        case "Заплановано":
+            statusDisplay = "Заплановано";
+            badgeClass = "bg-warning text-dark";
+            break;
+        default:
+            statusDisplay = "Поточне";
+            badgeClass = "bg-secondary text-white";
+            break;
+    }
 }
 
 <div class="container py-5">
-    <div class="bg-white rounded-4 shadow-sm p-4 mx-auto" style="max-width: 700px;">
-        <h2 class="fw-bold mb-4">����� ��������</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent p-0 mb-4">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none text-info">Завдання</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+        </ol>
+    </nav>
 
-        <div class="border rounded-4 p-3 mb-4">
-            <p><strong>�����:</strong> @Model.Title</p>
-            <p><strong>�������:</strong> @Model.Subject</p>
-            <p><strong>�������:</strong> @Model.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
-            <p class="mb-0"><strong>������:</strong> @Model.Status</p>
-        </div>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                
+                @* Шапка картки з виправленим статусом *@
+                <div class="card-header bg-dark text-white p-4 border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0 fw-bold">📝 Деталі завдання</h2>
+                        <span class="badge @badgeClass px-3 py-2 fw-bold shadow-sm" style="border-radius: 8px; font-size: 0.9rem;">
+                            @statusDisplay
+                        </span>
+                    </div>
+                </div>
 
-        <div class="d-flex gap-2">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">����������</a>
-            <a asp-action="Index" class="btn btn-outline-secondary">�����</a>
+                <div class="card-body p-5 bg-white">
+                    @* Назва завдання *@
+                    <div class="row mb-4 pb-3 border-bottom">
+                        <div class="col-sm-4">
+                            <h6 class="text-muted fw-bold text-uppercase small">Назва</h6>
+                        </div>
+                        <div class="col-sm-8">
+                            <p class="h5 fw-bold mb-0">@Model.Title</p>
+                        </div>
+                    </div>
+
+                    @* Предмет *@
+                    <div class="row mb-4 pb-3 border-bottom">
+                        <div class="col-sm-4">
+                            <h6 class="text-muted fw-bold text-uppercase small">Предмет</h6>
+                        </div>
+                        <div class="col-sm-8">
+                            <p class="h5 mb-0 text-dark">📚 @Model.Subject</p>
+                        </div>
+                    </div>
+
+                    @* Дедлайн *@
+                    <div class="row mb-4 pb-3 border-bottom">
+                        <div class="col-sm-4">
+                            <h6 class="text-muted fw-bold text-uppercase small">Дедлайн</h6>
+                        </div>
+                        <div class="col-sm-8">
+                            <p class="h5 mb-0 text-danger fw-bold">
+                                📅 @Model.Deadline.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("uk-UA"))
+                                <span class="ms-2 badge bg-light text-danger border fw-normal">
+                                    🕒 @Model.Deadline.ToString("HH:mm")
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    @* Опис / Примітки *@
+                    <div class="row mb-4 pb-3 border-bottom">
+                        <div class="col-sm-4">
+                            <h6 class="text-muted fw-bold text-uppercase small">Опис</h6>
+                        </div>
+                        <div class="col-sm-8">
+                            <p class="text-secondary mb-0">
+                                @(string.IsNullOrEmpty(Model.Description) ? "Опис відсутній" : Model.Description)
+                            </p>
+                        </div>
+                    </div>
+
+                    @* Кнопки дії *@
+                    <div class="d-flex gap-2 mt-4 pt-3">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-info text-white px-4 fw-bold shadow-sm" 
+                           style="border-radius: 10px; background-color: #6bc8d7; border: none;">
+                            Редагувати
+                        </a>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 fw-bold" style="border-radius: 10px;">
+                            Назад до списку
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    body { background-color: #f8f9fa; }
+    .breadcrumb-item + .breadcrumb-item::before { content: "→"; color: #82c3e2; }
+    .h5 { color: #2d3436; }
+    .btn-info:hover { background-color: #5bb8c7; color: white; }
+</style>

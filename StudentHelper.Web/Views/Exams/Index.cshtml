@@ -7,12 +7,12 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 style="font-size: 32px; font-weight: 800; color: rgb(26, 26, 26);">📚 Екзамени</h1>
-        <a asp-action="Create" class="btn btn-primary px-4">Додати екзамен</a>
+        <a asp-action="Create" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px;">Додати екзамен</a>
     </div>
 
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success rounded-4 shadow-sm">
+        <div class="alert alert-success rounded-4 shadow-sm border-0">
             @TempData["SuccessMessage"]
         </div>
     }
@@ -20,11 +20,11 @@
     <div class="bg-white rounded-4 shadow-sm p-4">
         <div class="d-flex flex-wrap gap-2 mb-4">
             <a asp-action="Index" asp-route-time="all" asp-route-subject="@Model.SelectedSubject" asp-route-sort="@Model.SortOrder"
-               class="btn @(Model.TimeFilter == "all" ? "btn-primary" : "btn-outline-primary")">Усі</a>
+               class="btn @(Model.TimeFilter == "all" ? "btn-primary" : "btn-outline-primary")" style="border-radius: 8px;">Усі</a>
             <a asp-action="Index" asp-route-time="upcoming" asp-route-subject="@Model.SelectedSubject" asp-route-sort="@Model.SortOrder"
-               class="btn @(Model.TimeFilter == "upcoming" ? "btn-primary" : "btn-outline-primary")">Майбутні</a>
+               class="btn @(Model.TimeFilter == "upcoming" ? "btn-primary" : "btn-outline-primary")" style="border-radius: 8px;">Майбутні</a>
             <a asp-action="Index" asp-route-time="past" asp-route-subject="@Model.SelectedSubject" asp-route-sort="@Model.SortOrder"
-               class="btn @(Model.TimeFilter == "past" ? "btn-primary" : "btn-outline-primary")">Минулі</a>
+               class="btn @(Model.TimeFilter == "past" ? "btn-primary" : "btn-outline-primary")" style="border-radius: 8px;">Минулі</a>
         </div>
 
         <form method="get" asp-action="Index" class="row g-3 align-items-end mb-4">
@@ -33,27 +33,18 @@
 
             <div class="col-md-4">
                 <label class="form-label fw-semibold">Предмет</label>
-                <select name="subject" class="form-select">
+                <select name="subject" class="form-select" style="border-radius: 8px;">
                     <option value="">Усі предмети</option>
                     @foreach (var subject in Model.Subjects)
                     {
-                        if (Model.SelectedSubject == subject)
-                        {
-                            <option value="@subject" selected>@subject</option>
-                        }
-                        else
-                        {
-                            <option value="@subject">@subject</option>
-                        }
+                        <option value="@subject" selected="@(Model.SelectedSubject == subject)">@subject</option>
                     }
                 </select>
             </div>
 
-            
-
             <div class="col-md-auto">
-                <button type="submit" class="btn btn-primary">Фільтрувати</button>
-                <a asp-action="Index" class="btn btn-outline-secondary">Скинути</a>
+                <button type="submit" class="btn btn-primary px-4" style="border-radius: 8px;">Фільтрувати</button>
+                <a asp-action="Index" class="btn btn-outline-secondary px-4" style="border-radius: 8px;">Скинути</a>
             </div>
         </form>
 
@@ -70,22 +61,22 @@
                 @foreach (var exam in Model.Exams)
                 {
                     <div class="col-12">
-                        <div class="border rounded-4 p-4 shadow-sm">
-                            <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                        <div class="border rounded-4 p-4 shadow-sm bg-white hover-shadow transition">
+                            <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center">
                                 <div>
-                                    <h4 class="mb-2">@exam.Subject</h4>
+                                    <h4 class="mb-2 fw-bold text-dark">@exam.Subject</h4>
                                     <div class="text-secondary mb-1">
-                                        <strong>Дата:</strong> @exam.DateTime.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                        <span class="me-2"></span><strong>Дата:</strong> @exam.DateTime.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                                     </div>
-                                    <div class="text-secondary mb-1">
-                                        <strong>Викладач:</strong> @(exam.Teacher != null ? exam.Teacher.FullName : "—")
+                                    <div class="text-secondary">
+                                        <span class="me-2"></span><strong>Викладач:</strong> @(string.IsNullOrEmpty(exam.TeacherName) ? "Не вказано" : exam.TeacherName)
                                     </div>
                                 </div>
 
-                                <div class="d-flex flex-wrap gap-2 align-items-start">
-                                    <a asp-action="Details" asp-route-id="@exam.Id" class="btn btn-outline-secondary btn-sm">Деталі</a>
-                                    <a asp-action="Edit" asp-route-id="@exam.Id" class="btn btn-outline-primary btn-sm">Редагувати</a>
-                                    <a asp-action="Delete" asp-route-id="@exam.Id" class="btn btn-outline-danger btn-sm">Видалити</a>
+                                <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                                    <a asp-action="Details" asp-route-id="@exam.Id" class="btn btn-outline-secondary btn-sm px-3">Деталі</a>
+                                    <a asp-action="Edit" asp-route-id="@exam.Id" class="btn btn-outline-primary btn-sm px-3">Редагувати</a>
+                                    <a asp-action="Delete" asp-route-id="@exam.Id" class="btn btn-outline-danger btn-sm px-3">Видалити</a>
                                 </div>
                             </div>
                         </div>
@@ -95,3 +86,17 @@
         }
     </div>
 </div>
+
+<style>
+    .hover-shadow:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+        border-color: #6bc8d7 !important;
+    }
+    .transition {
+        transition: all 0.2s ease-in-out;
+    }
+    .btn-primary { background-color: #6bc8d7; border-color: #6bc8d7; }
+    .btn-primary:hover { background-color: #5bb8c7; border-color: #5bb8c7; }
+    .btn-outline-primary { color: #6bc8d7; border-color: #6bc8d7; }
+    .btn-outline-primary:hover { background-color: #6bc8d7; border-color: #6bc8d7; color: white; }
+</style>

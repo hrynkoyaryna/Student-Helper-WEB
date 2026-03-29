@@ -1,162 +1,37 @@
+@using System.Globalization
 @model StudentHelper.Web.Models.Calendar.CalendarIndexViewModel
-@using StudentHelper.Domain.Entities
 
 @{
-    ViewData["Title"] = "Календар - Student Helper";
-    var previousWeek = Model.WeekStartDate.AddDays(-7);
-    var nextWeek = Model.WeekStartDate.AddDays(7);
-    string[] dayNames = { "Понеділок", "Вівторок", "Середа", "Четвер", "Пʼятниця", "Субота", "Неділя" };
-
-    int rowHeightPx = 80; 
-    
-    var dayWidths = new Dictionary<DateOnly, int>();
-    var eventLayouts = new Dictionary<int, (double left, double width)>();
-
-    foreach (var day in Model.Days)
-    {
-        var dayEvents = Model.Events
-            .Where(e => DateOnly.FromDateTime(e.StartAt) == day)
-            .OrderBy(e => e.StartAt)
-            .ThenByDescending(e => e.EndAt)
-            .ToList();
-
-        var columns = new List<List<PersonalEvent>>();
-
-        foreach (var ev in dayEvents)
-        {
-            bool placed = false;
-            for (int c = 0; c < columns.Count; c++)
-            {
-                if (!columns[c].Any(e => e.StartAt < ev.EndAt && e.EndAt > ev.StartAt))
-                {
-                    columns[c].Add(ev);
-                    placed = true;
-                    break;
-                }
-            }
-            if (!placed) columns.Add(new List<PersonalEvent> { ev });
-        }
-
-        int maxOverlaps = Math.Max(1, columns.Count);
-        dayWidths[day] = Math.Max(180, maxOverlaps * 150); 
-
-        double widthPct = 100.0 / maxOverlaps;
-        for (int c = 0; c < columns.Count; c++)
-        {
-            foreach (var ev in columns[c])
-            {
-                eventLayouts[ev.Id] = (c * widthPct, widthPct);
-            }
-        }
-    }
+    ViewData["Title"] = "Календар";
+    var ukCulture = new CultureInfo("uk-UA");
 }
 
-<style>
-    .calendar-container { max-width: 1300px; margin: 0 auto; padding: 32px 20px 48px; }
-    .calendar-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .calendar-title { font-size: 38px; font-weight: 800; color: #1a1a1a; }
-    .calendar-btn, .calendar-add-btn { padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center;}
-    .calendar-btn { background-color: #5bc8d8; color: white; margin-right: 8px;}
-    .calendar-btn:hover { background-color: #43b5c7; color: white;}
-    .calendar-add-btn { background-color: #111827; color: white; }
-    .calendar-add-btn:hover { background-color: #1f2937; color: white;}
-    
-    .calendar-shell { background: white; border-radius: 16px; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08); border: 1px solid #e5e7eb; overflow-x: auto; }
-    
-    .calendar-grid-table { width: 100%; border-collapse: collapse; table-layout: auto; min-width: 1000px; }
-    
-    .calendar-grid-table th, .calendar-grid-table td { 
-        border: 1px solid #e5e7eb; 
-        box-sizing: border-box; 
-    }
-    
-    .time-col { 
-        width: 70px; 
-        background: #f8fafc; 
-        font-weight: 700; 
-        text-align: center; 
-        color: #64748b; 
-        font-size: 13px; 
-        position: sticky; 
-        left: 0; 
-        z-index: 50; 
-        padding: 8px 0 !important; 
-        vertical-align: top;
-    }
-    
-    .day-header { text-align: center; font-weight: 800; min-width: 180px; padding: 15px 0;} 
-    .day-header.weekend-bg { color: #000000; background-color: #f8fafc; }
-    
-    .calendar-cell { 
-        position: relative; 
-        padding: 0 !important; 
-        height: @(rowHeightPx)px; 
-    }
-    .calendar-cell.weekend-bg { background-color: #f8fafc; }
-
-    .calendar-event-block { 
-        position: absolute; /
-        display: flex; 
-        flex-direction: column;
-        border-radius: 6px; 
-        padding: 4px 8px; 
-        font-size: 13px; 
-        box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
-        text-decoration: none;
-        transition: transform 0.1s, box-shadow 0.2s, z-index 0s;
-        border-left: 4px solid rgba(0,0,0,0.25); 
-        overflow: hidden; 
-        z-index: 10;
-    }
-    .calendar-event-block:hover { 
-        transform: scale(1.02); 
-        box-shadow: 0 5px 12px rgba(0,0,0,0.3); 
-        text-decoration: none; 
-        z-index: 30 !important; 
-    }
-    
-    .event-title { font-weight: 800; margin-bottom: 2px; word-wrap: break-word; white-space: normal; line-height: 1.15; font-size: 12px;} 
-    .event-time { font-size: 11px; opacity: 0.95; margin-bottom: 2px; font-weight: 600;}
-    .event-desc { font-size: 11px; opacity: 0.85; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-wrap: break-word; }
-
-    .alert-warning { background-color: #fef08a; color: #854d0e; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; font-weight: 600; border: 1px solid #fde047; display: flex; align-items: center; gap: 10px; }
-</style>
-
-<div class="calendar-container">
-
-    @if (TempData["CalendarMessage"] != null)
-    {
-        <div class="alert-warning">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            @TempData["CalendarMessage"]
-        </div>
-    }
-
-    <div class="calendar-topbar">
-        <div>
-            <h1 class="calendar-title">Календар</h1>
-            <p>Тиждень: @Model.WeekStartDate.ToString("dd.MM.yyyy") – @Model.WeekStartDate.AddDays(6).ToString("dd.MM.yyyy")</p>
-        </div>
-        <div style="display: flex; align-items: center;">
-            <a asp-action="Index" asp-route-weekStartDate="@previousWeek" class="calendar-btn" title="Попередній тиждень">←</a>
-            <a asp-action="Index" class="calendar-btn">Сьогодні</a>
-            <a asp-action="Index" asp-route-weekStartDate="@nextWeek" class="calendar-btn" title="Наступний тиждень">→</a>
-            <a asp-action="Create" class="calendar-add-btn">Додати подію</a>
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+        <h1 class="fw-bold mb-0" style="font-size: 3rem;">Календар</h1>
+        <div class="d-flex align-items-center gap-1">
+            <div class="btn-group shadow-sm">
+                <a asp-action="Index" asp-route-weekStartDate="@Model.WeekStartDate.AddDays(-7)" class="btn btn-info text-white">←</a>
+                <a asp-action="Index" asp-route-weekStartDate="@DateOnly.FromDateTime(DateTime.Today)" class="btn btn-info text-white px-4">Сьогодні</a>
+                <a asp-action="Index" asp-route-weekStartDate="@Model.WeekStartDate.AddDays(7)" class="btn btn-info text-white">→</a>
+            </div>
+            <a asp-action="Create" class="btn btn-dark ms-2 fw-bold py-2 px-3 shadow-sm" style="border-radius: 8px;">Додати подію</a>
         </div>
     </div>
+    <p class="text-muted mb-4">Тиждень: @Model.WeekStartDate.ToString("dd.MM.yyyy") — @Model.WeekEndDate.ToString("dd.MM.yyyy")</p>
 
-    <div class="calendar-shell">
-        <table class="calendar-grid-table">
+    <div class="calendar-scroll-container border rounded-4 bg-white shadow-sm" style="overflow-x: auto;">
+        <table class="table table-bordered mb-0" style="min-width: 1400px; table-layout: fixed; border-collapse: collapse;">
             <thead>
-                <tr>
-                    <th class="time-col" style="z-index: 60;">Час</th>
-                    @for (int i = 0; i < Model.Days.Count; i++)
+                <tr class="text-center align-middle bg-light">
+                    <th style="width: 80px;" class="text-muted fw-normal border-0 py-3">Час</th>
+                    @foreach (var day in Model.Days)
                     {
-                        var day = Model.Days.ElementAt(i);
-                        bool isWeekend = day.DayOfWeek == DayOfWeek.Saturday || day.DayOfWeek == DayOfWeek.Sunday;
-                        
-                        <th class="day-header @(isWeekend ? "weekend-bg" : "")" style="min-width: @(dayWidths[day])px;">
-                            @dayNames[i]<br /><span style="font-weight: 500; font-size: 14px;">@day.ToString("dd.MM")</span>
+                        <th class="border-start border-bottom-0 py-3" style="width: 250px;">
+                            <div class="fw-bold text-capitalize @(day == DateOnly.FromDateTime(DateTime.Today) ? "text-info" : "")">
+                                @day.ToString("dddd", ukCulture)
+                            </div>
+                            <div class="small text-muted fw-normal">@day.ToString("dd.MM")</div>
                         </th>
                     }
                 </tr>
@@ -164,62 +39,68 @@
             <tbody>
                 @foreach (var slot in Model.TimeSlots)
                 {
-                    <tr style="height: @(rowHeightPx)px;">
-                        <td class="time-col">
-                            <span style="position: relative; top: -10px; background: #f8fafc; padding: 2px 5px;">@slot.ToString("HH:mm")</span>
+                    <tr>
+                        <td class="text-center align-middle fw-bold text-muted small border-end bg-light" style="height: 100px;">
+                            @slot.ToString("HH:mm")
                         </td>
-                        
                         @foreach (var day in Model.Days)
                         {
-                            bool isWeekend = day.DayOfWeek == DayOfWeek.Saturday || day.DayOfWeek == DayOfWeek.Sunday;
-                            
-                            <td class="calendar-cell @(isWeekend ? "weekend-bg" : "")" style="min-width: @(dayWidths[day])px;">
+                            <td class="p-0 position-relative day-cell border-start" style="vertical-align: top; height: 100px;">
                                 @{
-                                    var eventsForCell = Model.Events
-                                        .Where(e => DateOnly.FromDateTime(e.StartAt) == day && e.StartAt.Hour == slot.Hour);
+                                    var eventsInSlot = Model.Events.Where(e => 
+                                        DateOnly.FromDateTime(e.StartAt) == day && 
+                                        TimeOnly.FromDateTime(e.StartAt).Hour == slot.Hour).ToList();
                                 }
-                                
-                                @foreach (var ev in eventsForCell)
+
+                                @if (eventsInSlot.Any())
                                 {
-                                    var layout = eventLayouts[ev.Id];
-                                    
-                                    double topPx = (ev.StartAt.Minute / 60.0) * rowHeightPx;
-                                    double durationMins = (ev.EndAt - ev.StartAt).TotalMinutes;
-                                    double heightPx = (durationMins / 60.0) * rowHeightPx;
-
-                                    string textColor = "#ffffff";
-                                    string safeColor = string.IsNullOrEmpty(ev.Color) ? "#5bc8d8" : ev.Color;
-                                    if (safeColor.StartsWith("#") && safeColor.Length == 7) {
-                                        try {
-                                            int r = Convert.ToInt32(safeColor.Substring(1, 2), 16);
-                                            int g = Convert.ToInt32(safeColor.Substring(3, 2), 16);
-                                            int b = Convert.ToInt32(safeColor.Substring(5, 2), 16);
-                                            if (((r * 299 + g * 587 + b * 114) / 1000.0) > 180) textColor = "#111827"; 
-                                        } catch {}
-                                    }
-
-                                    <a asp-action="Details" asp-route-id="@ev.Id" 
-                                       class="calendar-event-block" 
-                                       style="top: @(topPx)px; 
-                                              height: @(heightPx)px; 
-                                              left: calc(@(layout.left)% + 2px); 
-                                              width: calc(@(layout.width)% - 4px); 
-                                              background-color: @safeColor; 
-                                              color: @textColor;" 
-                                       title="Натисніть для перегляду деталей">
-                                        
-                                        <div class="event-title" style="color: @textColor;">@ev.Title</div>
-                                        
-                                        @if (heightPx >= 40) 
+                                    <div class="d-flex h-100 w-100">
+                                        @foreach (var ev in eventsInSlot)
                                         {
-                                            <div class="event-time" style="color: @textColor;">@ev.StartAt.ToString("HH:mm") - @ev.EndAt.ToString("HH:mm")</div>
+                                            var durationMin = (ev.EndAt - ev.StartAt).TotalMinutes;
+                                            var heightPx = (durationMin / 60.0) * 100;
+                                            var topOffsetPx = (ev.StartAt.Minute / 60.0) * 100;
+
+                                            var targetController = ev.Type switch {
+                                                "Task" => "Tasks",
+                                                "Exam" => "Exams",
+                                                _ => "Calendar"
+                                            };
+                                            
+                                            var targetAction = "Details"; 
+
+                                            <div class="flex-grow-1 position-relative h-100 border-end border-light" style="min-width: 100px;">
+                                                <div class="event-item rounded-3 shadow-sm text-white position-absolute mx-1" 
+                                                     style="background-color: @ev.Color; 
+                                                            height: @(heightPx - 4)px; 
+                                                            top: @(topOffsetPx + 2)px;
+                                                            left: 0; right: 0;
+                                                            z-index: 50;
+                                                            padding: 8px;
+                                                            cursor: pointer;
+                                                            overflow: hidden;"
+                                                     onclick="location.href='@Url.Action(targetAction, targetController, new { id = ev.Id })'">
+                                                    
+                                                    <div class="text-uppercase fw-bold mb-1" style="font-size: 0.6rem; opacity: 0.8; letter-spacing: 0.5px;">
+                                                        @(ev.Type == "Task" ? "Завдання" : (ev.Type == "Exam" ? "Екзамен" : "Подія"))
+                                                    </div>
+
+                                                    <div class="fw-bold" style="font-size: 0.85rem; line-height: 1.2;">@ev.Title</div>
+                                                    
+                                                    <div style="font-size: 0.75rem; opacity: 0.9;" class="mt-1">
+                                                         @ev.StartAt.ToString("HH:mm") - @ev.EndAt.ToString("HH:mm")
+                                                    </div>
+                                                    
+                                                    @if (heightPx > 70 && !string.IsNullOrEmpty(ev.Description))
+                                                    {
+                                                        <div class="mt-2 pt-1 border-top border-white border-opacity-25 text-truncate" style="font-size: 0.7rem; opacity: 0.8;">
+                                                            @ev.Description
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
                                         }
-                                        
-                                        @if (!string.IsNullOrWhiteSpace(ev.Description) && heightPx >= 70) 
-                                        {
-                                            <div class="event-desc" style="color: @textColor;">@ev.Description</div>
-                                        }
-                                    </a>
+                                    </div>
                                 }
                             </td>
                         }
@@ -229,3 +110,27 @@
         </table>
     </div>
 </div>
+
+<style>
+    body { background-color: #f8f9fa; }
+    .table td, .table th { border-color: #eee !important; }
+    .btn-info { background-color: #6bc8d7; border: none; }
+    .btn-info:hover { background-color: #5bb8c7; }
+    .btn-dark { background-color: #1a1d21; border-radius: 8px; }
+    
+    .event-item { 
+        transition: all 0.2s ease;
+        border-left: 4px solid rgba(0,0,0,0.15);
+    }
+    
+    .event-item:hover { 
+        filter: brightness(110%); 
+        transform: scale(1.02);
+        z-index: 100 !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    }
+
+    .calendar-scroll-container::-webkit-scrollbar { height: 10px; }
+    .calendar-scroll-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .calendar-scroll-container::-webkit-scrollbar-thumb { background: #6bc8d7; border-radius: 10px; border: 2px solid #f1f1f1; }
+</style>

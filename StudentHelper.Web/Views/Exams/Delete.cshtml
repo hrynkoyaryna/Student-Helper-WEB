@@ -17,7 +17,7 @@
         <dd class="col-sm-9">@Model.DateTime.ToString("dd.MM.yyyy HH:mm")</dd>
 
         <dt class="col-sm-3">Викладач</dt>
-        <dd class="col-sm-9">@Model.Teacher?.FullName</dd>
+        <dd class="col-sm-10">@Model.TeacherName</dd>
     </dl>
 
     <form method="post" asp-action="Delete">

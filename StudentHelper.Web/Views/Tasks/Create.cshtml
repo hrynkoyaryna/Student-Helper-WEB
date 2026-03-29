@@ -5,47 +5,80 @@
 }
 
 <div class="container py-5">
-    <div class="bg-white rounded-4 shadow-sm p-4 mx-auto" style="max-width: 700px;">
-        <h2 class="fw-bold mb-4">Створити завдання</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                
+                @* Шапка як на фото, але світло-синя *@
+                <div class="card-header text-white p-4 border-0" style="background-color: #6bc8d7 !important;">
+                    <h2 class="mb-0 fw-bold">Створити завдання</h2>
+                </div>
 
-        <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <div class="mb-3">
-                <label asp-for="Title" class="form-label fw-semibold">Назва</label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-bold">Назва завдання</label>
+                            <input asp-for="Title" class="form-control" placeholder="Введіть назву..." style="border-radius: 8px;" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Subject" class="form-label fw-bold">Предмет</label>
+                            <input asp-for="Subject" class="form-control" placeholder="Введіть предмет..." style="border-radius: 8px;" />
+                            <span asp-validation-for="Subject" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Deadline" class="form-label fw-bold">Дедлайн</label>
+                            <input asp-for="Deadline" type="datetime-local" class="form-control" 
+                                   value="@Model.Deadline.ToString("yyyy-MM-ddTHH:mm")" style="border-radius: 8px;" />
+                            <span asp-validation-for="Deadline" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Status" class="form-label fw-bold">Статус</label>
+                            <select asp-for="Status" class="form-select" style="border-radius: 8px;">
+                                <option value="ToDo">Заплановано</option>
+                                <option value="InProgress">У процесі</option>
+                                <option value="Done">Виконано</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+
+                        @* Опис *@
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label fw-bold">Примітки / Опис</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" 
+                                      placeholder="Додаткова інформація..." style="border-radius: 8px;"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex gap-2 pt-2">
+                            <button type="submit" class="btn btn-info text-white px-4 fw-bold shadow-sm" 
+                                    style="border-radius: 10px; min-width: 140px; background-color: #6bc8d7 !important; border: none;">
+                                Зберегти
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4 fw-bold" style="border-radius: 10px;">
+                                Скасувати
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label asp-for="Subject" class="form-label fw-semibold">Предмет</label>
-                <input asp-for="Subject" class="form-control" />
-                <span asp-validation-for="Subject" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Deadline" class="form-label fw-semibold">Дедлайн</label>
-				<input asp-for="Deadline" type="datetime-local" class="form-control" value="@Model.Deadline.ToString("yyyy-MM-ddTHH:mm")" />
-				<span asp-validation-for="Deadline" class="text-danger"></span>
-            </div>
-
-            <div class="mb-4">
-                <label asp-for="Status" class="form-label fw-semibold">Статус</label>
-                <select asp-for="Status" class="form-select">
-                    <option value="Поточне">Поточне</option>
-                    <option value="Виконане">Виконане</option>
-                    <option value="Прострочене">Прострочене</option>
-                </select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Зберегти</button>
-                <a asp-action="Index" class="btn btn-outline-secondary">Скасувати</a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
+
+<style>
+    body { background-color: #f8f9fa; }
+    .form-control:focus, .form-select:focus {
+        border-color: #6bc8d7;
+        box-shadow: 0 0 0 0.25rem rgba(107, 200, 215, 0.25);
+    }
+    .btn-info:hover { background-color: #5bb8c7 !important; }
+</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

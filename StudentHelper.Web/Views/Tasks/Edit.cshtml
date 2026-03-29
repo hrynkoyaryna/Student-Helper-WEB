@@ -1,52 +1,83 @@
 @model StudentHelper.Web.Models.Tasks.TaskCreateEditViewModel
 
 @{
-    ViewData["Title"] = "Редагувати завдання";
+    ViewData["Title"] = "Р РµРґР°РіСѓРІР°РЅРЅСЏ Р·Р°РІРґР°РЅРЅСЏ";
 }
 
 <div class="container py-5">
-    <div class="bg-white rounded-4 shadow-sm p-4 mx-auto" style="max-width: 700px;">
-        <h2 class="fw-bold mb-4">Редагувати завдання</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header text-white p-4 border-0" style="background-color: #6bc8d7 !important;">
+                    <h2 class="mb-0 fw-bold">вњЏпёЏ Р РµРґР°РіСѓРІР°РЅРЅСЏ Р·Р°РІРґР°РЅРЅСЏ</h2>
+                </div>
 
-        <form asp-action="Edit" method="post">
-            <input asp-for="Id" type="hidden" />
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form asp-action="Edit" method="post">
+                        <input asp-for="Id" type="hidden" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <div class="mb-3">
-                <label asp-for="Title" class="form-label fw-semibold">Назва</label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-bold">РќР°Р·РІР° Р·Р°РІРґР°РЅРЅСЏ</label>
+                            <input asp-for="Title" class="form-control" placeholder="РќР°РїСЂРёРєР»Р°Рґ: Р›Р°Р±РѕСЂР°С‚РѕСЂРЅР° в„–5" style="border-radius: 8px;" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Subject" class="form-label fw-bold">РџСЂРµРґРјРµС‚</label>
+                            <input asp-for="Subject" class="form-control" placeholder="РќР°РїСЂРёРєР»Р°Рґ: РџСЂРѕРіСЂР°РјРЅР° С–РЅР¶РµРЅРµСЂС–СЏ" style="border-radius: 8px;" />
+                            <span asp-validation-for="Subject" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Deadline" class="form-label fw-bold">Р”РµРґР»Р°Р№РЅ (РґР°С‚Р° С‚Р° С‡Р°СЃ)</label>
+                            <input asp-for="Deadline" type="datetime-local" class="form-control" 
+                                   value="@Model.Deadline.ToString("yyyy-MM-ddTHH:mm")" style="border-radius: 8px;" />
+                            <span asp-validation-for="Deadline" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label fw-bold">РЎС‚Р°С‚СѓСЃ</label>
+                            <select asp-for="Status" class="form-select" style="border-radius: 8px;">
+                                <option value="ToDo">Р—Р°РїР»Р°РЅРѕРІР°РЅРѕ</option>
+                                <option value="InProgress">РЈ РїСЂРѕС†РµСЃС–</option>
+                                <option value="Done">Р’РёРєРѕРЅР°РЅРѕ</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label fw-bold">РџСЂРёРјС–С‚РєРё / РћРїРёСЃ</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" 
+                                      placeholder="Р”РѕРґР°С‚РєРѕРІР° С–РЅС„РѕСЂРјР°С†С–СЏ..." style="border-radius: 8px;"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex gap-2 pt-2">
+                            @* РљРЅРѕРїРєР° 'Р—Р±РµСЂРµРіС‚Рё' С‚РµР¶ РјР°С” С†РµР№ СЃРІС–С‚Р»Рѕ-СЃРёРЅС–Р№ РєРѕР»С–СЂ *@
+                            <button type="submit" class="btn btn-info text-white px-4 fw-bold shadow-sm" style="border-radius: 10px; min-width: 140px; background-color: #6bc8d7 !important;">
+                                Р—Р±РµСЂРµРіС‚Рё
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4 fw-bold" style="border-radius: 10px;">
+                                РЎРєР°СЃСѓРІР°С‚Рё
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label asp-for="Subject" class="form-label fw-semibold">Предмет</label>
-                <input asp-for="Subject" class="form-control" />
-                <span asp-validation-for="Subject" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Deadline" class="form-label fw-semibold">Дедлайн</label>
-                <input asp-for="Deadline" type="datetime-local" class="form-control" value="@Model.Deadline.ToString("yyyy-MM-ddTHH:mm")" />
-                <span asp-validation-for="Deadline" class="text-danger"></span>
-            </div>
-
-            <div class="mb-4">
-                <label asp-for="Status" class="form-label fw-semibold">Статус</label>
-                <select asp-for="Status" class="form-select">
-                    <option value="Поточне">Поточне</option>
-                    <option value="Виконане">Виконане</option>
-                    <option value="Прострочене">Прострочене</option>
-                </select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Оновити</button>
-                <a asp-action="Index" class="btn btn-outline-secondary">Скасувати</a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
+
+<style>
+    body { background-color: #f8f9fa; }
+    .form-control:focus, .form-select:focus {
+        border-color: #6bc8d7;
+        box-shadow: 0 0 0 0.25rem rgba(116, 224, 240, 0.25);
+    }
+    .btn-info { background-color: #6bc8d7; border: none; color: white; }
+    .btn-info:hover { background-color: #5bb8c7; color: white; }
+</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

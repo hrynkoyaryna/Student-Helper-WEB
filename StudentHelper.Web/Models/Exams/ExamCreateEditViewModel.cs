@@ -14,11 +14,11 @@ public class ExamCreateEditViewModel
     [DataType(DataType.DateTime)]
     public DateTime DateTime { get; set; }
 
-    // The selected teacher id (optional if using existing)
     public int? TeacherId { get; set; }
 
-    // Allow user to enter teacher full name manually
     public string? TeacherName { get; set; }
+
+    public string? Description { get; set; }
 
     public List<Teacher> Teachers { get; set; } = new();
 }

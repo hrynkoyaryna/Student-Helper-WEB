@@ -1,26 +1,74 @@
 @model StudentHelper.Domain.Entities.TaskItem
 
 @{
-    ViewData["Title"] = "Видалити завдання";
+    ViewData["Title"] = "Р’РёРґР°Р»РµРЅРЅСЏ Р·Р°РІРґР°РЅРЅСЏ";
 }
 
 <div class="container py-5">
-    <div class="bg-white rounded-4 shadow-sm p-4 mx-auto" style="max-width: 700px;">
-        <h2 class="fw-bold mb-4 text-danger">Видалити завдання</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header bg-danger text-white p-4 border-0 text-center">
+                    <h2 class="mb-0 fw-bold">Р’РёРґР°Р»РµРЅРЅСЏ Р·Р°РІРґР°РЅРЅСЏ</h2>
+                </div>
 
-        <p>Ти справді хочеш видалити це завдання?</p>
+                <div class="card-body p-5 bg-white text-center">
+                    <p class="lead mb-4">Р’Рё РІРїРµРІРЅРµРЅС–, С‰Рѕ С…РѕС‡РµС‚Рµ РІРёРґР°Р»РёС‚Рё С†Рµ Р·Р°РІРґР°РЅРЅСЏ? <br> 
+                       <small class="text-muted">Р¦СЋ РґС–СЋ РЅРµРјРѕР¶Р»РёРІРѕ Р±СѓРґРµ СЃРєР°СЃСѓРІР°С‚Рё.</small>
+                    </p>
 
-        <div class="border rounded-4 p-3 mb-4">
-            <p><strong>Назва:</strong> @Model.Title</p>
-            <p><strong>Предмет:</strong> @Model.Subject</p>
-            <p><strong>Дедлайн:</strong> @Model.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
-            <p class="mb-0"><strong>Статус:</strong> @Model.Status</p>
+                    <div class="text-start bg-light rounded-4 p-4 mb-4 border">
+                        <div class="mb-3">
+                            <h6 class="text-muted fw-bold text-uppercase small mb-1">РќР°Р·РІР°</h6>
+                            <p class="h5 fw-bold">@Model.Title</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="text-muted fw-bold text-uppercase small mb-1">РџСЂРµРґРјРµС‚</h6>
+                            <p class="mb-0">@Model.Subject</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <h6 class="text-muted fw-bold text-uppercase small mb-1">Р”РµРґР»Р°Р№РЅ</h6>
+                                <p class="mb-0"> @Model.Deadline.ToString("dd.MM.yyyy HH:mm")</p>
+                            </div>
+                            <div class="col-6">
+                                <h6 class="text-muted fw-bold text-uppercase small mb-1">РЎС‚Р°С‚СѓСЃ</h6>
+                                <span class="badge @(Model.Status == "Done" ? "bg-success" : "bg-warning text-dark")">
+                                    @Model.Status
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Р¤РѕСЂРјР° РІРёРґР°Р»РµРЅРЅСЏ *@
+                    <form asp-action="DeleteConfirmed" method="post" asp-route-id="@Model.Id">
+                        @Html.AntiForgeryToken()
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+    <button type="submit" class="btn btn-danger px-5 fw-bold py-2 shadow-sm" style="border-radius: 10px;">
+        РўР°Рє, РІРёРґР°Р»РёС‚Рё
+    </button>
+    <a asp-action="Index" class="btn btn-outline-secondary px-5 fw-bold py-2" style="border-radius: 10px;">
+        РЎРєР°СЃСѓРІР°С‚Рё
+    </a> @* <-- Р”РѕРґР°РЅРѕ Р·Р°РєСЂРёРІР°СЋС‡РёР№ С‚РµРі *@
+</div>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <form asp-action="Delete" method="post">
-            <input type="hidden" asp-for="Id" />
-            <button type="submit" class="btn btn-danger">Видалити</button>
-            <a asp-action="Index" class="btn btn-outline-secondary">Скасувати</a>
-        </form>
     </div>
 </div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .card {
+        animation: fadeIn 0.3s ease-out;
+    }
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

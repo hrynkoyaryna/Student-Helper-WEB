@@ -5,19 +5,119 @@
 }
 
 <div class="container mt-5">
-    <h1>Деталі екзамену</h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent p-0 mb-4">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none text-info">Екзамени</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@(Model?.Subject ?? "Деталі")</li>
+        </ol>
+    </nav>
 
-    <dl class="row">
-        <dt class="col-sm-3">Предмет</dt>
-        <dd class="col-sm-9">@Model.Subject</dd>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                @* Шапка картки *@
+                <div class="card-header bg-dark text-white p-4 border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0 fw-bold">🎓 Деталі екзамену</h2>
+                        <span class="badge bg-info text-dark px-3 py-2 fw-bold" style="border-radius: 6px;">
+                            @(Model?.DateTime > DateTime.Now ? "Майбутній" : "Завершений")
+                        </span>
+                    </div>
+                </div>
 
-        <dt class="col-sm-3">Дата та час</dt>
-        <dd class="col-sm-9">@Model.DateTime.ToString("dd.MM.yyyy HH:mm")</dd>
+                <div class="card-body p-5 bg-white">
+                    @if (Model == null)
+                    {
+                        <div class="alert alert-warning">Дані про екзамен не знайдено.</div>
+                    }
+                    else
+                    {
+                        @* Предмет *@
+                        <div class="row mb-4 pb-3 border-bottom">
+                            <div class="col-sm-4">
+                                <h6 class="text-muted fw-bold text-uppercase small">Предмет</h6>
+                            </div>
+                            <div class="col-sm-8">
+                                <p class="h5 fw-bold mb-0">@Model.Subject</p>
+                            </div>
+                        </div>
 
-        <dt class="col-sm-3">Викладач</dt>
-        <dd class="col-sm-9">@Model.Teacher?.FullName</dd>
-    </dl>
+                        @* Дата та час *@
+                        <div class="row mb-4 pb-3 border-bottom">
+                            <div class="col-sm-4">
+                                <h6 class="text-muted fw-bold text-uppercase small">Дата та час</h6>
+                            </div>
+                            <div class="col-sm-8">
+                                <p class="h5 mb-0 text-dark">
+                                    @Model.DateTime.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("uk-UA"))
+                                    <span class="ms-2 badge bg-light text-dark border fw-normal">
+                                        🕒 @Model.DateTime.ToString("HH:mm")
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
 
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редагувати</a>
-    <a asp-action="Index" class="btn btn-link">Назад до списку</a>
+                        @* Викладач *@
+                        <div class="row mb-4 pb-3 border-bottom">
+                            <div class="col-sm-4">
+                                <h6 class="text-muted fw-bold text-uppercase small">Викладач</h6>
+                            </div>
+                            <div class="col-sm-8">
+                                <p class="h5 mb-0">
+                                    @(string.IsNullOrEmpty(Model.TeacherName) ? "Не вказано" : Model.TeacherName)
+                                </p>
+                            </div>
+                        </div>
+
+                        @* Примітки (Description) *@
+                        <div class="row mb-4 pb-3">
+                            <div class="col-sm-4">
+                                <h6 class="text-muted fw-bold text-uppercase small">Примітки</h6>
+                            </div>
+                            <div class="col-sm-8">
+                                <p class="text-secondary mb-0">
+                                    @(string.IsNullOrEmpty(Model.Description) ? "Опис відсутній" : Model.Description)
+                                </p>
+                            </div>
+                        </div>
+
+                        @* Кнопки дії *@
+                        <div class="d-flex gap-2 mt-4 pt-3">
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-info text-white px-4 fw-bold shadow-sm" style="border-radius: 8px;">
+                                Редагувати
+                            </a>
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4 fw-bold" style="border-radius: 8px;">
+                                Назад до списку
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "→";
+        color: #6c757d;
+    }
+
+    .h5 {
+        color: #2d3436;
+    }
+
+    .btn-info {
+        background-color: #6bc8d7;
+        border: none;
+    }
+
+    .btn-info:hover {
+        background-color: #5bb8c7;
+        color: white;
+    }
+</style>

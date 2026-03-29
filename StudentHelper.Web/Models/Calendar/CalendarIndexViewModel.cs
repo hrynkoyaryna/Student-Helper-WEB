@@ -1,4 +1,4 @@
-using StudentHelper.Domain.Entities;
+using StudentHelper.Application.Models.Calendar;
 
 namespace StudentHelper.Web.Models.Calendar;
 
@@ -6,9 +6,11 @@ public class CalendarIndexViewModel
 {
     public DateOnly WeekStartDate { get; set; }
 
-    public IReadOnlyCollection<DateOnly> Days { get; set; } = new List<DateOnly>();
+    public List<DateOnly> Days { get; set; } = new();
 
-    public IReadOnlyCollection<TimeOnly> TimeSlots { get; set; } = new List<TimeOnly>();
+    public List<TimeOnly> TimeSlots { get; set; } = new();
 
-    public IReadOnlyCollection<PersonalEvent> Events { get; set; } = new List<PersonalEvent>();
+    public List<CalendarEventViewModel> Events { get; set; } = new();
+
+    public DateOnly WeekEndDate => WeekStartDate.AddDays(6);
 }

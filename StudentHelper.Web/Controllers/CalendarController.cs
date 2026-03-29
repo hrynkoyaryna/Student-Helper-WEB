@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StudentHelper.Application.Interfaces; 
 using StudentHelper.Application.Models.Calendar;
 using StudentHelper.Application.Services;
 using StudentHelper.Domain.Entities;
@@ -11,11 +12,11 @@ namespace StudentHelper.Web.Controllers;
 [Authorize]
 public class CalendarController : Controller
 {
-    private readonly ICalendarService calendarService;
+    private readonly ICalendarService _calendarService;
 
     public CalendarController(ICalendarService calendarService)
     {
-        this.calendarService = calendarService;
+        _calendarService = calendarService;
     }
 
     [HttpGet]
@@ -30,17 +31,17 @@ public class CalendarController : Controller
         var days = Enumerable.Range(0, 7).Select(offset => startDate.AddDays(offset)).ToList();
         var timeSlots = Enumerable.Range(7, 16).Select(hour => new TimeOnly(hour, 0)).ToList();
 
-        var events = await this.calendarService.GetUserEventsAsync(userId, cancellationToken);
+        var allEvents = await _calendarService.GetFullCalendarDataAsync(userId, cancellationToken);
 
         var model = new CalendarIndexViewModel
         {
             WeekStartDate = startDate,
             Days = days,
             TimeSlots = timeSlots,
-            Events = events,
+            Events = allEvents
         };
 
-        return this.View(model);
+        return View(model);
     }
 
     [HttpGet]
@@ -49,16 +50,16 @@ public class CalendarController : Controller
         var userIdClaim = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdClaim, out var userId)) return this.Unauthorized();
 
-        var personalEvent = await this.calendarService.GetEventByIdAsync(id, cancellationToken);
-        if (personalEvent == null || personalEvent.UserId != userId) return this.NotFound();
+        var personalEvent = await _calendarService.GetEventByIdAsync(id, cancellationToken);
+        if (personalEvent == null || personalEvent.UserId != userId) return NotFound();
 
-        return this.View(personalEvent);
+        return View(personalEvent);
     }
 
     [HttpGet]
     public IActionResult Create()
     {
-        return this.View(new CreatePersonalEventViewModel
+        return View(new CreatePersonalEventViewModel
         {
             Date = DateOnly.FromDateTime(DateTime.Today),
             StartTime = new TimeOnly(9, 0),
@@ -71,7 +72,7 @@ public class CalendarController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreatePersonalEventViewModel model, CancellationToken cancellationToken)
     {
-        if (!this.ModelState.IsValid) return this.View(model);
+        if (!ModelState.IsValid) return View(model);
 
         var userIdClaim = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdClaim, out var userId)) return this.Unauthorized();
@@ -87,15 +88,15 @@ public class CalendarController : Controller
             Color = model.Color ?? "#5bc8d8"
         };
 
-        var result = await this.calendarService.CreateEventAsync(request, cancellationToken);
+        var result = await _calendarService.CreateEventAsync(request, cancellationToken);
         if (!result.Success)
         {
-            this.ModelState.AddModelError(string.Empty, result.Message);
-            return this.View(model);
+            ModelState.AddModelError(string.Empty, result.Message);
+            return View(model);
         }
 
         TempData["CalendarMessage"] = result.Message;
-        return this.RedirectToAction(nameof(this.Index));
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
@@ -104,8 +105,8 @@ public class CalendarController : Controller
         var userIdClaim = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdClaim, out var userId)) return this.Unauthorized();
 
-        var personalEvent = await this.calendarService.GetEventByIdAsync(id, cancellationToken);
-        if (personalEvent == null || personalEvent.UserId != userId) return this.NotFound();
+        var personalEvent = await _calendarService.GetEventByIdAsync(id, cancellationToken);
+        if (personalEvent == null || personalEvent.UserId != userId) return NotFound();
 
         var model = new EditPersonalEventViewModel
         {
@@ -118,14 +119,14 @@ public class CalendarController : Controller
             Color = string.IsNullOrEmpty(personalEvent.Color) ? "#5bc8d8" : personalEvent.Color
         };
 
-        return this.View(model);
+        return View(model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditPersonalEventViewModel model, CancellationToken cancellationToken)
     {
-        if (!this.ModelState.IsValid) return this.View(model);
+        if (!ModelState.IsValid) return View(model);
 
         var userIdClaim = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdClaim, out var userId)) return this.Unauthorized();
@@ -142,15 +143,15 @@ public class CalendarController : Controller
             Color = model.Color ?? "#5bc8d8"
         };
 
-        var result = await this.calendarService.UpdateEventAsync(request, cancellationToken);
+        var result = await _calendarService.UpdateEventAsync(request, cancellationToken);
         if (!result.Success)
         {
-            this.ModelState.AddModelError(string.Empty, result.Message);
-            return this.View(model);
+            ModelState.AddModelError(string.Empty, result.Message);
+            return View(model);
         }
 
         TempData["CalendarMessage"] = result.Message;
-        return this.RedirectToAction(nameof(this.Details), new { id = model.Id });
+        return RedirectToAction(nameof(Details), new { id = model.Id });
     }
 
     [HttpPost]
@@ -160,10 +161,10 @@ public class CalendarController : Controller
         var userIdClaim = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdClaim, out var userId)) return this.Unauthorized();
 
-        var result = await this.calendarService.DeleteEventAsync(id, userId, cancellationToken);
-        if (!result.Success) return this.RedirectToAction(nameof(this.Details), new { id });
+        var result = await _calendarService.DeleteEventAsync(id, userId, cancellationToken);
+        if (!result.Success) return RedirectToAction(nameof(Details), new { id });
 
-        return this.RedirectToAction(nameof(this.Index));
+        return RedirectToAction(nameof(Index));
     }
 
     private static DateOnly GetStartOfWeek(DateOnly date)
