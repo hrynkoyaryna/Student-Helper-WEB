@@ -28,6 +28,11 @@ public class ExamsService : IExamsService
         return await _repository.GetByIdAsync(id);
     }
 
+    public async Task<List<Exam>> GetByUserIdAsync(int userId)
+    {
+        return (await _repository.GetAllAsync()).Where(e => e.UserId == userId).ToList();
+    }
+
     public async Task<Result> CreateExamAsync(Exam exam)
     {
         if (string.IsNullOrWhiteSpace(exam.Subject))
@@ -111,7 +116,9 @@ public class ExamsService : IExamsService
         {
             Subject = request.Subject.Trim(),
             DateTime = DateTime.SpecifyKind(request.DateTime, DateTimeKind.Local),
-            TeacherId = teacherId
+            TeacherId = teacherId,
+            Description = request.Description,
+            UserId = request.UserId
         };
 
         return await CreateExamAsync(exam);
@@ -151,6 +158,8 @@ public class ExamsService : IExamsService
         existing.Subject = request.Subject.Trim();
         existing.DateTime = DateTime.SpecifyKind(request.DateTime, DateTimeKind.Local).ToUniversalTime();
         existing.TeacherId = teacherId;
+        existing.Description = request.Description;
+        existing.UserId = request.UserId;
 
         await _repository.UpdateAsync(existing);
         await _repository.SaveChangesAsync();

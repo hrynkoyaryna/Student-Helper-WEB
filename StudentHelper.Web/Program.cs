@@ -47,17 +47,15 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
-builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<IExamsRepository, ExamsRepository>(); 
 builder.Services.AddScoped<StudentHelper.Application.Interfaces.INotesRepository, NotesRepository>();
 builder.Services.AddScoped<StudentHelper.Application.Interfaces.ITeacherRepository, TeacherRepository>();
 
-builder.Services.AddScoped<StudentHelper.Application.Interfaces.ICalendarService, StudentHelper.Application.Services.CalendarService>();
+builder.Services.AddScoped<StudentHelper.Application.Services.ICalendarService, StudentHelper.Application.Services.CalendarService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
-builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<INotesService, NotesService>();
 builder.Services.AddScoped<IExamsService, ExamsService>();
 

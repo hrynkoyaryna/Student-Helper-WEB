@@ -19,4 +19,6 @@ public interface ICalendarService
     Task<Result> DeleteEventAsync(int eventId, int userId, CancellationToken cancellationToken = default);
 
     Task<Result> UpdateEventAsync(EditPersonalEventRequest request, CancellationToken cancellationToken = default);
+
+    Task<List<dynamic>> GetFullCalendarDataAsync(int userId, CancellationToken cancellationToken = default);
 }

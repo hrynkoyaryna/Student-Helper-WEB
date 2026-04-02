@@ -88,6 +88,7 @@ public class TaskService : ITaskService
         existingTask.Deadline = NormalizeToUtc(task.Deadline);
         existingTask.Status = task.Status;
         existingTask.Subject = task.Subject;
+        existingTask.Description = task.Description;
 
         UpdateOverdueStatusIfNeeded(existingTask);
 
@@ -147,7 +148,7 @@ public class TaskService : ITaskService
 
     private static void UpdateOverdueStatusIfNeeded(TaskItem task)
     {
-        if (task.Status != "Виконане" && task.Deadline < DateTime.Now)
+        if (task.Status != "Виконане" && task.Deadline < DateTime.UtcNow)
         {
             task.Status = "Прострочене";
         }

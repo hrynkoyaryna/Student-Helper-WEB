@@ -39,9 +39,9 @@
                         <div class="mb-3">
                             <label asp-for="Status" class="form-label fw-bold">Статус</label>
                             <select asp-for="Status" class="form-select" style="border-radius: 8px;">
-                                <option value="ToDo">Заплановано</option>
-                                <option value="InProgress">У процесі</option>
-                                <option value="Done">Виконано</option>
+                                <option value="Поточне" selected="@(Model.Status == "Поточне")">Поточне</option>
+                                <option value="Виконане" selected="@(Model.Status == "Виконане")">Виконане</option>
+                                <option value="Прострочене" selected="@(Model.Status == "Прострочене")">Прострочене</option>
                             </select>
                             <span asp-validation-for="Status" class="text-danger small"></span>
                         </div>

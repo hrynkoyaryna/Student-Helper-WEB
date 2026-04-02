@@ -13,32 +13,91 @@ namespace StudentHelper.Web.Controllers;
 public class CalendarController : Controller
 {
     private readonly ICalendarService _calendarService;
+    private readonly ITaskService _taskService;
+    private readonly IExamsService _examsService;
 
-    public CalendarController(ICalendarService calendarService)
+    public CalendarController(ICalendarService calendarService, ITaskService taskService, IExamsService examsService)
     {
         _calendarService = calendarService;
+        _taskService = taskService;
+        _examsService = examsService;
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(DateOnly? weekStartDate, CancellationToken cancellationToken)
+    public async Task<IActionResult> Index(string? weekStartDate, CancellationToken cancellationToken)
     {
         var userIdClaim = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdClaim, out var userId)) return this.Unauthorized();
 
         var today = DateOnly.FromDateTime(DateTime.Today);
-        var startDate = weekStartDate ?? GetStartOfWeek(today);
+        
+        // Парсимо дату з URL параметра або використовуємо сьогоднішню дату
+        DateOnly startDate;
+        if (!string.IsNullOrWhiteSpace(weekStartDate) && DateOnly.TryParse(weekStartDate, out var parsedDate))
+        {
+            startDate = GetStartOfWeek(parsedDate);
+        }
+        else
+        {
+            startDate = GetStartOfWeek(today);
+        }
 
-        var days = Enumerable.Range(0, 7).Select(offset => startDate.AddDays(offset)).ToList();
+        // Генеруємо 7 днів починаючи з понеділка
+        var days = new List<DateOnly>();
+        for (int i = 0; i < 7; i++)
+        {
+            days.Add(startDate.AddDays(i));
+        }
+        
         var timeSlots = Enumerable.Range(7, 16).Select(hour => new TimeOnly(hour, 0)).ToList();
 
-        var allEvents = await _calendarService.GetFullCalendarDataAsync(userId, cancellationToken);
+        var events = new List<CalendarEventViewModel>();
+
+        // Додаємо особисті eventos
+        var allPersonalEvents = await _calendarService.GetFullCalendarDataAsync(userId, cancellationToken);
+        events.AddRange(allPersonalEvents.Select(e => new CalendarEventViewModel
+        {
+            Id = e.Id,
+            Title = e.Title,
+            Start = e.Start,
+            End = e.End,
+            Description = e.Description,
+            Color = e.Color ?? "#007bff",
+            Type = "Event"
+        }));
+
+        // Додаємо завдання
+        var tasks = await _taskService.GetUserTasksAsync(userId);
+        events.AddRange(tasks.Select(t => new CalendarEventViewModel
+        {
+            Id = t.Id,
+            Title = t.Title,
+            Start = t.Deadline,
+            End = t.Deadline.AddHours(1),
+            Description = t.Description,
+            Color = "#ffc107", // жовтий для завдань
+            Type = "Task"
+        }));
+
+        // Додаємо екзамени
+        var exams = await _examsService.GetByUserIdAsync(userId);
+        events.AddRange(exams.Select(e => new CalendarEventViewModel
+        {
+            Id = e.Id,
+            Title = $"{e.Subject} - {e.TeacherName}",
+            Start = e.DateTime,
+            End = e.DateTime.AddHours(2),
+            Description = e.Description,
+            Color = "#dc3545", // червоний для екзаменів
+            Type = "Exam"
+        }));
 
         var model = new CalendarIndexViewModel
         {
             WeekStartDate = startDate,
             Days = days,
             TimeSlots = timeSlots,
-            Events = allEvents
+            Events = events
         };
 
         return View(model);
@@ -169,8 +228,10 @@ public class CalendarController : Controller
 
     private static DateOnly GetStartOfWeek(DateOnly date)
     {
-        var dayOfWeek = (int)date.DayOfWeek;
-        var diff = dayOfWeek == 0 ? 6 : dayOfWeek - 1;
-        return date.AddDays(-diff);
+        // Переводимо в понеділок (DayOfWeek.Monday = 1)
+        // Якщо неділя (0), переходимо назад на 6 днів
+        // Інакше переходимо на (DayOfWeek - 1) днів назад
+        int daysOffset = date.DayOfWeek == DayOfWeek.Sunday ? -6 : -(int)(date.DayOfWeek - DayOfWeek.Monday);
+        return date.AddDays(daysOffset);
     }
 }
