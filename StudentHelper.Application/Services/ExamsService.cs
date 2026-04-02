@@ -28,6 +28,11 @@ public class ExamsService : IExamsService
         return await _repository.GetByIdAsync(id);
     }
 
+    public async Task<List<Exam>> GetByUserIdAsync(int userId)
+    {
+        return (await _repository.GetAllAsync()).Where(e => e.UserId == userId).ToList();
+    }
+
     public async Task<Result> CreateExamAsync(Exam exam)
     {
         if (string.IsNullOrWhiteSpace(exam.Subject))
@@ -42,7 +47,7 @@ public class ExamsService : IExamsService
         await _repository.AddAsync(exam);
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Exam created: {ExamId} {Subject}", exam.Id, exam.Subject);
-        return Result.Ok("Екзамен створено");
+        return "Екзамен створено";
     }
 
     public async Task<Result> UpdateExamAsync(Exam exam)
@@ -58,7 +63,7 @@ public class ExamsService : IExamsService
         await _repository.UpdateAsync(existing);
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Exam updated: {ExamId}", exam.Id);
-        return Result.Ok("Екзамен оновлено");
+        return "Екзамен оновлено";
     }
 
     public async Task<Result> DeleteExamAsync(int id)
@@ -70,7 +75,7 @@ public class ExamsService : IExamsService
         await _repository.DeleteAsync(existing);
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Exam deleted: {ExamId}", id);
-        return Result.Ok("Екзамен видалено");
+        return "Екзамен видалено";
     }
 
     // New higher-level methods that encapsulate teacher lookup/creation
@@ -111,7 +116,9 @@ public class ExamsService : IExamsService
         {
             Subject = request.Subject.Trim(),
             DateTime = DateTime.SpecifyKind(request.DateTime, DateTimeKind.Local),
-            TeacherId = teacherId
+            TeacherId = teacherId,
+            Description = request.Description,
+            UserId = request.UserId
         };
 
         return await CreateExamAsync(exam);
@@ -151,11 +158,13 @@ public class ExamsService : IExamsService
         existing.Subject = request.Subject.Trim();
         existing.DateTime = DateTime.SpecifyKind(request.DateTime, DateTimeKind.Local).ToUniversalTime();
         existing.TeacherId = teacherId;
+        existing.Description = request.Description;
+        existing.UserId = request.UserId;
 
         await _repository.UpdateAsync(existing);
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Exam updated: {ExamId}", request.Id);
-        return Result.Ok("Екзамен оновлено");
+        return "Екзамен оновлено";
     }
 
     // New method: expose teachers for controllers

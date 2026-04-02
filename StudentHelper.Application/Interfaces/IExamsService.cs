@@ -7,6 +7,7 @@ public interface IExamsService
 {
     Task<List<Exam>> GetExamsAsync();
     Task<Exam?> GetExamByIdAsync(int id);
+    Task<List<Exam>> GetByUserIdAsync(int userId);
 
     // Existing domain-based methods (kept for compatibility)
     Task<Result> CreateExamAsync(Exam exam);
@@ -27,6 +28,8 @@ public class CreateExamRequest
     public DateTime DateTime { get; set; }
     public int? TeacherId { get; set; }
     public string? TeacherName { get; set; }
+    public string? Description { get; set; }
+    public int UserId { get; set; }
 }
 
 public class UpdateExamRequest
@@ -36,4 +39,6 @@ public class UpdateExamRequest
     public DateTime DateTime { get; set; }
     public int? TeacherId { get; set; }
     public string? TeacherName { get; set; }
+    public string? Description { get; set; }
+    public int UserId { get; set; }
 }

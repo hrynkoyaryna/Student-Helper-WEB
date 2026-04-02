@@ -70,7 +70,7 @@ public class TaskService : ITaskService
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Created task {TaskId} for user {UserId}", task.Id, task.UserId);
-        return Result.Ok("Завдання успішно створено");
+        return "Завдання успішно створено";
     }
 
     public async Task<Result> UpdateTaskAsync(TaskItem task, int userId)
@@ -88,13 +88,14 @@ public class TaskService : ITaskService
         existingTask.Deadline = NormalizeToUtc(task.Deadline);
         existingTask.Status = task.Status;
         existingTask.Subject = task.Subject;
+        existingTask.Description = task.Description;
 
         UpdateOverdueStatusIfNeeded(existingTask);
 
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Updated task {TaskId}", task.Id);
-        return Result.Ok("Завдання успішно оновлено");
+        return "Завдання успішно оновлено";
     }
 
     public async Task<Result> DeleteTaskAsync(int id, int userId)
@@ -112,7 +113,7 @@ public class TaskService : ITaskService
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Deleted task {TaskId}", id);
-        return Result.Ok("Завдання успішно видалено");
+        return "Завдання успішно видалено";
     }
 
     public async Task<Result> ChangeStatusAsync(int id, int userId, string status)
@@ -132,7 +133,7 @@ public class TaskService : ITaskService
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Changed task {TaskId} status to {Status}", id, task.Status);
-        return Result.Ok("Статус завдання оновлено");
+        return "Статус завдання оновлено";
     }
 
     public async Task<List<string>> GetUserSubjectsAsync(int userId)
@@ -147,7 +148,7 @@ public class TaskService : ITaskService
 
     private static void UpdateOverdueStatusIfNeeded(TaskItem task)
     {
-        if (task.Status != "Виконане" && task.Deadline < DateTime.Now)
+        if (task.Status != "Виконане" && task.Deadline < DateTime.UtcNow)
         {
             task.Status = "Прострочене";
         }

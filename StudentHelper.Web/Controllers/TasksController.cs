@@ -66,12 +66,21 @@ public class TasksController : Controller
             return View(model);
         }
 
+        // Маппінг статусів з англійської на українську
+        var statusMap = new Dictionary<string, string>
+        {
+            { "ToDo", "Поточне" },
+            { "InProgress", "Поточне" },
+            { "Done", "Виконане" }
+        };
+
         var task = new TaskItem
         {
             Title = model.Title,
-            Deadline = DateTime.SpecifyKind(model.Deadline, DateTimeKind.Utc),
-            Status = model.Status,
+            Deadline = DateTime.SpecifyKind(model.Deadline, DateTimeKind.Local).ToUniversalTime(),
+            Status = statusMap.ContainsKey(model.Status) ? statusMap[model.Status] : "Поточне",
             Subject = model.Subject,
+            Description = model.Description,
             UserId = GetCurrentUserId()
         };
 
@@ -114,7 +123,8 @@ public class TasksController : Controller
             Title = task.Title,
             Deadline = DateTime.SpecifyKind(task.Deadline, DateTimeKind.Utc),
             Status = task.Status,
-            Subject = task.Subject
+            Subject = task.Subject,
+            Description = task.Description
         };
 
         return View(model);
@@ -133,9 +143,10 @@ public class TasksController : Controller
         {
             Id = model.Id,
             Title = model.Title,
-            Deadline = DateTime.SpecifyKind(model.Deadline, DateTimeKind.Utc),
+            Deadline = DateTime.SpecifyKind(model.Deadline, DateTimeKind.Local).ToUniversalTime(),
             Status = model.Status,
-            Subject = model.Subject
+            Subject = model.Subject,
+            Description = model.Description
         };
 
         var updated = await _taskService.UpdateTaskAsync(task, GetCurrentUserId());

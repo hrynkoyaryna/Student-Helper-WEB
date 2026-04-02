@@ -3,6 +3,7 @@ using StudentHelper.Application.Interfaces;
 using StudentHelper.Application.Models;
 using StudentHelper.Application.Models.Calendar;
 using StudentHelper.Domain.Entities;
+using System.Dynamic;
 
 namespace StudentHelper.Application.Services;
 
@@ -59,7 +60,7 @@ public class CalendarService : ICalendarService
         await this.personalEventRepository.AddAsync(personalEvent, cancellationToken);
         await this.personalEventRepository.SaveChangesAsync(cancellationToken);
 
-        return Result.Ok(resultMessage);
+        return resultMessage;
     }
 
     public Task<IReadOnlyCollection<PersonalEvent>> GetUserEventsAsync(int userId, CancellationToken cancellationToken = default)
@@ -82,7 +83,7 @@ public class CalendarService : ICalendarService
         await this.personalEventRepository.DeleteAsync(personalEvent, cancellationToken);
         await this.personalEventRepository.SaveChangesAsync(cancellationToken);
 
-        return Result.Ok("Подію успішно видалено.");
+        return "Подію успішно видалено.";
     }
     
     public async Task<Result> UpdateEventAsync(EditPersonalEventRequest request, CancellationToken cancellationToken = default)
@@ -122,6 +123,28 @@ public class CalendarService : ICalendarService
 
         await this.personalEventRepository.SaveChangesAsync(cancellationToken);
 
-        return Result.Ok(resultMessage);
+        return resultMessage;
+    }
+
+    public async Task<List<dynamic>> GetFullCalendarDataAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        var events = await this.personalEventRepository.GetByUserIdAsync(userId, cancellationToken);
+        
+        var result = new List<dynamic>();
+        
+        foreach (var e in events)
+        {
+            dynamic eventData = new ExpandoObject();
+            eventData.Id = e.Id;
+            eventData.Title = e.Title;
+            eventData.Start = e.StartAt;
+            eventData.End = e.EndAt;
+            eventData.Description = e.Description;
+            eventData.Color = e.Color;
+            
+            result.Add(eventData);
+        }
+
+        return result;
     }
 }

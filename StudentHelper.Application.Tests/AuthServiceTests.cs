@@ -218,8 +218,12 @@ public class AuthServiceTests
         var duplicateUser = new User { Email = email };
 
         _mockUserManager
-            .Setup(um => um.FindByEmailAsync(email))
+            .Setup(um => um.FindByEmailAsync(It.Is<string>(e => e == email)))
             .ReturnsAsync(duplicateUser);
+
+        _mockUserManager
+            .Setup(um => um.FindByEmailAsync(It.Is<string>(e => e != email)))
+            .ReturnsAsync(default(User));
 
         // Act
         var registrationResult = await _authService.RegisterAsync(firstName, lastName, email, password);

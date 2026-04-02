@@ -20,23 +20,14 @@ public class AccountService : IAccountService
     }
     
     public async Task<Result> SendPasswordResetEmailAsync(User user, string callbackUrl)
-{
-    try
     {
         await _emailSender.SendEmailAsync(
             user.Email!,
             "Скидання пароля",
             $"Для скидання пароля перейдіть за посиланням: {callbackUrl}");
 
-        return Result.Ok();
+        return true;
     }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Помилка при відправці листа для скидання пароля для користувача {Email}", user.Email);
-        
-        return Result.Fail("Не вдалося відправити лист для скидання пароля.");
-    }
-}
 
     public async Task<Result> ChangePasswordAsync(User user, string currentPassword, string newPassword)
     {
@@ -54,7 +45,7 @@ public class AccountService : IAccountService
         if (result.Succeeded)
         {
             _logger.LogInformation("User {UserId} changed password successfully", user.Id);
-            return Result.Ok("Пароль успішно змінено");
+            return "Пароль успішно змінено";
         }
 
         var errors = string.Join(", ", result.Errors.Select(e => e.Description));

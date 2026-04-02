@@ -1,0 +1,91 @@
+@model StudentHelper.Web.Models.ErrorViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="text-center">
+                <!-- Велика цифра статусу -->
+                <div style="font-size: 120px; font-weight: 900; color: #dc3545; line-height: 1;">
+                    @Model.StatusCode
+                </div>
+
+                <!-- Заголовок помилки -->
+                <h1 class="fw-bold mb-3" style="font-size: 2.5rem; color: #1a1a1a;">
+                    @Model.Title
+                </h1>
+
+                <!-- Повідомлення про помилку -->
+                <p class="lead text-muted mb-4" style="font-size: 1.1rem;">
+                    @Model.Message
+                </p>
+
+                <!-- Кнопки навігації -->
+                <div class="d-flex gap-2 justify-content-center mb-5">
+                    <a href="/" class="btn btn-primary px-4 py-2 fw-bold">
+                        🏠 На головну
+                    </a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a href="/Calendar" class="btn btn-outline-primary px-4 py-2 fw-bold">
+                            📅 На календар
+                        </a>
+                    }
+                </div>
+
+                <!-- Teknical information -->
+                @if (Model.ShowRequestId)
+                {
+                    <div class="alert alert-light border border-secondary rounded-3 mt-4">
+                        <p class="text-muted small mb-0">
+                            <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                        </p>
+                    </div>
+                }
+
+                <!-- Додаткова інформація -->
+                <div class="text-muted small mt-4">
+                    <p>Якщо проблема зберігається, будь ласка свяжіться з підтримкою.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 3rem 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn {
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    code {
+        background-color: #f8f9fa;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        color: #666;
+    }
+</style>
