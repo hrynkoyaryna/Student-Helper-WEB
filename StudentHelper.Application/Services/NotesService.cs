@@ -48,7 +48,7 @@ public class NotesService : INotesService
         await _repository.AddAsync(note);
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Note {NoteId} created for user {UserId}", note.Id, note.UserId);
-        return Result.Ok("Нотатка успішно створена");
+        return "Нотатка успішно створена";
     }
 
     public async Task<Result> UpdateNoteAsync(Note note, int userId)
@@ -66,7 +66,7 @@ public class NotesService : INotesService
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Note {NoteId} updated for user {UserId}", note.Id, userId);
 
-        return Result.Ok("Нотатка успішно оновлена");
+        return "Нотатка успішно оновлена";
     }
 
     public async Task<Result> DeleteNoteAsync(int id, int userId)
@@ -81,7 +81,7 @@ public class NotesService : INotesService
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Note {NoteId} deleted for user {UserId}", id, userId);
 
-        return Result.Ok("Нотатка успішно видалена");
+        return "Нотатка успішно видалена";
     }
 
     public async Task<Result> PinNoteAsync(int id, int userId)
@@ -97,7 +97,7 @@ public class NotesService : INotesService
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Note {NoteId} pinned for user {UserId}", id, userId);
 
-        return Result.Ok("Нотатка закріплена");
+        return "Нотатка закріплена";
     }
 
     public async Task<Result> UnpinNoteAsync(int id, int userId)
@@ -113,6 +113,6 @@ public class NotesService : INotesService
         await _repository.SaveChangesAsync();
         _logger.LogInformation("Note {NoteId} unpinned for user {UserId}", id, userId);
 
-        return Result.Ok("Нотатка відкріплена");
+        return "Нотатка відкріплена";
     }
 }

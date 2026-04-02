@@ -20,8 +20,8 @@ public interface IAuthService
     /// <param name="email">Email.</param>
     /// <param name="password">Password.</param>
     /// <param name="groupId">Optional group id.</param>
-    /// <returns>Result containing a list of errors when registration fails; empty list or ok when succeeds.</returns>
-    Task<Result<List<string>>> RegisterAsync(string firstName, string lastName, string email, string password, int? groupId = null);
+    /// <returns>Result indicating registration success or failure with message.</returns>
+    Task<Result> RegisterAsync(string firstName, string lastName, string email, string password, int? groupId = null);
 
     /// <summary>
     /// USE-CASE: ForgotPassword - генерування посилання для скидання пароля.

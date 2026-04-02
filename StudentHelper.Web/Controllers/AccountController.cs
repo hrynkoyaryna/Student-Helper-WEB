@@ -55,7 +55,6 @@ public class AccountController : Controller
             await _signInManager.SignInAsync(user, model.RememberMe);
         }
 
-        _logger.LogInformation($"Користувач з ID {userId} успішно увійшов");
         return RedirectToAction("Index", "Calendar");
     }
 
@@ -64,7 +63,6 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        _logger.LogInformation("Користувач розійшовся");
         return RedirectToAction("Index", "Home");
     }
 
@@ -92,19 +90,7 @@ public class AccountController : Controller
 
         if (!regResult.Success)
         {
-            // If the service returned structured errors in Value, use them; otherwise use Message
-            if (regResult.Value != null && regResult.Value.Any())
-            {
-                foreach (var error in regResult.Value)
-                {
-                    ModelState.AddModelError("", error);
-                }
-            }
-            else
-            {
-                ModelState.AddModelError("", regResult.Message);
-            }
-
+            ModelState.AddModelError("", regResult.Message);
             return View(model);
         }
 
@@ -115,7 +101,6 @@ public class AccountController : Controller
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
 
-        _logger.LogInformation($"Користувач {model.Email} успішно зареєстрований");
         return RedirectToAction("Index", "Calendar");
     }
 
@@ -141,7 +126,6 @@ public class AccountController : Controller
                 new { userId, code },
                 protocol: Request.Scheme) ?? string.Empty);
 
-        _logger.LogInformation($"Запит на скидання пароля для email: {model.Email}");
         // We show confirmation regardless to avoid user enumeration. Optionally display message from result.
         return View("ForgotPasswordConfirmation");
     }
@@ -175,7 +159,6 @@ public class AccountController : Controller
 
         if (result.Success)
         {
-            _logger.LogInformation($"Користувач з ID {model.UserId} успішно скинув пароль");
             return View("ResetPasswordConfirmation");
         }
 

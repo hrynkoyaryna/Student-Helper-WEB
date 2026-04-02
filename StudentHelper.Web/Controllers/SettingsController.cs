@@ -95,7 +95,6 @@ public class SettingsController : Controller
 
         if (result.Success)
         {
-            _logger.LogInformation($"Користувач {user.Email} успішно змінив пароль");
             TempData["SuccessMessage"] = result.Message;
             return RedirectToAction("Index");
         }

@@ -33,16 +33,16 @@ public class AuthService : IAuthService
             return Result<int?>.Fail("Невірний email або пароль");
         }
 
-        return Result<int?>.Ok(user.Id);
+        return user.Id;
     }
 
     // ========== REGISTER USE-CASE ==========
-    public async Task<Result<List<string>>> RegisterAsync(string firstName, string lastName, string email, string password, int? groupId = null)
+    public async Task<Result> RegisterAsync(string firstName, string lastName, string email, string password, int? groupId = null)
     {
         var existingUser = await _userManager.FindByEmailAsync(email);
         if (existingUser != null)
         {
-            return Result<List<string>>.Fail("Користувач з таким email вже зареєстрований");
+            return Result.Fail("Користувач з таким email вже зареєстрований");
         }
 
         var user = new User
@@ -57,21 +57,25 @@ public class AuthService : IAuthService
         var result = await _userManager.CreateAsync(user, password);
         if (result.Succeeded)
         {
-            return Result<List<string>>.Ok(new List<string>());
+            return true;
         }
 
         var errors = result.Errors.Select(e => e.Description).ToList();
-        return Result<List<string>>.Fail(string.Join(", ", errors));
+        return Result.Fail(string.Join(", ", errors));
     }
 
     // ========== FORGOT PASSWORD USE-CASE ==========
     public async Task<Result<string?>> ForgotPasswordAsync(string email, Func<string, string, string> generateResetLink)
     {
         var user = await _userManager.FindByEmailAsync(email);
+        
+        // Регулярне повідомлення для обох випадків - не розкриваємо інформацію про користувача
+        const string successMessage = "Посилання для скидання пароля надіслано на вашу email";
+        
         if (user == null)
         {
-            // Не розкриваємо, що користувача не існує (безпека)
-            return Result<string?>.Ok(null, "Якщо цей email зареєстрований, ви отримаєте посилання для скидання пароля");
+            // Користувача немає, але повертаємо тосамо повідомлення (захист від User Enumeration Attack)
+            return Result<string?>.Ok(null, successMessage);
         }
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -85,7 +89,7 @@ public class AuthService : IAuthService
             "Скидання пароля",
             $"Клацніть на посилання для скидання пароля: <a href=\"{resetLink}\">тут</a>");
 
-        return Result<string?>.Ok(null, "Посилання для скидання пароля надіслано на вашу email");
+        return Result<string?>.Ok(null, successMessage);
     }
 
     // ========== RESET PASSWORD USE-CASE ==========
@@ -104,7 +108,7 @@ public class AuthService : IAuthService
         var result = await _userManager.ResetPasswordAsync(user, decodedToken, newPassword);
         if (result.Succeeded)
         {
-            return Result.Ok("Пароль успішно скинуто");
+            return "Пароль успішно скинуто";
         }
 
         var errors = string.Join(", ", result.Errors.Select(e => e.Description));

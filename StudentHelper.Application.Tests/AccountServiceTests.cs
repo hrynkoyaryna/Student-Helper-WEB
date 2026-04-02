@@ -49,7 +49,7 @@ public class AccountServiceTests
     }
 
     [Fact]
-    public async Task SendPasswordResetEmailAsync_Returns_Fail_WhenEmailSenderFails()
+    public async Task SendPasswordResetEmailAsync_ThrowsWhenEmailSenderFails()
     {
         // Arrange
         _emailSenderMock
@@ -59,12 +59,10 @@ public class AccountServiceTests
         var user = new User { Email = "test@test.com" };
         var accountService = new AccountService(_emailSenderMock.Object, _loggerMock.Object, _userManagerMock.Object);
 
-        // Act
-        var result = await accountService.SendPasswordResetEmailAsync(user, "url");
-
-        // Assert
-        Assert.False(result.Success);
-        Assert.Equal("Не вдалося відправити лист для скидання пароля.", result.Message);
+        // Act & Assert
+        // Очікуємо, що виняток буде кинутий (обробляється middleware)
+        await Assert.ThrowsAsync<Exception>(async () => 
+            await accountService.SendPasswordResetEmailAsync(user, "url"));
     }
 
     // ========== ChangePasswordAsync Tests ==========

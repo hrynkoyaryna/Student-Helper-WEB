@@ -9,6 +9,17 @@ public class Result
     public bool Success { get; private set; }
     public string Message { get; private set; } = string.Empty;
 
+    // Type conversion operators
+    public static implicit operator Result(string message)
+    {
+        return Ok(message);
+    }
+
+    public static implicit operator Result(bool success)
+    {
+        return success ? Ok() : Fail("Operation failed");
+    }
+
     public static Result Ok(string? message = null)
     {
         return new Result { Success = true, Message = message ?? string.Empty };
@@ -36,6 +47,12 @@ public class Result<T>
     public bool Success { get; private set; }
     public T? Value { get; private set; }
     public string Message { get; private set; } = string.Empty;
+
+    // Type conversion operators
+    public static implicit operator Result<T>(T? value)
+    {
+        return Ok(value);
+    }
 
     public static Result<T> Ok(T? value, string? message = null)
     {
