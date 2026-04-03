@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Domain.Entities;
@@ -7,8 +5,7 @@ using StudentHelper.Web.Models.Settings;
 
 namespace StudentHelper.Web.Controllers;
 
-[Authorize]
-public class SettingsController : Controller
+public class SettingsController : BaseController
 {
     private readonly IUserService _userService;
     private readonly IAccountService _accountService;
@@ -22,18 +19,6 @@ public class SettingsController : Controller
         _userService = userService;
         _accountService = accountService;
         _logger = logger;
-    }
-
-    private int GetCurrentUserId()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            throw new UnauthorizedAccessException("Користувач не аутентифікований.");
-        }
-
-        return int.Parse(userId);
     }
 
     private async Task<User> GetCurrentUserAsync()

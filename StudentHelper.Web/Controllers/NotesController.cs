@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Domain.Entities;
@@ -7,8 +5,7 @@ using StudentHelper.Web.Models.Notes;
 
 namespace StudentHelper.Web.Controllers;
 
-[Authorize]
-public class NotesController : Controller
+public class NotesController : BaseController
 {
     private readonly INotesService _notesService;
     private readonly ILogger<NotesController> _logger;
@@ -17,18 +14,6 @@ public class NotesController : Controller
     {
         _notesService = notesService;
         _logger = logger;
-    }
-
-    private int GetCurrentUserId()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            throw new UnauthorizedAccessException("Користувач не аутентифікований.");
-        }
-
-        return int.Parse(userId);
     }
 
     public async Task<IActionResult> Index(string? search = null)

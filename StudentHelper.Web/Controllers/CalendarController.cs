@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentHelper.Application.Interfaces; 
 using StudentHelper.Application.Models.Calendar;
@@ -9,8 +7,7 @@ using StudentHelper.Web.Models.Calendar;
 
 namespace StudentHelper.Web.Controllers;
 
-[Authorize]
-public class CalendarController : Controller
+public class CalendarController : BaseController
 {
     private readonly ICalendarService _calendarService;
     private readonly ITaskService _taskService;
@@ -26,8 +23,7 @@ public class CalendarController : Controller
     [HttpGet]
     public async Task<IActionResult> Index(string? weekStartDate, CancellationToken cancellationToken)
     {
-        var userIdClaim = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!int.TryParse(userIdClaim, out var userId)) return this.Unauthorized();
+        var userId = GetCurrentUserId();
 
         var today = DateOnly.FromDateTime(DateTime.Today);
         
@@ -111,8 +107,7 @@ public class CalendarController : Controller
     [HttpGet]
     public async Task<IActionResult> Details(int id, CancellationToken cancellationToken)
     {
-        var userIdClaim = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!int.TryParse(userIdClaim, out var userId)) return this.Unauthorized();
+        var userId = GetCurrentUserId();
 
         var personalEvent = await _calendarService.GetEventByIdAsync(id, cancellationToken);
         if (personalEvent == null || personalEvent.UserId != userId) return NotFound();
@@ -138,8 +133,7 @@ public class CalendarController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
-        var userIdClaim = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!int.TryParse(userIdClaim, out var userId)) return this.Unauthorized();
+        var userId = GetCurrentUserId();
 
         var request = new CreatePersonalEventRequest
         {
@@ -166,8 +160,7 @@ public class CalendarController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
     {
-        var userIdClaim = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!int.TryParse(userIdClaim, out var userId)) return this.Unauthorized();
+        var userId = GetCurrentUserId();
 
         var personalEvent = await _calendarService.GetEventByIdAsync(id, cancellationToken);
         if (personalEvent == null || personalEvent.UserId != userId) return NotFound();
@@ -192,8 +185,7 @@ public class CalendarController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
-        var userIdClaim = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!int.TryParse(userIdClaim, out var userId)) return this.Unauthorized();
+        var userId = GetCurrentUserId();
 
         var request = new EditPersonalEventRequest
         {
@@ -222,8 +214,7 @@ public class CalendarController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        var userIdClaim = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!int.TryParse(userIdClaim, out var userId)) return this.Unauthorized();
+        var userId = GetCurrentUserId();
 
         var result = await _calendarService.DeleteEventAsync(id, userId, cancellationToken);
         if (!result.Success) return RedirectToAction(nameof(Details), new { id });

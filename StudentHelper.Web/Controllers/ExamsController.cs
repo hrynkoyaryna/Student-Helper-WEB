@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentHelper.Application.Interfaces;
@@ -8,8 +7,7 @@ using StudentHelper.Web.Models.Exams;
 
 namespace StudentHelper.Web.Controllers;
 
-[Authorize]
-public class ExamsController : Controller
+public class ExamsController : BaseController
 {
     private readonly IExamsService _examsService;
     private readonly ILogger<ExamsController> _logger;
@@ -22,7 +20,7 @@ public class ExamsController : Controller
 
     public async Task<IActionResult> Index(string? subject = null, string time = "all", string sort = "subject_asc")
     {
-        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) !);
+        var userId = GetCurrentUserId();
         var exams = (await _examsService.GetByUserIdAsync(userId)).ToList();
 
         var subjects = exams.Select(e => e.Subject).Distinct().OrderBy(s => s).ToList();
@@ -85,7 +83,7 @@ public class ExamsController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
-        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) !);
+        var userId = GetCurrentUserId();
 
         var request = new CreateExamRequest
         {
@@ -133,7 +131,7 @@ public class ExamsController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
-        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) !);
+        var userId = GetCurrentUserId();
 
         var request = new UpdateExamRequest
         {

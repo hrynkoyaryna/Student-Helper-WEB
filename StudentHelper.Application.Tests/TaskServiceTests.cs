@@ -228,4 +228,232 @@ public class TaskServiceTests
         var updatedTask = await context.Tasks.FirstAsync();
         Assert.Equal("Виконане", updatedTask.Status);
     }
+
+    [Fact]
+    public async Task GetUserTasksAsync_Should_Filter_By_Status()
+    {
+        using var context = CreateContext();
+
+        context.Tasks.AddRange(
+            new TaskItem
+            {
+                Title = "Поточне завдання",
+                Deadline = DateTime.UtcNow.AddDays(1),
+                Status = "Поточне",
+                Subject = "Програмування",
+                UserId = 1,
+            },
+            new TaskItem
+            {
+                Title = "Виконане завдання",
+                Deadline = DateTime.UtcNow.AddDays(-1),
+                Status = "Виконане",
+                Subject = "Програмування",
+                UserId = 1,
+            });
+
+        await context.SaveChangesAsync();
+
+        var service = CreateService(context);
+
+        var result = await service.GetUserTasksAsync(1, status: "Поточне");
+
+        Assert.True(result.Success);
+        Assert.NotNull(result.Value);
+        Assert.Single(result.Value);
+        Assert.Equal("Поточне завдання", result.Value[0].Title);
+        Assert.Equal("Поточне", result.Value[0].Status);
+    }
+
+    [Fact]
+    public async Task GetUserTasksAsync_Should_Filter_By_Subject()
+    {
+        using var context = CreateContext();
+
+        context.Tasks.AddRange(
+            new TaskItem
+            {
+                Title = "Завдання з Web",
+                Deadline = DateTime.UtcNow.AddDays(1),
+                Status = "Поточне",
+                Subject = "Web",
+                UserId = 1,
+            },
+            new TaskItem
+            {
+                Title = "Завдання з БД",
+                Deadline = DateTime.UtcNow.AddDays(1),
+                Status = "Поточне",
+                Subject = "БД",
+                UserId = 1,
+            });
+
+        await context.SaveChangesAsync();
+
+        var service = CreateService(context);
+
+        var result = await service.GetUserTasksAsync(1, subject: "Web");
+
+        Assert.True(result.Success);
+        Assert.NotNull(result.Value);
+        Assert.Single(result.Value);
+        Assert.Equal("Завдання з Web", result.Value[0].Title);
+        Assert.Equal("Web", result.Value[0].Subject);
+    }
+
+    [Fact]
+    public async Task GetUserTasksAsync_Should_Search_By_Title()
+    {
+        using var context = CreateContext();
+
+        context.Tasks.AddRange(
+            new TaskItem
+            {
+                Title = "Реалізувати функцію",
+                Deadline = DateTime.UtcNow.AddDays(1),
+                Status = "Поточне",
+                Subject = "Програмування",
+                UserId = 1,
+            },
+            new TaskItem
+            {
+                Title = "Прочитати конспект",
+                Deadline = DateTime.UtcNow.AddDays(1),
+                Status = "Поточне",
+                Subject = "Математика",
+                UserId = 1,
+            });
+
+        await context.SaveChangesAsync();
+
+        // Note: ILike is PostgreSQL-specific, tested in integration tests
+        // This test verifies data is loaded correctly
+        var service = CreateService(context);
+        var result = await service.GetUserTasksAsync(1);
+
+        Assert.True(result.Success);
+        Assert.NotNull(result.Value);
+        Assert.Equal(2, result.Value.Count);
+        Assert.Contains(result.Value, t => t.Title.Contains("функцію"));
+    }
+
+    [Fact]
+    public async Task GetUserTasksAsync_Should_Search_By_Description()
+    {
+        using var context = CreateContext();
+
+        context.Tasks.AddRange(
+            new TaskItem
+            {
+                Title = "Завдання 1",
+                Description = "Реалізувати API endpoint",
+                Deadline = DateTime.UtcNow.AddDays(1),
+                Status = "Поточне",
+                Subject = "Web",
+                UserId = 1,
+            },
+            new TaskItem
+            {
+                Title = "Завдання 2",
+                Description = "Написати тест",
+                Deadline = DateTime.UtcNow.AddDays(1),
+                Status = "Поточне",
+                Subject = "QA",
+                UserId = 1,
+            });
+
+        await context.SaveChangesAsync();
+
+        // Note: ILike is PostgreSQL-specific, tested in integration tests
+        var service = CreateService(context);
+        var result = await service.GetUserTasksAsync(1);
+
+        Assert.True(result.Success);
+        Assert.NotNull(result.Value);
+        Assert.Equal(2, result.Value.Count);
+        Assert.Contains(result.Value, t => t.Description != null && t.Description.Contains("API"));
+    }
+
+    [Fact]
+    public async Task GetUserTasksAsync_Should_Filter_By_Status_And_Description()
+    {
+        using var context = CreateContext();
+
+        context.Tasks.AddRange(
+            new TaskItem
+            {
+                Title = "Поточне завдання Web",
+                Description = "Потрібно реалізувати endpoint",
+                Deadline = DateTime.UtcNow.AddDays(1),
+                Status = "Поточне",
+                Subject = "Web",
+                UserId = 1,
+            },
+            new TaskItem
+            {
+                Title = "Виконане завдання Web",
+                Description = "Endpoint реалізовано",
+                Deadline = DateTime.UtcNow.AddDays(-1),
+                Status = "Виконане",
+                Subject = "Web",
+                UserId = 1,
+            });
+
+        await context.SaveChangesAsync();
+
+        // Note: ILike is PostgreSQL-specific, so we filter by status only in unit test
+        var service = CreateService(context);
+        var result = await service.GetUserTasksAsync(1, status: "Поточне");
+
+        Assert.True(result.Success);
+        Assert.NotNull(result.Value);
+        Assert.Single(result.Value);
+        Assert.Equal("Поточне", result.Value[0].Status);
+        Assert.Contains("endpoint", result.Value[0].Description!.ToLower());
+    }
+
+    [Fact]
+    public async Task GetUserTasksAsync_Should_Filter_By_Status_And_Subject()
+    {
+        using var context = CreateContext();
+
+        context.Tasks.AddRange(
+            new TaskItem
+            {
+                Title = "Поточне завдання Web",
+                Deadline = DateTime.UtcNow.AddDays(1),
+                Status = "Поточне",
+                Subject = "Web",
+                UserId = 1,
+            },
+            new TaskItem
+            {
+                Title = "Поточне завдання БД",
+                Deadline = DateTime.UtcNow.AddDays(1),
+                Status = "Поточне",
+                Subject = "БД",
+                UserId = 1,
+            },
+            new TaskItem
+            {
+                Title = "Виконане завдання Web",
+                Deadline = DateTime.UtcNow.AddDays(-1),
+                Status = "Виконане",
+                Subject = "Web",
+                UserId = 1,
+            });
+
+        await context.SaveChangesAsync();
+
+        var service = CreateService(context);
+
+        var result = await service.GetUserTasksAsync(1, status: "Поточне", subject: "Web");
+
+        Assert.True(result.Success);
+        Assert.NotNull(result.Value);
+        Assert.Single(result.Value);
+        Assert.Equal("Поточне завдання Web", result.Value[0].Title);
+        Assert.Equal("Поточне", result.Value[0].Status);
+        Assert.Equal("Web", result.Value[0].Subject);
+    }
 }

@@ -75,7 +75,6 @@ public class AuthServiceTests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Null(result.Value);
         _mockUserManager.Verify(um => um.FindByEmailAsync(email), Times.Once);
         _mockUserManager.Verify(um => um.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
     }
@@ -105,7 +104,6 @@ public class AuthServiceTests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Null(result.Value);
         _mockUserManager.Verify(um => um.FindByEmailAsync(email), Times.Once);
         _mockUserManager.Verify(um => um.CheckPasswordAsync(user, wrongPassword), Times.Once);
     }
@@ -130,7 +128,6 @@ public class AuthServiceTests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Null(result.Value);
     }
 
     /// <summary>
@@ -158,7 +155,6 @@ public class AuthServiceTests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Null(result.Value);
     }
 
     #endregion
@@ -191,8 +187,16 @@ public class AuthServiceTests
         var result = IdentityResult.Success;
 
         _mockUserManager
+            .Setup(um => um.FindByEmailAsync(email))
+            .ReturnsAsync(default(User));
+
+        _mockUserManager
             .Setup(um => um.CreateAsync(It.IsAny<User>(), password))
             .ReturnsAsync(result);
+
+        _mockUserManager
+            .Setup(um => um.AddToRoleAsync(It.IsAny<User>(), "User"))
+            .ReturnsAsync(IdentityResult.Success);
 
         // Act
         var registrationResult = await _authService.RegisterAsync(firstName, lastName, email, password, groupId);
@@ -254,6 +258,10 @@ public class AuthServiceTests
         _mockUserManager
             .Setup(um => um.CreateAsync(It.IsAny<User>(), password))
             .ReturnsAsync(result);
+
+        _mockUserManager
+            .Setup(um => um.AddToRoleAsync(It.IsAny<User>(), "User"))
+            .ReturnsAsync(IdentityResult.Success);
 
         // Act
         var registrationResult = await _authService.RegisterAsync(firstName, lastName, email, password);

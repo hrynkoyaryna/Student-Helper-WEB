@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace StudentHelper.Web.Controllers;
 
 [Authorize(Roles = "Admin")]
-public class AdminController : Controller
+public class AdminController : BaseController
 {
     public IActionResult Index()
     {
