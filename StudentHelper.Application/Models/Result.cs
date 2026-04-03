@@ -2,14 +2,18 @@ namespace StudentHelper.Application.Models;
 
 public class Result
 {
-    private Result()
+    protected Result(bool success, string message)
     {
+        this.Success = success;
+        this.Message = message;
     }
 
-    public bool Success { get; private set; }
-    public string Message { get; private set; } = string.Empty;
+    public bool Success { get; }
 
-    // Type conversion operators
+    public bool Failure => !this.Success;
+
+    public string Message { get; }
+
     public static implicit operator Result(string message)
     {
         return Ok(message);
@@ -22,53 +26,61 @@ public class Result
 
     public static Result Ok(string? message = null)
     {
-        return new Result { Success = true, Message = message ?? string.Empty };
+        return new Result(true, message ?? string.Empty);
     }
 
     public static Result Fail(string message)
     {
-        return new Result { Success = false, Message = message };
+        return new Result(false, message);
     }
 
-    // Allow deconstruction: (bool success, string message) = result;
     public void Deconstruct(out bool success, out string message)
     {
-        success = Success;
-        message = Message;
+        success = this.Success;
+        message = this.Message;
     }
 }
 
-public class Result<T>
+public class Result<T> : Result
 {
-    private Result()
+    private readonly T? value;
+
+    private Result(T value, string? message = null)
+        : base(true, message ?? string.Empty)
     {
+        this.value = value;
     }
 
-    public bool Success { get; private set; }
-    public T? Value { get; private set; }
-    public string Message { get; private set; } = string.Empty;
-
-    // Type conversion operators
-    public static implicit operator Result<T>(T? value)
+    private Result(string message)
+        : base(false, message)
     {
-        return Ok(value);
+        this.value = default;
     }
 
-    public static Result<T> Ok(T? value, string? message = null)
+    public T Value =>
+        this.Success
+            ? this.value!
+            : throw new InvalidOperationException("No value for failure result.");
+
+    public static implicit operator Result<T>(T value)
     {
-        return new Result<T> { Success = true, Value = value, Message = message ?? string.Empty };
+        return new Result<T>(value);
     }
 
-    public static Result<T> Fail(string message)
+    public static Result<T> Ok(T value, string? message = null)
     {
-        return new Result<T> { Success = false, Value = default, Message = message };
+        return new Result<T>(value, message);
     }
 
-    // Allow deconstruction: (bool success, T? value, string message) = result;
+    public static new Result<T> Fail(string message)
+    {
+        return new Result<T>(message);
+    }
+
     public void Deconstruct(out bool success, out T? value, out string message)
     {
-        success = Success;
-        value = Value;
-        message = Message;
+        success = this.Success;
+        value = this.value;
+        message = this.Message;
     }
 }

@@ -31,16 +31,28 @@ public class TasksController : Controller
         return int.Parse(userId);
     }
 
-    public async Task<IActionResult> Index(string status = "Поточне", string? subject = null)
+    public async Task<IActionResult> Index(
+        string status = "Поточне",
+        string? subject = null,
+        string? searchTerm = null)
     {
         var userId = GetCurrentUserId();
+
+        var subjectsResult = await _taskService.GetUserSubjectsAsync(userId);
+        var tasksResult = await _taskService.GetUserTasksAsync(userId, status, subject, searchTerm);
+
+        if (!subjectsResult.Success || !tasksResult.Success)
+        {
+            return BadRequest("Не вдалося завантажити список завдань.");
+        }
 
         var model = new TaskIndexViewModel
         {
             SelectedStatus = status,
             SelectedSubject = subject,
-            Subjects = await _taskService.GetUserSubjectsAsync(userId),
-            Tasks = await _taskService.GetUserTasksAsync(userId, status, subject)
+            SearchTerm = searchTerm,
+            Subjects = subjectsResult.Value ?? new List<string>(),
+            Tasks = tasksResult.Value ?? new List<TaskItem>()
         };
 
         return View(model);
@@ -66,7 +78,6 @@ public class TasksController : Controller
             return View(model);
         }
 
-        // Маппінг статусів з англійської на українську
         var statusMap = new Dictionary<string, string>
         {
             { "ToDo", "Поточне" },
@@ -88,7 +99,7 @@ public class TasksController : Controller
 
         if (!result.Success)
         {
-            ModelState.AddModelError("", result.Message);
+            ModelState.AddModelError(string.Empty, result.Message);
             return View(model);
         }
 
@@ -98,24 +109,26 @@ public class TasksController : Controller
 
     public async Task<IActionResult> Details(int id)
     {
-        var task = await _taskService.GetTaskByIdAsync(id, GetCurrentUserId());
+        var result = await _taskService.GetTaskByIdAsync(id, GetCurrentUserId());
 
-        if (task == null)
+        if (!result.Success)
         {
             return NotFound();
         }
 
-        return View(task);
+        return View(result.Value);
     }
 
     public async Task<IActionResult> Edit(int id)
     {
-        var task = await _taskService.GetTaskByIdAsync(id, GetCurrentUserId());
+        var result = await _taskService.GetTaskByIdAsync(id, GetCurrentUserId());
 
-        if (task == null)
+        if (!result.Success)
         {
             return NotFound();
         }
+
+        var task = result.Value;
 
         var model = new TaskCreateEditViewModel
         {
@@ -162,14 +175,14 @@ public class TasksController : Controller
 
     public async Task<IActionResult> Delete(int id)
     {
-        var task = await _taskService.GetTaskByIdAsync(id, GetCurrentUserId());
+        var result = await _taskService.GetTaskByIdAsync(id, GetCurrentUserId());
 
-        if (task == null)
+        if (!result.Success)
         {
             return NotFound();
         }
 
-        return View(task);
+        return View(result.Value);
     }
 
     [HttpPost, ActionName("Delete")]

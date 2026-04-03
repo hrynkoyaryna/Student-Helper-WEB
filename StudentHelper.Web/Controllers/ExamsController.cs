@@ -67,6 +67,8 @@ public class ExamsController : Controller
         return View(exam);
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpGet]
     public IActionResult Create()
     {
         var model = new ExamCreateEditViewModel 
@@ -76,6 +78,7 @@ public class ExamsController : Controller
         return View(model);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ExamCreateEditViewModel model)
@@ -104,6 +107,8 @@ public class ExamsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
         var exam = await _examsService.GetExamByIdAsync(id);
@@ -121,6 +126,7 @@ public class ExamsController : Controller
         return View(model);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(ExamCreateEditViewModel model)
@@ -150,6 +156,8 @@ public class ExamsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
         var exam = await _examsService.GetExamByIdAsync(id);
@@ -157,7 +165,8 @@ public class ExamsController : Controller
         return View(exam);
     }
 
-    [HttpPost, ActionName("Delete")]
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {

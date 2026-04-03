@@ -67,15 +67,20 @@ public class CalendarController : Controller
         }));
 
         // Додаємо завдання
-        var tasks = await _taskService.GetUserTasksAsync(userId);
-        events.AddRange(tasks.Select(t => new CalendarEventViewModel
+        var tasksResult = await _taskService.GetUserTasksAsync(userId);
+        if (!tasksResult.Success || tasksResult.Value is null)
+        {
+            return BadRequest(tasksResult.Message);
+        }
+
+        events.AddRange(tasksResult.Value.Select(t => new CalendarEventViewModel
         {
             Id = t.Id,
             Title = t.Title,
             Start = t.Deadline,
             End = t.Deadline.AddHours(1),
             Description = t.Description,
-            Color = "#ffc107", // жовтий для завдань
+            Color = "#ffc107",
             Type = "Task"
         }));
 

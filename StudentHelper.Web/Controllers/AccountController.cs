@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StudentHelper.Domain.Entities;
@@ -22,13 +23,14 @@ public class AccountController : Controller
         _logger = logger;
     }
 
-    // ========== LOGIN ==========
+    [AllowAnonymous]
     [HttpGet]
     public IActionResult Login()
     {
         return View();
     }
 
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
@@ -37,7 +39,6 @@ public class AccountController : Controller
             return View(model);
         }
 
-        // USE-CASE: Login - делегуємо всю логіку до сервісу
         var loginResult = await _authService.LoginAsync(model.Email, model.Password);
 
         if (!loginResult.Success || !loginResult.Value.HasValue)
@@ -48,7 +49,6 @@ public class AccountController : Controller
 
         var userId = loginResult.Value.Value;
 
-        // Логіка сесії залишається в контролері (це не use-case)
         var user = await _signInManager.UserManager.FindByIdAsync(userId.ToString());
         if (user != null)
         {
@@ -58,21 +58,22 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Calendar");
     }
 
-    // ========== LOGOUT ==========
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
         return RedirectToAction("Index", "Home");
     }
 
-    // ========== REGISTER ==========
+    [AllowAnonymous]
     [HttpGet]
     public IActionResult Register()
     {
         return View();
     }
 
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
@@ -81,7 +82,6 @@ public class AccountController : Controller
             return View(model);
         }
 
-        // USE-CASE: Register - делегуємо всю логіку до сервісу
         var regResult = await _authService.RegisterAsync(
             model.FirstName,
             model.LastName,
@@ -94,7 +94,6 @@ public class AccountController : Controller
             return View(model);
         }
 
-        // Логіка сесії залишається в контролері (це не use-case)
         var user = await _signInManager.UserManager.FindByEmailAsync(model.Email);
         if (user != null)
         {
@@ -104,13 +103,14 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Calendar");
     }
 
-    // ========== FORGOT PASSWORD ==========
+    [AllowAnonymous]
     [HttpGet]
     public IActionResult ForgotPassword()
     {
         return View();
     }
 
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
     {
@@ -119,18 +119,16 @@ public class AccountController : Controller
             return View(model);
         }
 
-        // USE-CASE: ForgotPassword - делегуємо всю логіку до сервісу
-        var result = await _authService.ForgotPasswordAsync(
+        await _authService.ForgotPasswordAsync(
             model.Email,
             (userId, code) => Url.Action("ResetPassword", "Account",
                 new { userId, code },
                 protocol: Request.Scheme) ?? string.Empty);
 
-        // We show confirmation regardless to avoid user enumeration. Optionally display message from result.
         return View("ForgotPasswordConfirmation");
     }
 
-    // ========== RESET PASSWORD ==========
+    [AllowAnonymous]
     [HttpGet]
     public IActionResult ResetPassword(int? userId, string code)
     {
@@ -143,6 +141,7 @@ public class AccountController : Controller
         return View(model);
     }
 
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
     {
@@ -151,7 +150,6 @@ public class AccountController : Controller
             return View(model);
         }
 
-        // USE-CASE: ResetPassword - делегуємо всю логіку до сервісу
         var result = await _authService.ResetPasswordAsync(
             model.UserId,
             model.Code,
@@ -164,5 +162,12 @@ public class AccountController : Controller
 
         ModelState.AddModelError("", result.Message);
         return View(model);
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
     }
 }

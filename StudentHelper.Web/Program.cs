@@ -84,6 +84,8 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<StudentHelperDbContext>();
         context.Database.Migrate();
+
+        await DbSeeder.SeedAdminAsync(services);
     }
     catch (Exception ex)
     {

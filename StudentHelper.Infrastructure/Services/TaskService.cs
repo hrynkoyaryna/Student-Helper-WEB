@@ -1,12 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StudentHelper.Application.Interfaces;
+using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Infrastructure.Data;
-using StudentHelper.Application.Models;
 
 namespace StudentHelper.Infrastructure.Services;
-
 
 public class TaskService : ITaskService
 {
@@ -19,9 +18,14 @@ public class TaskService : ITaskService
         _logger = logger;
     }
 
-    public async Task<List<TaskItem>> GetUserTasksAsync(int userId, string? status = null, string? subject = null)
+    public async Task<Result<List<TaskItem>>> GetUserTasksAsync(
+        int userId,
+        string? status = null,
+        string? subject = null,
+        string? searchTerm = null)
     {
-        IQueryable<TaskItem> query = _context.Tasks.Where(t => t.UserId == userId);
+        IQueryable<TaskItem> query = _context.Tasks
+            .Where(t => t.UserId == userId);
 
         if (!string.IsNullOrWhiteSpace(status))
         {
@@ -31,6 +35,14 @@ public class TaskService : ITaskService
         if (!string.IsNullOrWhiteSpace(subject))
         {
             query = query.Where(t => t.Subject == subject);
+        }
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(t =>
+                EF.Functions.ILike(t.Title, $"%{searchTerm}%") ||
+                EF.Functions.ILike(t.Description!, $"%{searchTerm}%") ||
+                EF.Functions.ILike(t.Subject!, $"%{searchTerm}%"));
         }
 
         var tasks = await query
@@ -47,16 +59,19 @@ public class TaskService : ITaskService
         return tasks;
     }
 
-    public async Task<TaskItem?> GetTaskByIdAsync(int id, int userId)
+    public async Task<Result<TaskItem>> GetTaskByIdAsync(int id, int userId)
     {
         var task = await _context.Tasks
             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
 
-        if (task is not null)
+        if (task is null)
         {
-            UpdateOverdueStatusIfNeeded(task);
-            await _context.SaveChangesAsync();
+            _logger.LogWarning("Task {TaskId} was not found for user {UserId}", id, userId);
+            return Result<TaskItem>.Fail("Завдання не знайдено");
         }
+
+        UpdateOverdueStatusIfNeeded(task);
+        await _context.SaveChangesAsync();
 
         return task;
     }
@@ -136,14 +151,16 @@ public class TaskService : ITaskService
         return "Статус завдання оновлено";
     }
 
-    public async Task<List<string>> GetUserSubjectsAsync(int userId)
+    public async Task<Result<List<string>>> GetUserSubjectsAsync(int userId)
     {
-        return await _context.Tasks
+        var subjects = await _context.Tasks
             .Where(t => t.UserId == userId && !string.IsNullOrWhiteSpace(t.Subject))
-            .Select(t => t.Subject)
+            .Select(t => t.Subject!)
             .Distinct()
             .OrderBy(s => s)
             .ToListAsync();
+
+        return subjects;
     }
 
     private static void UpdateOverdueStatusIfNeeded(TaskItem task)
@@ -153,6 +170,7 @@ public class TaskService : ITaskService
             task.Status = "Прострочене";
         }
     }
+
     private static DateTime NormalizeToUtc(DateTime value)
     {
         return value.Kind switch

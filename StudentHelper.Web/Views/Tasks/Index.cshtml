@@ -19,17 +19,26 @@
 
     <div class="bg-white rounded-4 shadow-sm p-4">
         <div class="d-flex flex-wrap gap-2 mb-4">
-            <a asp-action="Index" asp-route-status="Поточне" asp-route-subject="@Model.SelectedSubject"
+            <a asp-action="Index"
+               asp-route-status="Поточне"
+               asp-route-subject="@Model.SelectedSubject"
+               asp-route-searchTerm="@Model.SearchTerm"
                class="btn @(Model.SelectedStatus == "Поточне" ? "btn-primary" : "btn-outline-primary")">
                 Поточні
             </a>
 
-            <a asp-action="Index" asp-route-status="Виконане" asp-route-subject="@Model.SelectedSubject"
+            <a asp-action="Index"
+               asp-route-status="Виконане"
+               asp-route-subject="@Model.SelectedSubject"
+               asp-route-searchTerm="@Model.SearchTerm"
                class="btn @(Model.SelectedStatus == "Виконане" ? "btn-primary" : "btn-outline-primary")">
                 Виконані
             </a>
 
-            <a asp-action="Index" asp-route-status="Прострочене" asp-route-subject="@Model.SelectedSubject"
+            <a asp-action="Index"
+               asp-route-status="Прострочене"
+               asp-route-subject="@Model.SelectedSubject"
+               asp-route-searchTerm="@Model.SearchTerm"
                class="btn @(Model.SelectedStatus == "Прострочене" ? "btn-primary" : "btn-outline-primary")">
                 Прострочені
             </a>
@@ -37,6 +46,16 @@
 
         <form method="get" asp-action="Index" class="row g-3 align-items-end mb-4">
             <input type="hidden" name="status" value="@Model.SelectedStatus" />
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Пошук</label>
+                <input type="text"
+                       id="searchInput"
+                       name="searchTerm"
+                       value="@Model.SearchTerm"
+                       class="form-control"
+                       placeholder="Введіть назву завдання" />
+            </div>
 
             <div class="col-md-4">
                 <label class="form-label fw-semibold">Предмет</label>
@@ -102,9 +121,32 @@
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@task.Id" />
                                         <select name="status" class="form-select form-select-sm">
-                                            <option value="Поточне" selected="@(task.Status == "Поточне")">Поточне</option>
-                                            <option value="Виконане" selected="@(task.Status == "Виконане")">Виконане</option>
-                                            <option value="Прострочене" selected="@(task.Status == "Прострочене")">Прострочене</option>
+                                            @if (task.Status == "Поточне")
+                                            {
+                                                <option value="Поточне" selected>Поточне</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Поточне">Поточне</option>
+                                            }
+
+                                            @if (task.Status == "Виконане")
+                                            {
+                                                <option value="Виконане" selected>Виконане</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Виконане">Виконане</option>
+                                            }
+
+                                            @if (task.Status == "Прострочене")
+                                            {
+                                                <option value="Прострочене" selected>Прострочене</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Прострочене">Прострочене</option>
+                                            }
                                         </select>
                                         <button type="submit" class="btn btn-primary btn-sm">Оновити</button>
                                     </form>
@@ -117,4 +159,34 @@
         }
     </div>
 </div>
-</div>
+<script>
+    let timeout = null;
+    const searchInput = document.getElementById("searchInput");
+
+    const savedCursorPosition = sessionStorage.getItem("taskSearchCursorPosition");
+    const shouldFocus = sessionStorage.getItem("taskSearchFocus");
+
+    if (searchInput && shouldFocus === "true")
+    {
+        searchInput.focus();
+
+        if (savedCursorPosition !== null)
+        {
+            const position = parseInt(savedCursorPosition, 10);
+            searchInput.setSelectionRange(position, position);
+        }
+
+        sessionStorage.removeItem("taskSearchFocus");
+        sessionStorage.removeItem("taskSearchCursorPosition");
+    }
+
+    searchInput.addEventListener("input", function () {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(() => {
+            sessionStorage.setItem("taskSearchFocus", "true");
+            sessionStorage.setItem("taskSearchCursorPosition", searchInput.selectionStart);
+            this.form.submit();
+        }, 400);
+    });
+</script>

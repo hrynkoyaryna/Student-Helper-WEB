@@ -1,0 +1,20 @@
+@{
+    ViewData["Title"] = "Адмін-панель";
+}
+
+<div class="container mt-4">
+    <h2>Адмін-панель</h2>
+    <p>Вітаю в адмінській частині Student Helper.</p>
+
+    <div class="list-group mt-3">
+        <a asp-controller="Admin" asp-action="Users" class="list-group-item list-group-item-action">
+            Користувачі
+        </a>
+        <a asp-controller="Admin" asp-action="Groups" class="list-group-item list-group-item-action">
+            Групи
+        </a>
+        <a asp-controller="Admin" asp-action="Teachers" class="list-group-item list-group-item-action">
+            Викладачі
+        </a>
+    </div>
+</div>

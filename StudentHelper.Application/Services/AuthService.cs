@@ -55,13 +55,20 @@ public class AuthService : IAuthService
         };
 
         var result = await _userManager.CreateAsync(user, password);
-        if (result.Succeeded)
+        if (!result.Succeeded)
         {
-            return true;
+            var errors = result.Errors.Select(e => e.Description).ToList();
+            return Result.Fail(string.Join(", ", errors));
         }
 
-        var errors = result.Errors.Select(e => e.Description).ToList();
-        return Result.Fail(string.Join(", ", errors));
+        var roleResult = await _userManager.AddToRoleAsync(user, "User");
+        if (!roleResult.Succeeded)
+        {
+            var errors = roleResult.Errors.Select(e => e.Description).ToList();
+            return Result.Fail("Користувача створено, але не вдалося призначити роль: " + string.Join(", ", errors));
+        }
+
+        return true;
     }
 
     // ========== FORGOT PASSWORD USE-CASE ==========
