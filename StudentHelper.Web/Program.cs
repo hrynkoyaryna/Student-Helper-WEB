@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using MailKit.Net.Smtp;
 using StudentHelper.Infrastructure.Repositories;
+using StudentHelper.Application.Models;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -19,6 +20,8 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.Configure<ApplicationSettings>(builder.Configuration.GetSection("ApplicationSettings"));
 
 builder.Services.AddDbContext<StudentHelperDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -59,7 +62,6 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<INotesService, NotesService>();
 builder.Services.AddScoped<IExamsService, ExamsService>();
 
-// Email Sender
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 var smtpOptions = builder.Configuration.GetSection("Smtp").Get<SmtpOptions>();
 if (smtpOptions != null && !string.IsNullOrEmpty(smtpOptions.Host))
@@ -73,10 +75,8 @@ else
 
 var app = builder.Build();
 
-// Global Exception Handler
 app.UseMiddleware<StudentHelper.Web.Middleware.GlobalExceptionHandlerMiddleware>();
 
-// Migrations
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -112,7 +112,6 @@ app.MapControllerRoute(
 
 app.Run();
 
-// ========== CLASSES ==========
 public class SmtpOptions
 {
     public string? Host { get; set; }

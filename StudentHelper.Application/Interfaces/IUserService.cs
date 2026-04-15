@@ -1,19 +1,13 @@
 using StudentHelper.Domain.Entities;
+using StudentHelper.Application.Models;
+using System.Threading.Tasks;
 
 namespace StudentHelper.Application.Interfaces;
 
-/// <summary>
-/// Сервіс для роботи з даними користувача
-/// </summary>
 public interface IUserService
 {
-    /// <summary>
-    /// Отримати користувача за ID
-    /// </summary>
     Task<User?> GetUserByIdAsync(int userId);
-
-    /// <summary>
-    /// Отримати користувача за email
-    /// </summary>
     Task<User?> GetUserByEmailAsync(string email);
+    Task<Result> UpdateProfileAsync(int userId, string firstName, string lastName, string email);
+    Task<Result> DeleteUserAsync(int userId);
 }

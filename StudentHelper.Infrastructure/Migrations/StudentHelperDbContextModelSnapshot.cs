@@ -179,9 +179,6 @@ namespace StudentHelper.Infrastructure.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasColumnType("text");
@@ -189,14 +186,11 @@ namespace StudentHelper.Infrastructure.Migrations
                     b.Property<int>("TeacherId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Exams");
+                    b.ToTable("Exams", (string)null);
                 });
 
             modelBuilder.Entity("StudentHelper.Domain.Entities.Group", b =>
@@ -213,7 +207,7 @@ namespace StudentHelper.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups");
+                    b.ToTable("Groups", (string)null);
                 });
 
             modelBuilder.Entity("StudentHelper.Domain.Entities.Note", b =>
@@ -242,7 +236,7 @@ namespace StudentHelper.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notes");
+                    b.ToTable("Notes", (string)null);
                 });
 
             modelBuilder.Entity("StudentHelper.Domain.Entities.PersonalEvent", b =>
@@ -278,7 +272,7 @@ namespace StudentHelper.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PersonalEvents");
+                    b.ToTable("PersonalEvents", (string)null);
                 });
 
             modelBuilder.Entity("StudentHelper.Domain.Entities.ScheduleLesson", b =>
@@ -323,7 +317,7 @@ namespace StudentHelper.Infrastructure.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("ScheduleLessons");
+                    b.ToTable("ScheduleLessons", (string)null);
                 });
 
             modelBuilder.Entity("StudentHelper.Domain.Entities.Subject", b =>
@@ -340,7 +334,7 @@ namespace StudentHelper.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subjects");
+                    b.ToTable("Subjects", (string)null);
                 });
 
             modelBuilder.Entity("StudentHelper.Domain.Entities.TaskItem", b =>
@@ -353,9 +347,6 @@ namespace StudentHelper.Infrastructure.Migrations
 
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -376,7 +367,7 @@ namespace StudentHelper.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Tasks", (string)null);
                 });
 
             modelBuilder.Entity("StudentHelper.Domain.Entities.Teacher", b =>
@@ -393,7 +384,7 @@ namespace StudentHelper.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teachers");
+                    b.ToTable("Teachers", (string)null);
                 });
 
             modelBuilder.Entity("StudentHelper.Domain.Entities.User", b =>
