@@ -1,0 +1,54 @@
+@model IEnumerable<StudentHelper.Domain.Entities.User>
+
+@{
+    ViewData["Title"] = "Студенти";
+}
+
+<h2 class="mb-4">Студенти</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Додати студента</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Логін</th>
+            <th>Email</th>
+            <th style="width: 220px;">Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model)
+        {
+            <tr>
+                <td>@student.UserName</td>
+                <td>@student.Email</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@student.Id" class="btn btn-warning btn-sm">Редагувати</a>
+					<a asp-action="ChangePassword" asp-route-id="@student.Id" class="btn btn-info btn-sm">Змінити пароль</a>	
+
+
+                    <form asp-action="Delete" asp-route-id="@student.Id" method="post" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Ви впевнені, що хочете видалити цього студента?');">
+                            Видалити
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
