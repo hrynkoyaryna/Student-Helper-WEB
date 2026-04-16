@@ -26,13 +26,25 @@ builder.Services.Configure<ApplicationSettings>(builder.Configuration.GetSection
 builder.Services.AddDbContext<StudentHelperDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+var appSettings = builder.Configuration.GetSection("ApplicationSettings").Get<ApplicationSettings>();
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 8;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
+    if (appSettings?.PasswordSettings != null)
+    {
+        options.Password.RequireDigit = appSettings.PasswordSettings.RequireDigit;
+        options.Password.RequiredLength = appSettings.PasswordSettings.RequiredLength;
+        options.Password.RequireNonAlphanumeric = appSettings.PasswordSettings.RequireNonAlphanumeric;
+        options.Password.RequireUppercase = appSettings.PasswordSettings.RequireUppercase;
+        options.Password.RequireLowercase = appSettings.PasswordSettings.RequireLowercase;
+    }
+    else
+    {
+        options.Password.RequireDigit = true;
+        options.Password.RequiredLength = 8;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
+    }
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<StudentHelperDbContext>()

@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using StudentHelper.Application.Interfaces;
+using StudentHelper.Application.Models;
 using StudentHelper.Application.Services;
 using StudentHelper.Domain.Entities;
 using Xunit;
@@ -11,6 +14,7 @@ public class AuthServiceTests
 {
     private readonly Mock<UserManager<User>> _mockUserManager;
     private readonly Mock<IEmailSender> _mockEmailSender;
+    private readonly Mock<ILogger<AuthService>> _mockLogger;
     private readonly AuthService _authService;
 
     public AuthServiceTests()
@@ -19,7 +23,23 @@ public class AuthServiceTests
         _mockUserManager = new Mock<UserManager<User>>(
             store.Object, null, null, null, null, null, null, null, null);
         _mockEmailSender = new Mock<IEmailSender>();
-        _authService = new AuthService(_mockUserManager.Object, _mockEmailSender.Object);
+        _mockLogger = new Mock<ILogger<AuthService>>();
+        var settings = Options.Create(new ApplicationSettings 
+        { 
+            MinSearchCharacters = 3,
+            ItemsPerPage = 10,
+            CalendarStartHour = 8,
+            MaxTaskDescriptionLength = 500,
+            PasswordSettings = new PasswordSettings
+            {
+                RequiredLength = 8,
+                RequireDigit = true,
+                RequireNonAlphanumeric = true,
+                RequireUppercase = true,
+                RequireLowercase = true
+            }
+        });
+        _authService = new AuthService(_mockUserManager.Object, _mockEmailSender.Object, _mockLogger.Object, settings);
     }
 
     #region LoginAsync Tests

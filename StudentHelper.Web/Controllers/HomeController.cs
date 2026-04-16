@@ -23,13 +23,11 @@ public class HomeController : Controller
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
-        // Получаем ErrorViewModel из middleware если она установлена
         if (HttpContext.Items.TryGetValue("ErrorViewModel", out var model) && model is ErrorViewModel errorModel)
         {
             return View(errorModel);
         }
 
-        // Иначе возвращаем default ViewModel
         return View(new ErrorViewModel 
         { 
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,

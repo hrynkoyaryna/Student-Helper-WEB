@@ -9,6 +9,19 @@ public interface ITaskService
         int userId,
         string? status = null,
         string? subject = null,
+        string? searchTerm = null,
+        int pageNumber = 1);
+
+    Task<Result<List<TaskItem>>> GetAllUserTasksAsync(
+        int userId,
+        string? status = null,
+        string? subject = null,
+        string? searchTerm = null);
+
+    Task<int> GetUserTasksCountAsync(
+        int userId,
+        string? status = null,
+        string? subject = null,
         string? searchTerm = null);
 
     Task<Result<TaskItem>> GetTaskByIdAsync(int id, int userId);

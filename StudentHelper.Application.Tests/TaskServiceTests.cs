@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Infrastructure.Data;
 using StudentHelper.Infrastructure.Services;
@@ -20,7 +22,14 @@ public class TaskServiceTests
 
     private static TaskService CreateService(StudentHelperDbContext context)
     {
-        return new TaskService(context, new NullLogger<TaskService>());
+        var settings = Options.Create(new ApplicationSettings 
+        { 
+            MinSearchCharacters = 3,
+            ItemsPerPage = 10,
+            CalendarStartHour = 8,
+            MaxTaskDescriptionLength = 500
+        });
+        return new TaskService(context, new NullLogger<TaskService>(), settings);
     }
 
     [Fact]

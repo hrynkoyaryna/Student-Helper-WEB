@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
@@ -10,12 +11,14 @@ public class ExamsService : IExamsService
     private readonly IExamsRepository _repository;
     private readonly ITeacherRepository _teacherRepository;
     private readonly ILogger<ExamsService> _logger;
+    private readonly IOptions<ApplicationSettings> _settings;
 
-    public ExamsService(IExamsRepository repository, ITeacherRepository teacherRepository, ILogger<ExamsService> logger)
+    public ExamsService(IExamsRepository repository, ITeacherRepository teacherRepository, ILogger<ExamsService> logger, IOptions<ApplicationSettings> settings)
     {
         _repository = repository;
         _teacherRepository = teacherRepository;
         _logger = logger;
+        _settings = settings;
     }
 
     public async Task<List<Exam>> GetExamsAsync()

@@ -43,7 +43,7 @@
                     </div>
 
                     @* Форма видалення *@
-                    <form asp-action="DeleteConfirmed" method="post" asp-route-id="@Model.Id">
+                    <form asp-action="Delete" method="post" asp-route-id="@Model.Id">
                         @Html.AntiForgeryToken()
                         <div class="d-grid gap-2 d-md-flex justify-content-md-center">
     <button type="submit" class="btn btn-danger px-5 fw-bold py-2 shadow-sm" style="border-radius: 10px;">

@@ -54,7 +54,7 @@
 
                                 @if (eventsInSlot.Any())
                                 {
-                                    <div class="d-flex h-100 w-100">
+                                    <div class="d-flex flex-column gap-1 p-2" style="width: 100%; height: 100%; overflow-y: auto;">
                                         @foreach (var ev in eventsInSlot)
                                         {
                                             var durationMin = (ev.EndAt - ev.StartAt).TotalMinutes;
@@ -69,34 +69,24 @@
                                             
                                             var targetAction = "Details"; 
 
-                                            <div class="flex-grow-1 position-relative h-100 border-end border-light" style="min-width: 100px;">
-                                                <div class="event-item rounded-3 shadow-sm text-white position-absolute mx-1" 
-                                                     style="background-color: @ev.Color; 
-                                                            height: @(heightPx - 4)px; 
-                                                            top: @(topOffsetPx + 2)px;
-                                                            left: 0; right: 0;
-                                                            z-index: 50;
-                                                            padding: 8px;
-                                                            cursor: pointer;
-                                                            overflow: hidden;"
-                                                     onclick="location.href='@Url.Action(targetAction, targetController, new { id = ev.Id })'">
-                                                    
-                                                    <div class="text-uppercase fw-bold mb-1" style="font-size: 0.6rem; opacity: 0.8; letter-spacing: 0.5px;">
-                                                        @(ev.Type == "Task" ? "Завдання" : (ev.Type == "Exam" ? "Екзамен" : "Подія"))
-                                                    </div>
+                                            <div class="event-item rounded-2 shadow-sm text-white" 
+                                                 style="background-color: @ev.Color; 
+                                                        padding: 6px 8px;
+                                                        cursor: pointer;
+                                                        overflow: hidden;
+                                                        flex-shrink: 0;
+                                                        font-size: 0.75rem;
+                                                        min-width: 0;"
+                                                 onclick="location.href='@Url.Action(targetAction, targetController, new { id = ev.Id })'">
+                                                
+                                                <div class="text-uppercase fw-bold" style="font-size: 0.6rem; opacity: 0.8; letter-spacing: 0.5px;">
+                                                    @(ev.Type == "Task" ? "Завдання" : (ev.Type == "Exam" ? "Екзамен" : "Подія"))
+                                                </div>
 
-                                                    <div class="fw-bold" style="font-size: 0.85rem; line-height: 1.2;">@ev.Title</div>
-                                                    
-                                                    <div style="font-size: 0.75rem; opacity: 0.9;" class="mt-1">
-                                                         @ev.StartAt.ToString("HH:mm") - @ev.EndAt.ToString("HH:mm")
-                                                    </div>
-                                                    
-                                                    @if (heightPx > 70 && !string.IsNullOrEmpty(ev.Description))
-                                                    {
-                                                        <div class="mt-2 pt-1 border-top border-white border-opacity-25 text-truncate" style="font-size: 0.7rem; opacity: 0.8;">
-                                                            @ev.Description
-                                                        </div>
-                                                    }
+                                                <div class="fw-bold text-truncate">@ev.Title</div>
+                                                
+                                                <div style="opacity: 0.9;">
+                                                     @ev.StartAt.ToString("HH:mm") - @ev.EndAt.ToString("HH:mm")
                                                 </div>
                                             </div>
                                         }
@@ -133,4 +123,11 @@
     .calendar-scroll-container::-webkit-scrollbar { height: 10px; }
     .calendar-scroll-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
     .calendar-scroll-container::-webkit-scrollbar-thumb { background: #6bc8d7; border-radius: 10px; border: 2px solid #f1f1f1; }
+
+    /* Scrollbar для клітинок з подіями */
+    .day-cell::-webkit-scrollbar { width: 6px; }
+    .day-cell::-webkit-scrollbar-track { background: transparent; }
+    .day-cell::-webkit-scrollbar-thumb { background: rgba(107, 200, 215, 0.4); border-radius: 3px; }
+    .day-cell::-webkit-scrollbar-thumb:hover { background: rgba(107, 200, 215, 0.8); }
+
 </style>

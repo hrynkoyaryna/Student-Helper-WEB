@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using StudentHelper.Application.Interfaces;
+using StudentHelper.Application.Models;
 using StudentHelper.Application.Models.Calendar;
 using StudentHelper.Application.Services;
 using StudentHelper.Domain.Entities;
@@ -18,10 +20,18 @@ public class CalendarServiceTests
     {
         this.personalEventRepositoryMock = new Mock<IPersonalEventRepository>();
         this.loggerMock = new Mock<ILogger<CalendarService>>();
+        var settingsMock = Options.Create(new ApplicationSettings 
+        { 
+            MinSearchCharacters = 3,
+            ItemsPerPage = 10,
+            CalendarStartHour = 7,
+            MaxTaskDescriptionLength = 500
+        });
 
         this.calendarService = new CalendarService(
             this.personalEventRepositoryMock.Object,
-            this.loggerMock.Object);
+            this.loggerMock.Object,
+            settingsMock);
     }
 
     #region CreateEventAsync Tests

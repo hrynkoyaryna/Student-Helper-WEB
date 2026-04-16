@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Moq;
 using StudentHelper.Application.Interfaces;
+using StudentHelper.Application.Models;
 using StudentHelper.Application.Services;
 using StudentHelper.Domain.Entities;
 using Xunit;
@@ -11,7 +13,14 @@ public class NotesServiceTests
 {
     private static NotesService CreateService(Mock<INotesRepository> repositoryMock)
     {
-        return new NotesService(repositoryMock.Object, new NullLogger<NotesService>());
+        var settings = Options.Create(new ApplicationSettings 
+        { 
+            MinSearchCharacters = 3,
+            ItemsPerPage = 10,
+            CalendarStartHour = 8,
+            MaxTaskDescriptionLength = 500
+        });
+        return new NotesService(repositoryMock.Object, new NullLogger<NotesService>(), settings);
     }
 
     [Fact]
@@ -69,7 +78,7 @@ public class NotesServiceTests
         var repositoryMock = new Mock<INotesRepository>();
         var notes = new List<Note>
         {
-            new Note { Title = "Нотатка про C#", Body = "Текст про C#", UserId = 1 },
+            new Note { Title = "Нотатка про CSharp", Body = "Текст про CSharp", UserId = 1 },
             new Note { Title = "Нотатка про JavaScript", Body = "Текст про JS", UserId = 1 }
         };
         
@@ -79,11 +88,11 @@ public class NotesServiceTests
         var service = CreateService(repositoryMock);
 
         // Act
-        var result = await service.GetUserNotesAsync(1, "C#");
+        var result = await service.GetUserNotesAsync(1, "CSharp");
 
         // Assert
         Assert.Single(result);
-        Assert.Contains("C#", result[0].Title);
+        Assert.Contains("CSharp", result[0].Title);
     }
 
     [Fact]

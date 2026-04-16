@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using StudentHelper.Application.Interfaces; 
+using StudentHelper.Application.Models;
 using StudentHelper.Application.Models.Calendar;
 using StudentHelper.Application.Services;
 using StudentHelper.Domain.Entities;
@@ -12,12 +14,18 @@ public class CalendarController : BaseController
     private readonly ICalendarService _calendarService;
     private readonly ITaskService _taskService;
     private readonly IExamsService _examsService;
+    private readonly IOptions<ApplicationSettings> _settings;
 
-    public CalendarController(ICalendarService calendarService, ITaskService taskService, IExamsService examsService)
+    public CalendarController(
+        ICalendarService calendarService,
+        ITaskService taskService,
+        IExamsService examsService,
+        IOptions<ApplicationSettings> settings)
     {
         _calendarService = calendarService;
         _taskService = taskService;
         _examsService = examsService;
+        _settings = settings;
     }
 
     [HttpGet]
@@ -45,7 +53,12 @@ public class CalendarController : BaseController
             days.Add(startDate.AddDays(i));
         }
         
-        var timeSlots = Enumerable.Range(7, 16).Select(hour => new TimeOnly(hour, 0)).ToList();
+        // Генеруємо часові слоти з CalendarStartHour до 23:00
+        var calendarStartHour = _settings.Value.CalendarStartHour;
+        var hoursCount = 24 - calendarStartHour;  // К-сть годин від початку до кінця дня
+        var timeSlots = Enumerable.Range(calendarStartHour, hoursCount)
+            .Select(hour => new TimeOnly(hour, 0))
+            .ToList();
 
         var events = new List<CalendarEventViewModel>();
 
@@ -63,7 +76,7 @@ public class CalendarController : BaseController
         }));
 
         // Додаємо завдання
-        var tasksResult = await _taskService.GetUserTasksAsync(userId);
+        var tasksResult = await _taskService.GetAllUserTasksAsync(userId);
         if (!tasksResult.Success || tasksResult.Value is null)
         {
             return BadRequest(tasksResult.Message);

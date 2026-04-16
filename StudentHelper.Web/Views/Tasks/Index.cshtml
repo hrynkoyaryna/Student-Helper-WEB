@@ -17,6 +17,13 @@
         </div>
     }
 
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning rounded-4 shadow-sm">
+            <i class="fas fa-exclamation-triangle"></i> @TempData["WarningMessage"]
+        </div>
+    }
+
     <div class="bg-white rounded-4 shadow-sm p-4">
         <div class="d-flex flex-wrap gap-2 mb-4">
             <a asp-action="Index"
@@ -155,6 +162,87 @@
                         </div>
                     </div>
                 }
+            </div>
+        }
+        
+        @* Пагінація *@
+        @if (Model.TotalPages > 1)
+        {
+            <nav aria-label="Навігація по сторінках" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    @* Кнопка "Попередня" *@
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index" 
+                               asp-route-status="@Model.SelectedStatus" 
+                               asp-route-subject="@Model.SelectedSubject"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-page="@(Model.CurrentPage - 1)" 
+                               aria-label="Попередня сторінка">
+                                ← Попередня
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">← Попередня</span>
+                        </li>
+                    }
+
+                    @* Номери сторінок *@
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        @if (i == Model.CurrentPage)
+                        {
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link">
+                                    @i
+                                    <span class="visually-hidden">(поточна)</span>
+                                </span>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index"
+                                   asp-route-status="@Model.SelectedStatus"
+                                   asp-route-subject="@Model.SelectedSubject"
+                                   asp-route-searchTerm="@Model.SearchTerm"
+                                   asp-route-page="@i">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                    }
+
+                    @* Кнопка "Наступна" *@
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index"
+                               asp-route-status="@Model.SelectedStatus"
+                               asp-route-subject="@Model.SelectedSubject"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-page="@(Model.CurrentPage + 1)"
+                               aria-label="Наступна сторінка">
+                                Наступна →
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">Наступна →</span>
+                        </li>
+                    }
+                </ul>
+            </nav>
+            
+            <div class="text-center text-muted small mt-2">
+                Сторінка @Model.CurrentPage з @Model.TotalPages 
+                (@Model.TotalItems елементів, по @Model.ItemsPerPage на сторінці)
             </div>
         }
     </div>

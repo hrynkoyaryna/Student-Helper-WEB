@@ -2,16 +2,30 @@
 using System.Threading.Tasks;
 using Moq;
 using StudentHelper.Application.Interfaces;
+using StudentHelper.Application.Models;
 using StudentHelper.Application.Services;
 using StudentHelper.Domain.Entities;
 using Xunit;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 
 namespace StudentHelper.Application.Tests;
 
 public class ExamsServiceTests
 {
+    private static IOptions<ApplicationSettings> CreateMockSettings()
+    {
+        return Options.Create(new ApplicationSettings 
+        { 
+            MinSearchCharacters = 3,
+            ItemsPerPage = 10,
+            CalendarStartHour = 8,
+            MaxTaskDescriptionLength = 500,
+            PasswordSettings = new PasswordSettings()
+        });
+    }
+
     [Fact]
     public async Task CreateExamAsync_CreatesExam_WhenTeacherNameProvidedAndNotExists()
     {
@@ -19,6 +33,7 @@ public class ExamsServiceTests
         var examRepoMock = new Mock<IExamsRepository>();
         var teacherRepoMock = new Mock<ITeacherRepository>();
         var loggerMock = new Mock<ILogger<ExamsService>>();
+        var settingsMock = CreateMockSettings();
 
         // Teacher does not exist
         teacherRepoMock.Setup(t => t.GetByNameAsync(It.IsAny<string>()))
@@ -44,7 +59,7 @@ public class ExamsServiceTests
         examRepoMock.Setup(r => r.SaveChangesAsync())
             .Returns(Task.CompletedTask);
 
-        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object);
+        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object, settingsMock);
 
         var request = new CreateExamRequest
         {
@@ -76,7 +91,7 @@ public class ExamsServiceTests
         var teacherRepoMock = new Mock<ITeacherRepository>();
         var loggerMock = new Mock<ILogger<ExamsService>>();
 
-        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object);
+        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object, CreateMockSettings());
 
         var request = new CreateExamRequest
         {
@@ -113,7 +128,7 @@ public class ExamsServiceTests
         examRepoMock.Setup(r => r.UpdateAsync(It.IsAny<Exam>())).Returns(Task.CompletedTask);
         examRepoMock.Setup(r => r.SaveChangesAsync()).Returns(Task.CompletedTask);
 
-        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object);
+        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object, CreateMockSettings());
 
         var request = new UpdateExamRequest
         {
@@ -146,7 +161,7 @@ public class ExamsServiceTests
         examRepoMock.Setup(r => r.DeleteAsync(existingExam)).Returns(Task.CompletedTask);
         examRepoMock.Setup(r => r.SaveChangesAsync()).Returns(Task.CompletedTask);
 
-        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object);
+        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object, CreateMockSettings());
 
         // Act
         var result = await service.DeleteExamAsync(7);
@@ -174,7 +189,7 @@ public class ExamsServiceTests
             .Returns(Task.CompletedTask);
         examRepoMock.Setup(r => r.SaveChangesAsync()).Returns(Task.CompletedTask);
 
-        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object);
+        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object, CreateMockSettings());
 
         var request = new CreateExamRequest
         {
@@ -203,7 +218,7 @@ public class ExamsServiceTests
         var teacherRepoMock = new Mock<ITeacherRepository>();
         var loggerMock = new Mock<ILogger<ExamsService>>();
 
-        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object);
+        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object, CreateMockSettings());
 
         var request = new CreateExamRequest
         {
@@ -228,7 +243,7 @@ public class ExamsServiceTests
         var teacherRepoMock = new Mock<ITeacherRepository>();
         var loggerMock = new Mock<ILogger<ExamsService>>();
 
-        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object);
+        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object, CreateMockSettings());
 
         var request = new CreateExamRequest
         {
@@ -255,7 +270,7 @@ public class ExamsServiceTests
 
         examRepoMock.Setup(r => r.GetByIdAsync(123)).ReturnsAsync((Exam?)null);
 
-        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object);
+        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object, CreateMockSettings());
 
         var request = new UpdateExamRequest
         {
@@ -287,7 +302,7 @@ public class ExamsServiceTests
 
         examRepoMock.Setup(r => r.AddAsync(It.IsAny<Exam>())).ThrowsAsync(new InvalidOperationException("DB error"));
 
-        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object);
+        var service = new ExamsService(examRepoMock.Object, teacherRepoMock.Object, loggerMock.Object, CreateMockSettings());
 
         var request = new CreateExamRequest
         {
