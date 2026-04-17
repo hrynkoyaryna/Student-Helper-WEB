@@ -1,16 +1,16 @@
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using StudentHelper.Application.Interfaces;
-using StudentHelper.Application.Services;
-using StudentHelper.Infrastructure.Services;
-using StudentHelper.Domain.Entities;
-using StudentHelper.Infrastructure.Data;
-using Serilog;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using MailKit.Net.Smtp;
-using StudentHelper.Infrastructure.Repositories;
+using Serilog;
+using StudentHelper.Application.Interfaces;
 using StudentHelper.Application.Models;
+using StudentHelper.Application.Services;
+using StudentHelper.Domain.Entities;
+using StudentHelper.Infrastructure.Data;
+using StudentHelper.Infrastructure.Repositories;
+using StudentHelper.Infrastructure.Services;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -21,12 +21,16 @@ builder.Host.UseSerilog((context, configuration) =>
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.Configure<ApplicationSettings>(builder.Configuration.GetSection("ApplicationSettings"));
+builder.Services.Configure<ApplicationSettings>(
+    builder.Configuration.GetSection("ApplicationSettings"));
 
 builder.Services.AddDbContext<StudentHelperDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<IGroupsService, GroupsService>();
+
 var appSettings = builder.Configuration.GetSection("ApplicationSettings").Get<ApplicationSettings>();
+
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {
     if (appSettings?.PasswordSettings != null)
@@ -45,6 +49,7 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
         options.Password.RequireUppercase = true;
         options.Password.RequireLowercase = true;
     }
+
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<StudentHelperDbContext>()
@@ -62,11 +67,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
-builder.Services.AddScoped<IExamsRepository, ExamsRepository>(); 
-builder.Services.AddScoped<StudentHelper.Application.Interfaces.INotesRepository, NotesRepository>();
-builder.Services.AddScoped<StudentHelper.Application.Interfaces.ITeacherRepository, TeacherRepository>();
+builder.Services.AddScoped<IExamsRepository, ExamsRepository>();
+builder.Services.AddScoped<INotesRepository, NotesRepository>();
+builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 
-builder.Services.AddScoped<StudentHelper.Application.Services.ICalendarService, StudentHelper.Application.Services.CalendarService>();
+builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -76,13 +81,14 @@ builder.Services.AddScoped<IExamsService, ExamsService>();
 
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 var smtpOptions = builder.Configuration.GetSection("Smtp").Get<SmtpOptions>();
+
 if (smtpOptions != null && !string.IsNullOrEmpty(smtpOptions.Host))
 {
-    builder.Services.AddSingleton<StudentHelper.Application.Interfaces.IEmailSender, SmtpEmailSender>();
+    builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
 }
 else
 {
-    builder.Services.AddSingleton<StudentHelper.Application.Interfaces.IEmailSender, ConsoleEmailSender>();
+    builder.Services.AddSingleton<IEmailSender, ConsoleEmailSender>();
 }
 
 var app = builder.Build();
@@ -144,26 +150,37 @@ public class SmtpOptions
     public string? FromEmail { get; set; }
 }
 
-public class SmtpEmailSender : StudentHelper.Application.Interfaces.IEmailSender
+public class SmtpEmailSender : IEmailSender
 {
-    private readonly SmtpOptions _options;
-    public SmtpEmailSender(IOptions<SmtpOptions> options) => _options = options.Value;
+    private readonly SmtpOptions options;
+
+    public SmtpEmailSender(IOptions<SmtpOptions> options)
+    {
+        this.options = options.Value;
+    }
+
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Student Helper", _options.FromEmail ?? "noreply@test.com"));
+        message.From.Add(new MailboxAddress("Student Helper", this.options.FromEmail ?? "noreply@test.com"));
         message.To.Add(MailboxAddress.Parse(email));
         message.Subject = subject;
         message.Body = new BodyBuilder { HtmlBody = htmlMessage }.ToMessageBody();
+
         using var client = new MailKit.Net.Smtp.SmtpClient();
-        await client.ConnectAsync(_options.Host, _options.Port, MailKit.Security.SecureSocketOptions.StartTls);
-        await client.AuthenticateAsync(_options.UserName, _options.Password);
+        await client.ConnectAsync(this.options.Host, this.options.Port, MailKit.Security.SecureSocketOptions.StartTls);
+
+        if (!string.IsNullOrEmpty(this.options.UserName))
+        {
+            await client.AuthenticateAsync(this.options.UserName, this.options.Password);
+        }
+
         await client.SendAsync(message);
         await client.DisconnectAsync(true);
     }
 }
 
-public class ConsoleEmailSender : StudentHelper.Application.Interfaces.IEmailSender
+public class ConsoleEmailSender : IEmailSender
 {
     public Task SendEmailAsync(string email, string subject, string htmlMessage)
     {

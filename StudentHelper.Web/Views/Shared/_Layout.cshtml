@@ -112,6 +112,7 @@
                         aria-expanded="false" aria-label="Меню навігації">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         @if (User.Identity?.IsAuthenticated == true)
@@ -131,8 +132,19 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Home" asp-action="AboutApp">Про додаток</a>
                             </li>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Students" asp-action="Index">Студенти</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Groups" asp-action="Index">Групи</a>
+                                </li>
+                            }
                         }
                     </ul>
+
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <div class="d-flex align-items-center gap-3">
@@ -143,14 +155,14 @@
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
                                     <li>
                                         <a class="dropdown-item" asp-controller="Settings" asp-action="Index">
-                                            <i class="bi bi-gear"></i> Налаштування
+                                            Налаштування
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form method="post" asp-controller="Account" asp-action="Logout" style="margin: 0;">
                                             <button type="submit" class="dropdown-item">
-                                                <i class="bi bi-box-arrow-right"></i> Вихід
+                                                Вихід
                                             </button>
                                         </form>
                                     </li>
@@ -165,16 +177,11 @@
                             <a class="btn btn-primary btn-sm" asp-controller="Account" asp-action="Register">Реєстрація</a>
                         </div>
                     }
-                    @if (User.IsInRole("Admin"))
-{
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Students" asp-action="Index">Студенти</a>
-                        </li>
-                    }
                 </div>
             </div>
         </nav>
     </header>
+
     <main role="main">
         @RenderBody()
     </main>

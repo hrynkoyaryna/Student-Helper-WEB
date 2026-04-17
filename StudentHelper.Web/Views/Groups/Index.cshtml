@@ -1,0 +1,67 @@
+﻿@model IEnumerable<StudentHelper.Application.DTOs.Groups.GroupListItemDto>
+
+@{
+    ViewData["Title"] = "Групи";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Групи</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-md-6">
+            <input type="text"
+                   name="search"
+                   class="form-control"
+                   placeholder="Пошук групи..." />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Пошук</button>
+        </div>
+        <div class="col-md-2">
+            <a asp-action="Index" class="btn btn-outline-secondary w-100">Скинути</a>
+        </div>
+    </form>
+
+    <p>
+        <a asp-action="Create" class="btn btn-success">Створити групу</a>
+    </p>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Назва</th>
+                <th style="width: 220px;">Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var group in Model)
+            {
+                <tr>
+                    <td>@group.Name</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@group.Id" class="btn btn-warning btn-sm">Редагувати</a>
+
+                        <form asp-action="Delete" asp-route-id="@group.Id" method="post" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Ви впевнені, що хочете видалити цю групу?');">
+                                Видалити
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
