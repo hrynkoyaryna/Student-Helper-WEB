@@ -12,8 +12,8 @@ using StudentHelper.Infrastructure.Data;
 namespace StudentHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(StudentHelperDbContext))]
-    [Migration("20260329120108_AddEventColor")]
-    partial class AddEventColor
+    [Migration("20260417014937_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -182,11 +182,17 @@ namespace StudentHelper.Infrastructure.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("TeacherId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -350,6 +356,10 @@ namespace StudentHelper.Infrastructure.Migrations
 
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("Status")
                         .IsRequired()

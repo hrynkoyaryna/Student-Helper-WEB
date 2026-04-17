@@ -1,54 +1,60 @@
 @model IEnumerable<StudentHelper.Domain.Entities.User>
 
 @{
-    ViewData["Title"] = "Студенти";
+    ViewData["Title"] = "Управління студентами";
 }
 
-<h2 class="mb-4">Студенти</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Список студентів</h2>
+    @* Кнопка додавання нового студента *@
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-lg"></i> Додати студента
+    </a>
+</div>
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 }
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-}
-
-<p>
-    <a asp-action="Create" class="btn btn-primary">Додати студента</a>
-</p>
-
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Логін</th>
-            <th>Email</th>
-            <th style="width: 220px;">Дії</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var student in Model)
-        {
-            <tr>
-                <td>@student.UserName</td>
-                <td>@student.Email</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@student.Id" class="btn btn-warning btn-sm">Редагувати</a>
-					<a asp-action="ChangePassword" asp-route-id="@student.Id" class="btn btn-info btn-sm">Змінити пароль</a>	
-
-
-                    <form asp-action="Delete" asp-route-id="@student.Id" method="post" style="display:inline;">
-                        @Html.AntiForgeryToken()
-                        <button type="submit"
-                                class="btn btn-danger btn-sm"
-                                onclick="return confirm('Ви впевнені, що хочете видалити цього студента?');">
-                            Видалити
-                        </button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Прізвище та ім'я</th>
+                    <th>Email / Логін</th>
+                    <th>Група</th>
+                    <th class="text-end">Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var student in Model)
+                {
+                    <tr>
+                        <td>@student.LastName @student.FirstName</td>
+                        <td>@student.Email</td>
+                        <td>@(student.Group?.Name ?? "Не призначено")</td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a asp-action="Edit" asp-route-id="@student.Id" class="btn btn-outline-warning btn-sm">
+                                    Редагувати
+                                </a>
+                                <a asp-action="ChangePassword" asp-route-id="@student.Id" class="btn btn-outline-info btn-sm">
+                                    Пароль
+                                </a>
+                                <form asp-action="Delete" asp-route-id="@student.Id" method="post" onsubmit="return confirm('Ви впевнені, що хочете видалити цього студента?');" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Видалити</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

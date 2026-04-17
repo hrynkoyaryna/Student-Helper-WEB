@@ -4,13 +4,11 @@ namespace StudentHelper.Web.Models.Settings;
 
 public class EditProfileViewModel
 {
-    [Required(ErrorMessage = "Ім'я є обов'язковим")]
-    public string FirstName { get; set; }
+    public string FirstName { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Прізвище є обов'язковим")]
-    public string LastName { get; set; }
+    public string LastName { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Email є обов'язковим")]
-    [EmailAddress(ErrorMessage = "Некоректний формат Email")]
-    public string Email { get; set; }
+    public string Email { get; set; } = string.Empty;
+
+    public int? GroupId { get; set; }
 }

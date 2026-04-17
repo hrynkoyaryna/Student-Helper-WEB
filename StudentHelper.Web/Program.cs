@@ -87,6 +87,17 @@ else
 
 var app = builder.Build();
 
+var currentEnv = app.Environment.EnvironmentName;
+var itemsPerPage = app.Configuration["ApplicationSettings:ItemsPerPage"];
+var smtpHost = app.Configuration["Smtp:Host"];
+
+Console.WriteLine("\n" + new string('=', 50));
+Console.WriteLine($">>> ПЕРЕВІРКА КОНФІГУРАЦІЇ");
+Console.WriteLine($">>> Поточне середовище: {currentEnv}");
+Console.WriteLine($">>> ItemsPerPage (з файлу): {itemsPerPage}");
+Console.WriteLine($">>> SMTP Host: {(string.IsNullOrEmpty(smtpHost) ? "ВИМКНЕНО (Console Mode)" : smtpHost)}");
+Console.WriteLine(new string('=', 50) + "\n");
+
 app.UseMiddleware<StudentHelper.Web.Middleware.GlobalExceptionHandlerMiddleware>();
 
 using (var scope = app.Services.CreateScope())
