@@ -8,4 +8,5 @@ public class Group
 
     public ICollection<User> Users { get; set; } = new List<User>();
     public ICollection<ScheduleLesson> ScheduleLessons { get; set; } = new List<ScheduleLesson>();
+    public ICollection<Exam> Exams { get; set; } = new List<Exam>();
 }

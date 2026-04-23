@@ -11,6 +11,7 @@ using StudentHelper.Domain.Entities;
 using StudentHelper.Infrastructure.Data;
 using StudentHelper.Infrastructure.Repositories;
 using StudentHelper.Infrastructure.Services;
+using StudentHelper.Web.Middleware;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -98,12 +99,13 @@ var itemsPerPage = app.Configuration["ApplicationSettings:ItemsPerPage"];
 var smtpHost = app.Configuration["Smtp:Host"];
 
 Console.WriteLine("\n" + new string('=', 50));
-Console.WriteLine($">>> œ≈–≈¬≤– ¿  ŒÕ‘≤√”–¿÷≤Ø");
-Console.WriteLine($">>> œÓÚÓ˜ÌÂ ÒÂÂ‰Ó‚Ë˘Â: {currentEnv}");
-Console.WriteLine($">>> ItemsPerPage (Á Ù‡ÈÎÛ): {itemsPerPage}");
-Console.WriteLine($">>> SMTP Host: {(string.IsNullOrEmpty(smtpHost) ? "¬»Ã Õ≈ÕŒ (Console Mode)" : smtpHost)}");
+Console.WriteLine($">>> ÔøΩÔøΩÔøΩÔøΩ¬≤ÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩ‘≤ÔøΩÔøΩÔøΩÔøΩ÷≤ÔøΩ");
+Console.WriteLine($">>> ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ: {currentEnv}");
+Console.WriteLine($">>> ItemsPerPage (ÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩ): {itemsPerPage}");
+Console.WriteLine($">>> SMTP Host: {(string.IsNullOrEmpty(smtpHost) ? "ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ (Console Mode)" : smtpHost)}");
 Console.WriteLine(new string('=', 50) + "\n");
 
+// –î–æ–¥–∞—î–º–æ middleware –¥–ª—è –æ–±—Ä–æ–±–∫–∏ –≥–ª–æ–±–∞–ª—å–Ω–∏—Ö –≤–∏–Ω—è—Ç–∫—ñ–≤
 app.UseMiddleware<StudentHelper.Web.Middleware.GlobalExceptionHandlerMiddleware>();
 
 using (var scope = app.Services.CreateScope())
@@ -134,6 +136,8 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+// –î–æ–¥–∞—î–º–æ middleware –¥–ª—è –ª–æ–≥—É–≤–∞–Ω–Ω—è –∑–∞–ø–∏—Ç—ñ–≤ (–ø–æ–≤–∏–Ω–µ–Ω –±—É—Ç–∏ –ø–µ—Ä–µ–¥ —ñ–Ω—à–∏–º–∏)
+app.UseRequestLogging();
 
 app.MapControllerRoute(
     name: "default",
