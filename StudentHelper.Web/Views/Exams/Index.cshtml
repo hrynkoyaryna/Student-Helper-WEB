@@ -7,15 +7,17 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 style="font-size: 32px; font-weight: 800; color: rgb(26, 26, 26);">📚 Екзамени</h1>
-        <a asp-action="Create" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px;">Додати екзамен</a>
+        <div>
+            @if (User.Identity != null && User.Identity.IsAuthenticated && !User.IsInRole("Admin"))
+            {
+                <a asp-action="Create" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px;">Додати екзамен</a>
+            }
+            @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                <a asp-action="CreateGroupExam" class="btn btn-success px-4 shadow-sm ms-2" style="border-radius: 8px;">Додати екзамен для групи</a>
+            }
+        </div>
     </div>
-
-    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-{
-    <a asp-controller="Exams" asp-action="Create" class="btn btn-primary">
-        Додати екзамен
-    </a>
-}
 
     <div class="bg-white rounded-4 shadow-sm p-4">
         <div class="d-flex flex-wrap gap-2 mb-4">
@@ -64,7 +66,13 @@
                         <div class="border rounded-4 p-4 shadow-sm bg-white hover-shadow transition">
                             <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center">
                                 <div>
-                                    <h4 class="mb-2 fw-bold text-dark">@exam.Subject</h4>
+                                    <h4 class="mb-2 fw-bold text-dark">
+                                        @exam.Subject
+                                        @if (exam.GroupId.HasValue)
+                                        {
+                                            <span class="badge bg-info ms-2">Групповий</span>
+                                        }
+                                    </h4>
                                     <div class="text-secondary mb-1">
                                         <span class="me-2"></span><strong>Дата:</strong> @exam.DateTime.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                                     </div>
@@ -75,8 +83,16 @@
 
                                 <div class="d-flex flex-wrap gap-2 justify-content-md-end">
                                     <a asp-action="Details" asp-route-id="@exam.Id" class="btn btn-outline-secondary btn-sm px-3">Деталі</a>
-                                    <a asp-action="Edit" asp-route-id="@exam.Id" class="btn btn-outline-primary btn-sm px-3">Редагувати</a>
-                                    <a asp-action="Delete" asp-route-id="@exam.Id" class="btn btn-outline-danger btn-sm px-3">Видалити</a>
+                                    @if (exam.GroupId == null)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@exam.Id" class="btn btn-outline-primary btn-sm px-3">Редагувати</a>
+                                        <a asp-action="Delete" asp-route-id="@exam.Id" class="btn btn-outline-danger btn-sm px-3">Видалити</a>
+                                    }
+                                    else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="EditGroupExam" asp-route-id="@exam.Id" class="btn btn-outline-primary btn-sm px-3">Редагувати</a>
+                                        <a asp-action="Delete" asp-route-id="@exam.Id" class="btn btn-outline-danger btn-sm px-3">Видалити</a>
+                                    }
                                 </div>
                             </div>
                         </div>

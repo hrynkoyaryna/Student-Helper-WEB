@@ -14,17 +14,20 @@ public class CalendarController : BaseController
     private readonly ICalendarService _calendarService;
     private readonly ITaskService _taskService;
     private readonly IExamsService _examsService;
+    private readonly IUserService _userService;
     private readonly IOptions<ApplicationSettings> _settings;
 
     public CalendarController(
         ICalendarService calendarService,
         ITaskService taskService,
         IExamsService examsService,
+        IUserService userService,
         IOptions<ApplicationSettings> settings)
     {
         _calendarService = calendarService;
         _taskService = taskService;
         _examsService = examsService;
+        _userService = userService;
         _settings = settings;
     }
 
@@ -105,6 +108,23 @@ public class CalendarController : BaseController
             Color = "#dc3545", // червоний для екзаменів
             Type = "Exam"
         }));
+
+        // Додаємо групові екзамени
+        var user = await _userService.GetUserByIdAsync(userId);
+        if (user?.GroupId.HasValue == true)
+        {
+            var groupExams = await _examsService.GetByGroupIdAsync(user.GroupId.Value);
+            events.AddRange(groupExams.Select(e => new CalendarEventViewModel
+            {
+                Id = e.Id,
+                Title = $"{e.Subject} - {e.TeacherName}",
+                Start = e.DateTime,
+                End = e.DateTime.AddHours(2),
+                Description = e.Description,
+                Color = "#dc3545", // червоний для екзаменів
+                Type = "Exam"
+            }));
+        }
 
         var model = new CalendarIndexViewModel
         {

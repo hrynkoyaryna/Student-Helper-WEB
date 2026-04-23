@@ -1,0 +1,63 @@
+@model StudentHelper.Web.Models.Exams.GroupExamCreateEditViewModel
+
+@{
+    ViewData["Title"] = "Редагувати екзамен для групи";
+}
+
+<div class="container mt-5">
+    <h1>Редагувати екзамен для групи</h1>
+
+    <form method="post" asp-action="EditGroupExam">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label class="form-label">Предмет</label>
+            <input asp-for="Subject" class="form-control" />
+            <span asp-validation-for="Subject" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Група <span class="text-danger">*</span></label>
+            <select asp-for="GroupId" class="form-select" disabled>
+                @foreach(var group in Model.Groups)
+                {
+                    <option value="@group.Id" selected="@(group.Id == Model.GroupId)">@group.Name</option>
+                }
+            </select>
+            <small class="text-muted">Групу змінити неможливо</small>
+            <input type="hidden" asp-for="GroupId" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Дата та час</label>
+            <input asp-for="DateTime" type="datetime-local" class="form-control" value="@(Model.DateTime.ToString("yyyy-MM-ddTHH:mm"))" />
+            <span asp-validation-for="DateTime" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Викладач (виберіть зі списку або введіть власноруч)</label>
+            <select asp-for="TeacherId" class="form-select mb-2">
+                <option value="">-- оберіть викладача --</option>
+                @foreach(var t in Model.Teachers)
+                {
+                    <option value="@t.Id" selected="@(t.Id == Model.TeacherId ? "selected" : null)">@t.FullName</option>
+                }
+            </select>
+            <input asp-for="TeacherName" class="form-control" placeholder="Введіть ПІБ викладача" />
+            <span asp-validation-for="TeacherId" class="text-danger"></span>
+            <span asp-validation-for="TeacherName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Опис (необов'язково)</label>
+            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Додайте додаткову інформацію про екзамен"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Зберегти зміни</button>
+        <a asp-action="Index" class="btn btn-link">Скасувати</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace StudentHelper.Web.Controllers;
@@ -8,8 +9,11 @@ namespace StudentHelper.Web.Controllers;
 /// Базовий контролер з загальною функціональністю для всіх [Authorize] контролерів.
 /// </summary>
 [Authorize]
-public class BaseController : Controller
+public abstract class BaseController : Controller
 {
+    protected const string SuccessMessageKey = "SuccessMessage";
+    protected const string ErrorMessageKey = "ErrorMessage";
+
     /// <summary>
     /// Отримує ID поточного авторизованого користувача з Claims.
     /// </summary>
@@ -17,7 +21,7 @@ public class BaseController : Controller
     /// <exception cref="UnauthorizedAccessException">Якщо користувач не аутентифікований.</exception>
     protected int GetCurrentUserId()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         if (string.IsNullOrWhiteSpace(userId))
         {
@@ -25,5 +29,23 @@ public class BaseController : Controller
         }
 
         return int.Parse(userId);
+    }
+
+    protected void SetSuccessMessage(string message)
+    {
+        this.TempData[SuccessMessageKey] = message;
+    }
+
+    protected void SetErrorMessage(string message)
+    {
+        this.TempData[ErrorMessageKey] = message;
+    }
+
+    protected void AddIdentityErrors(IdentityResult result)
+    {
+        foreach (var error in result.Errors)
+        {
+            this.ModelState.AddModelError(string.Empty, error.Description);
+        }
     }
 }

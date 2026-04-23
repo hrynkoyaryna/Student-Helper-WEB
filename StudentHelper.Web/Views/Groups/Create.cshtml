@@ -1,0 +1,31 @@
+﻿@model StudentHelper.Application.DTOs.Groups.CreateGroupDto
+
+@{
+    ViewData["Title"] = "Створення групи";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Створення групи</h2>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Назва групи</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Зберегти</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Назад</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
