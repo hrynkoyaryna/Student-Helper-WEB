@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -6,16 +7,6 @@ using Microsoft.AspNetCore.Http.Extensions;
 
 namespace StudentHelper.Web.Middleware;
 
-/// <summary>
-/// Middleware для логування інформації про кожен HTTP запит.
-/// Логує:
-/// - Метод запиту (GET, POST, PUT, DELETE і т.д.)
-/// - URL адресу
-/// - IP адресу клієнта
-/// - Хедери запиту
-/// - Тіло запиту (для методів що передають дані)
-/// - ID поточного користувача (якщо залогінений)
-/// </summary>
 public class RequestLoggingMiddleware
 {
     private readonly RequestDelegate _next;
@@ -29,20 +20,17 @@ public class RequestLoggingMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        // Логуємо вхідний запит
         await LogRequestAsync(context);
 
-        // Логуємо відповідь
         var originalBodyStream = context.Response.Body;
+        var stopwatch = Stopwatch.StartNew();
 
         using (var responseBody = new MemoryStream())
         {
             context.Response.Body = responseBody;
-
             await _next(context);
-
-            await LogResponseAsync(context, responseBody);
-
+            stopwatch.Stop();
+            await LogResponseAsync(context, responseBody, stopwatch.ElapsedMilliseconds);
             await responseBody.CopyToAsync(originalBodyStream);
         }
     }
@@ -50,17 +38,12 @@ public class RequestLoggingMiddleware
     private async Task LogRequestAsync(HttpContext context)
     {
         var request = context.Request;
-
-        // Отримуємо дані про запит
         var method = request.Method;
         var url = request.GetEncodedPathAndQuery();
         var ipAddress = GetClientIpAddress(context);
         var userId = GetCurrentUserId(context);
-
-        // Читаємо тіло запиту (якщо є)
         var body = await ReadRequestBodyAsync(request);
 
-        // Логуємо основну інформацію
         _logger.LogInformation(
             "═══════════════════════════════════════════════════════════════\n" +
             "📨 ВХІДНИЙ ЗАПИТ\n" +
@@ -72,65 +55,52 @@ public class RequestLoggingMiddleware
             "═══════════════════════════════════════════════════════════════",
             method, url, ipAddress, userId ?? "Не залогінений");
 
-        // Логуємо хедери
         if (request.Headers.Count > 0)
         {
             var headers = new StringBuilder();
             headers.AppendLine("\n📋 ХЕДЕРИ:");
             foreach (var header in request.Headers)
             {
-                // Приховуємо чутливі дані (Authorization, Cookie, Password)
                 var value = ShouldMaskHeader(header.Key) ? "***MASKED***" : string.Join(", ", header.Value);
                 headers.AppendLine($"   • {header.Key}: {value}");
             }
             _logger.LogInformation(headers.ToString());
         }
 
-        // Логуємо тіло запиту (якщо є)
         if (!string.IsNullOrWhiteSpace(body))
         {
             var maskedBody = MaskSensitiveData(body, request.ContentType);
-            _logger.LogInformation(
-                "📦 ТІЛО ЗАПИТУ:\n{Body}",
-                maskedBody);
+            _logger.LogInformation("📦 ТІЛО ЗАПИТУ:\n{Body}", maskedBody);
         }
 
         _logger.LogInformation("═══════════════════════════════════════════════════════════════\n");
     }
 
-    private async Task LogResponseAsync(HttpContext context, MemoryStream responseBody)
+    private async Task LogResponseAsync(HttpContext context, MemoryStream responseBody, long elapsedMs)
     {
         var response = context.Response;
-
-        // Отримуємо дані про відповідь
         var statusCode = response.StatusCode;
         var body = await ReadResponseBodyAsync(responseBody);
 
-        // Логуємо основну інформацію
         _logger.LogInformation(
             "═══════════════════════════════════════════════════════════════\n" +
             "📤 ВИХІДНА ВІДПОВІДЬ\n" +
             "═══════════════════════════════════════════════════════════════\n" +
             "🔹 Код статусу: {StatusCode}\n" +
+            "⏱ Час виконання: {ElapsedMs} мс\n" +
             "═══════════════════════════════════════════════════════════════",
-            statusCode);
+            statusCode, elapsedMs);
 
         _logger.LogInformation("═══════════════════════════════════════════════════════════════\n");
     }
 
     private async Task<string> ReadRequestBodyAsync(HttpRequest request)
     {
-        // Якщо метод GET або HEAD, немає сенсу читати тіло
         if (request.Method == "GET" || request.Method == "HEAD" || request.Method == "DELETE")
-        {
             return string.Empty;
-        }
 
-        // Перевіряємо чи можна прочитати тіло
         if (!request.Body.CanSeek)
-        {
             request.EnableBuffering();
-        }
 
         request.Body.Position = 0;
         var body = await new StreamReader(request.Body, Encoding.UTF8).ReadToEndAsync();
@@ -150,48 +120,34 @@ public class RequestLoggingMiddleware
 
     private string GetClientIpAddress(HttpContext context)
     {
-        // Спочатку перевіряємо заголовок X-Forwarded-For (для proxies)
         if (context.Request.Headers.TryGetValue("X-Forwarded-For", out var forwardedFor))
         {
             var addresses = forwardedFor.ToString().Split(',');
             if (addresses.Length > 0 && !string.IsNullOrWhiteSpace(addresses[0]))
-            {
                 return addresses[0].Trim();
-            }
         }
 
-        // Потім перевіряємо X-Real-IP
         if (context.Request.Headers.TryGetValue("X-Real-IP", out var realIp))
         {
             if (!string.IsNullOrWhiteSpace(realIp.ToString()))
-            {
                 return realIp.ToString()!;
-            }
         }
 
-        // Як останній варіант, використовуємо RemoteIpAddress
         return context.Connection.RemoteIpAddress?.ToString() ?? "Невідома IP";
     }
 
     private string? GetCurrentUserId(HttpContext context)
     {
-        // Отримуємо ID користувача з Claims
         var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier);
         return userIdClaim?.Value;
     }
 
     private bool ShouldMaskHeader(string headerName)
     {
-        // Список чутливих хедерів, які не слід логувати в повному вигляді
         var sensitiveHeaders = new[]
         {
-            "authorization",
-            "cookie",
-            "x-csrf-token",
-            "password",
-            "x-api-key",
-            "x-auth-token",
-            "x-access-token"
+            "authorization", "cookie", "x-csrf-token", "password",
+            "x-api-key", "x-auth-token", "x-access-token"
         };
 
         return sensitiveHeaders.Contains(headerName.ToLower());
@@ -204,42 +160,21 @@ public class RequestLoggingMiddleware
 
         try
         {
-            // Чутливі поля, які потрібно приховувати
             var sensitiveFields = new[]
             {
-                "password",
-                "confirmpassword",
-                "currentpassword",
-                "newpassword",
-                "__requestverificationtoken",
-                "token",
-                "apikey",
-                "secretkey",
-                "creditcard",
-                "cardnumber",
-                "ssn",
-                "socialSecurityNumber",
-                "cvv",
-                "pincode"
+                "password", "confirmpassword", "currentpassword", "newpassword",
+                "__requestverificationtoken", "token", "apikey", "secretkey",
+                "creditcard", "cardnumber", "ssn", "socialSecurityNumber", "cvv", "pincode"
             };
 
-            // Якщо це JSON
             if (contentType?.Contains("application/json") == true)
-            {
                 return MaskJsonFields(body, sensitiveFields);
-            }
 
-            // Якщо це URL-encoded form data
             if (contentType?.Contains("application/x-www-form-urlencoded") == true)
-            {
                 return MaskFormEncodedFields(body, sensitiveFields);
-            }
 
-            // Якщо це multipart/form-data
             if (contentType?.Contains("multipart/form-data") == true)
-            {
                 return MaskMultipartFormData(body, sensitiveFields);
-            }
 
             return body;
         }
@@ -257,21 +192,17 @@ public class RequestLoggingMiddleware
 
             foreach (var field in sensitiveFields)
             {
-                // Шукаємо паттерни типу "password": "value" або "password":"value"
                 var patterns = new[]
                 {
-                    $@"""{field}""\s*:\s*""[^""]*""",      // "password": "value"
-                    $@"""{field}""\s*:\s*'[^']*'",          // "password": 'value'
-                    $@"""{field}""\s*:\s*[^,}}]*"           // "password": value (number, bool)
+                    $@"""{field}""\s*:\s*""[^""]*""",
+                    $@"""{field}""\s*:\s*'[^']*'",
+                    $@"""{field}""\s*:\s*[^,}}]*"
                 };
 
                 foreach (var pattern in patterns)
                 {
-                    maskedJson = Regex.Replace(
-                        maskedJson,
-                        pattern,
-                        $"\"{field}\": \"***MASKED***\"",
-                        RegexOptions.IgnoreCase);
+                    maskedJson = Regex.Replace(maskedJson, pattern,
+                        $"\"{field}\": \"***MASKED***\"", RegexOptions.IgnoreCase);
                 }
             }
 
@@ -296,16 +227,11 @@ public class RequestLoggingMiddleware
                 if (keyValue.Length == 2)
                 {
                     var key = HttpUtility.UrlDecode(keyValue[0]);
-                    var value = HttpUtility.UrlDecode(keyValue[1]);
 
                     if (sensitiveFields.Any(f => f.Equals(key, StringComparison.OrdinalIgnoreCase)))
-                    {
                         maskedPairs.Add($"{key}=***MASKED***");
-                    }
                     else
-                    {
                         maskedPairs.Add(pair);
-                    }
                 }
                 else
                 {
@@ -323,20 +249,15 @@ public class RequestLoggingMiddleware
 
     private string MaskMultipartFormData(string formData, string[] sensitiveFields)
     {
-        // Multipart form data - приховуємо чутливі поля
         try
         {
             var result = formData;
 
             foreach (var field in sensitiveFields)
             {
-                // Шукаємо паттерни типу name="password" та value="xxx"
                 var pattern = $@"name=""{field}""\s*\r?\n\r?\n([^\r\n-]*)";
-                result = Regex.Replace(
-                    result,
-                    pattern,
-                    $"name=\"{field}\"\r\n\r\n***MASKED***",
-                    RegexOptions.IgnoreCase);
+                result = Regex.Replace(result, pattern,
+                    $"name=\"{field}\"\r\n\r\n***MASKED***", RegexOptions.IgnoreCase);
             }
 
             return result;
@@ -348,14 +269,8 @@ public class RequestLoggingMiddleware
     }
 }
 
-/// <summary>
-/// Extension методи для реєстрації middleware
-/// </summary>
 public static class RequestLoggingMiddlewareExtensions
 {
-    /// <summary>
-    /// Добавляє middleware для логування запитів до конвеєра обробки
-    /// </summary>
     public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder)
     {
         return builder.UseMiddleware<RequestLoggingMiddleware>();
