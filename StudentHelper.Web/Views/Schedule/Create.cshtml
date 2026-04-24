@@ -1,0 +1,87 @@
+@model StudentHelper.Web.Models.Schedule.CreateScheduleViewModel
+
+@{
+    ViewData["Title"] = "Додати розклад";
+}
+
+<div class="card">
+    <div class="card-body">
+        <h3>Додати подію в розклад групи</h3>
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="GroupId" class="form-label">Група</label>
+                    <select asp-for="GroupId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Groups, "Id", "Name", Model.GroupId))">
+                        <option value="">-- Виберіть групу --</option>
+                    </select>
+                    <span asp-validation-for="GroupId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Предмет</label>
+                    <select asp-for="SubjectId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Subjects, "Id", "Title", Model.SubjectId))">
+                        <option value="">-- Виберіть предмет --</option>
+                    </select>
+                    <div class="form-text">Або введіть назву предмету нижче</div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label asp-for="TeacherId" class="form-label">Викладач (необов'язково)</label>
+                    <select asp-for="TeacherId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Teachers, "Id", "FullName", Model.TeacherId))">
+                        <option value="">-- Виберіть викладача --</option>
+                    </select>
+                    <div class="form-text">Або введіть ім'я викладача нижче</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Date" class="form-label">Дата</label>
+                    <input asp-for="Date" class="form-control" type="date" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label asp-for="StartTime" class="form-label">Початок</label>
+                    <input asp-for="StartTime" class="form-control" type="time" />
+                    <span asp-validation-for="StartTime" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label asp-for="EndTime" class="form-label">Кінець</label>
+                    <input asp-for="EndTime" class="form-control" type="time" />
+                    <span asp-validation-for="EndTime" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SubjectTitle" class="form-label">Назва предмету (якщо не в списку)</label>
+                <input asp-for="SubjectTitle" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TeacherName" class="form-label">Ім'я викладача (якщо не в списку)</label>
+                <input asp-for="TeacherName" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Place" class="form-label">Аудиторія/Місце</label>
+                <input asp-for="Place" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Type" class="form-label">Тип</label>
+                <input asp-for="Type" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Recurrence" class="form-label">Повторення (опційно)</label>
+                <input asp-for="Recurrence" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Створити</button>
+            <a asp-action="Index" asp-controller="Students" class="btn btn-secondary ms-2">Назад</a>
+        </form>
+    </div>
+</div>
