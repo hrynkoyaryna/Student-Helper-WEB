@@ -80,6 +80,10 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<INotesService, NotesService>();
 builder.Services.AddScoped<IExamsService, ExamsService>();
 
+// Add memory cache and cacheable lookup service
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<ICacheableLookupService, StudentHelper.Web.Services.CacheableLookupServiceWeb>();
+
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 var smtpOptions = builder.Configuration.GetSection("Smtp").Get<SmtpOptions>();
 

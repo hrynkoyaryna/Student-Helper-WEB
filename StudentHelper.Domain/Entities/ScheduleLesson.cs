@@ -22,4 +22,7 @@ public class ScheduleLesson
 
     public int GroupId { get; set; }
     public Group Group { get; set; } = null!;
+
+    // Optional place/location for the lesson
+    public string? Place { get; set; }
 }
