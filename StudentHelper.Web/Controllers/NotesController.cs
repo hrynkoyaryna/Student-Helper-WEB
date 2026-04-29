@@ -4,6 +4,7 @@ using StudentHelper.Application.Interfaces;
 using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Web.Models.Notes;
+using StudentHelper.Web.Filters;
 
 namespace StudentHelper.Web.Controllers;
 
@@ -49,6 +50,7 @@ public class NotesController : BaseController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RateLimitingFilter(maxRequests: 3, timeWindowSeconds: 60)]
     public async Task<IActionResult> Create(NoteCreateEditViewModel model)
     {
         if (!ModelState.IsValid)

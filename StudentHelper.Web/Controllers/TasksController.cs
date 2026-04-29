@@ -4,6 +4,7 @@ using StudentHelper.Application.Interfaces;
 using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Web.Models.Tasks;
+using StudentHelper.Web.Filters;
 
 namespace StudentHelper.Web.Controllers;
 
@@ -87,6 +88,7 @@ public class TasksController : BaseController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RateLimitingFilter(maxRequests: 40, timeWindowSeconds: 60)]
     public async Task<IActionResult> Create(TaskCreateEditViewModel model)
     {
         if (!ModelState.IsValid)
@@ -203,6 +205,7 @@ public class TasksController : BaseController
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [RateLimitingFilter(maxRequests: 20, timeWindowSeconds: 60)]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var deleted = await _taskService.DeleteTaskAsync(id, GetCurrentUserId());

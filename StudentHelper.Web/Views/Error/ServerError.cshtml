@@ -1,0 +1,34 @@
+@{
+    ViewData["Title"] = "Внутрішня помилка сервера";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="alert alert-danger" role="alert">
+                <h1 class="alert-heading">
+                    <i class="fas fa-exclamation-circle"></i> 500 - Внутрішня помилка сервера
+                </h1>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">На сервері сталася непередбачена помилка</h5>
+                    <p class="card-text">
+                        Нам дуже шкода, але щось пішло не так на нашому сервері.
+                        Будь ласка, спробуйте пізніше або зв'яжіться з адміністратором.
+                    </p>
+
+                    <div class="text-center mt-4">
+                        <a href="javascript:history.back()" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i> Повернутись назад
+                        </a>
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                            <i class="fas fa-home"></i> На головну
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
