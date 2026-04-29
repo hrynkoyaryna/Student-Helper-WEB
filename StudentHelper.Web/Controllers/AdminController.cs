@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StudentHelper.Application.Interfaces;
 using StudentHelper.Domain.Entities;
 
 namespace StudentHelper.Web.Controllers
@@ -10,10 +11,12 @@ namespace StudentHelper.Web.Controllers
     public class AdminController : Controller
     {
         private readonly UserManager<User> _userManager;
+        private readonly IAccountService _accountService;
 
-        public AdminController(UserManager<User> userManager)
+        public AdminController(UserManager<User> userManager, IAccountService accountService)
         {
             _userManager = userManager;
+            _accountService = accountService;
         }
 
         public async Task<IActionResult> FixStudentRoles()
@@ -31,7 +34,42 @@ namespace StudentHelper.Web.Controllers
                 }
             }
 
-            TempData["SuccessMessage"] = "Ролі User успішно додані всім студентам.";
+            TempData["SuccessMessage"] = "пїЅпїЅпїЅ User пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.";
+            return RedirectToAction("Index", "Students");
+        }
+
+        // ========== STUDENT BLOCKING ENDPOINTS ==========
+        [HttpPost]
+        public async Task<IActionResult> BlockStudent(int id)
+        {
+            var result = await _accountService.BlockStudentAsync(id);
+            
+            if (result.Success)
+            {
+                TempData["SuccessMessage"] = result.Message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result.Message;
+            }
+
+            return RedirectToAction("Index", "Students");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UnblockStudent(int id)
+        {
+            var result = await _accountService.UnblockStudentAsync(id);
+
+            if (result.Success)
+            {
+                TempData["SuccessMessage"] = result.Message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result.Message;
+            }
+
             return RedirectToAction("Index", "Students");
         }
     }

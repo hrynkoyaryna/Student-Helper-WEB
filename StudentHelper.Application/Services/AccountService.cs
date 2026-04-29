@@ -52,4 +52,63 @@ public class AccountService : IAccountService
         _logger.LogWarning("Failed to change password for user {UserId}: {Errors}", user.Id, errors);
         return Result.Fail(errors);
     }
+
+    // ========== BLOCK/UNBLOCK STUDENT USE-CASE ==========
+    public async Task<Result> BlockStudentAsync(int userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
+        {
+            _logger.LogWarning("Attempt to block non-existent user with id {UserId}", userId);
+            return Result.Fail("Користувач не знайдений");
+        }
+
+        if (user.IsBlocked)
+        {
+            _logger.LogInformation("User {UserId} is already blocked", userId);
+            return Result.Fail("Користувач вже заблокований");
+        }
+
+        user.IsBlocked = true;
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+            _logger.LogInformation("User {UserId} has been blocked by admin", userId);
+            return "Студент успішно заблокований";
+        }
+
+        var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+        _logger.LogError("Failed to block user {UserId}: {Errors}", userId, errors);
+        return Result.Fail("Не вдалося заблокувати студента: " + errors);
+    }
+
+    public async Task<Result> UnblockStudentAsync(int userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
+        {
+            _logger.LogWarning("Attempt to unblock non-existent user with id {UserId}", userId);
+            return Result.Fail("Користувач не знайдений");
+        }
+
+        if (!user.IsBlocked)
+        {
+            _logger.LogInformation("User {UserId} is not blocked", userId);
+            return Result.Fail("Користувач не заблокований");
+        }
+
+        user.IsBlocked = false;
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+            _logger.LogInformation("User {UserId} has been unblocked by admin", userId);
+            return "Студент успішно розблокований";
+        }
+
+        var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+        _logger.LogError("Failed to unblock user {UserId}: {Errors}", userId, errors);
+        return Result.Fail("Не вдалося розблокувати студента: " + errors);
+    }
 }

@@ -33,6 +33,13 @@ public class AuthService : IAuthService
             return Result<int?>.Fail("Невірний email або пароль");
         }
 
+        // Check if user is blocked
+        if (user.IsBlocked)
+        {
+            _logger.LogWarning("Blocked user attempted to login: {Email}", email);
+            return Result<int?>.Fail("Ваш акаунт заблокований. Будь ласка, зв'яжіться з адміністратором");
+        }
+
         var passwordValid = await _userManager.CheckPasswordAsync(user, password);
         if (!passwordValid)
         {
