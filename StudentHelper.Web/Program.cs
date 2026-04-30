@@ -61,6 +61,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<INotesService, NotesService>();
 builder.Services.AddScoped<IExamsService, ExamsService>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 var smtpOptions = builder.Configuration.GetSection("Smtp").Get<SmtpOptions>();

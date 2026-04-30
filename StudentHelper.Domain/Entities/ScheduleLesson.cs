@@ -1,25 +1,50 @@
-namespace StudentHelper.Domain.Entities;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public class ScheduleLesson
+namespace StudentHelper.Domain.Entities
 {
-    public int Id { get; set; }
+    public class ScheduleLesson
+    {
+        [Key]
+        public int Id { get; set; }
 
-    public DateTime Date { get; set; }
+        [Required]
+        public int GroupId { get; set; }
 
-    public string Type { get; set; } = string.Empty;
+        [ForeignKey("GroupId")]
+        public virtual Group Group { get; set; } = null!;
 
-    public string Recurrence { get; set; } = string.Empty;
+        [Required]
+        public DateTime Date { get; set; } // Тепер властивість оголошена коректно
 
-    public TimeSpan StartTime { get; set; }
+        [Required]
+        public int SubjectId { get; set; }
 
-    public TimeSpan EndTime { get; set; }
+        [ForeignKey("SubjectId")]
+        public virtual Subject Subject { get; set; } = null!;
 
-    public int SubjectId { get; set; }
-    public Subject Subject { get; set; } = null!;
+        [Required]
+        public int TeacherId { get; set; }
 
-    public int TeacherId { get; set; }
-    public Teacher Teacher { get; set; } = null!;
+        [ForeignKey("TeacherId")]
+        public virtual Teacher Teacher { get; set; } = null!;
 
-    public int GroupId { get; set; }
-    public Group Group { get; set; } = null!;
+        [Required]
+        public DayOfWeek DayOfWeek { get; set; }
+
+        [Required]
+        public TimeSpan StartTime { get; set; }
+
+        [Required]
+        public TimeSpan EndTime { get; set; }
+
+        [StringLength(50)]
+        public string? Room { get; set; }
+
+        [StringLength(100)]
+        public string? LessonType { get; set; }
+
+        public bool? IsEvenWeek { get; set; }
+    }
 }

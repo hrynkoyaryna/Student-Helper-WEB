@@ -1,16 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace StudentHelper.Web.Models.Settings;
-
-public class EditProfileViewModel
+namespace StudentHelper.Web.Models.Settings
 {
-    [Required(ErrorMessage = "Ім'я є обов'язковим")]
-    public string FirstName { get; set; }
-
-    [Required(ErrorMessage = "Прізвище є обов'язковим")]
-    public string LastName { get; set; }
-
-    [Required(ErrorMessage = "Email є обов'язковим")]
-    [EmailAddress(ErrorMessage = "Некоректний формат Email")]
-    public string Email { get; set; }
+    public class EditProfileViewModel
+    {
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+    }
 }

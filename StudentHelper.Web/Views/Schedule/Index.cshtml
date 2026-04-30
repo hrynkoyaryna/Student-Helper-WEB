@@ -1,0 +1,107 @@
+@model IEnumerable<StudentHelper.Domain.Entities.ScheduleLesson>
+
+@{
+    ViewData["Title"] = "Розклад занять";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 style="font-weight: 700;">Розклад занять</h2>
+        
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="d-flex gap-2">
+                <!-- Кнопка створення групи -->
+                <a asp-action="CreateGroup" 
+                   class="btn btn-outline-secondary shadow-sm" 
+                   style="border-radius: 10px; font-weight: 600; padding: 8px 20px;">
+                    <i class="bi bi-people"></i> Створити групу
+                </a>
+
+                <!-- Кнопка додавання графіка -->
+                <a asp-action="Create" asp-route-groupId="@ViewBag.SelectedGroupId" 
+                   class="btn text-white shadow-sm" 
+                   style="background-color: var(--primary-color, rgb(91, 200, 216)); border-radius: 10px; font-weight: 600; padding: 8px 20px;">
+                    <i class="bi bi-plus-lg"></i> Додати графік
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert" style="border-radius: 12px;">
+            <i class="bi bi-check-circle me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
+        <div class="card-body p-4">
+            <form asp-action="Index" method="get" class="row align-items-center">
+                <div class="col-md-4">
+                    <label for="groupId" class="form-label" style="font-weight: 600;">Оберіть групу:</label>
+                    <select name="groupId" id="groupId" class="form-select shadow-none" 
+                            asp-items="ViewBag.Groups" onchange="this.form.submit()" style="border-radius: 8px;">
+                        <option value="">-- Оберіть групу --</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (ViewBag.SelectedGroupId != null)
+    {
+        <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead style="background-color: #f8f9fa;">
+                        <tr>
+                            <th class="px-4 py-3">День</th>
+                            <th class="px-4 py-3">Час</th>
+                            <th class="px-4 py-3">Предмет</th>
+                            <th class="px-4 py-3">Викладач</th>
+                            <th class="px-4 py-3">Тип</th>
+                            <th class="px-4 py-3">Аудиторія</th>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <th class="px-4 py-3 text-center">Дії</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="px-4 py-3">@item.DayOfWeek</td>
+                                <td class="px-4 py-3">@item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")</td>
+                                <td class="px-4 py-3" style="font-weight: 600;">@item.Subject?.Title</td>
+                                <td class="px-4 py-3">@item.Teacher?.FullName</td>
+                                <td class="px-4 py-3"><span class="badge bg-light text-dark border">@item.LessonType</span></td>
+                                <td class="px-4 py-3">@item.Room</td>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <td class="px-4 py-3 text-center">
+                                        <form asp-action="Delete" asp-route-id="@item.Id" asp-route-groupId="@item.GroupId" 
+                                              method="post" onsubmit="return confirm('Ви впевнені, що хочете видалити це заняття?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" style="border-radius: 8px;">
+                                                <i class="bi bi-trash"></i> Видалити
+                                            </button>
+                                        </form>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info border-0 shadow-sm" style="border-radius: 12px;">
+            <i class="bi bi-info-circle me-2"></i> Будь ласка, оберіть групу зі списку вище, щоб переглянути актуальний розклад.
+        </div>
+    }
+</div>

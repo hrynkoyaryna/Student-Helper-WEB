@@ -1,20 +1,26 @@
-@{
-    ViewData["Title"] = "Адмін-панель";
-}
+@model IEnumerable<StudentHelper.Domain.Entities.Group>
+<div class="container mt-5">
+    <div class="card shadow-sm p-4" style="border-radius: 15px;">
+        <h3 class="mb-4">РљРµСЂСѓРІР°РЅРЅСЏ РіСЂСѓРїР°РјРё</h3>
+        
+        <!-- Р¤РѕСЂРјР° СЃС‚РІРѕСЂРµРЅРЅСЏ -->
+        <form asp-action="CreateGroup" method="post" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="name" class="form-control" placeholder="РќР°Р·РІР° РіСЂСѓРїРё (РЅР°РїСЂ. Р“СЂ-33)" required>
+                <button class="btn text-white" type="submit" style="background-color: rgb(91, 200, 216);">РЎС‚РІРѕСЂРёС‚Рё</button>
+            </div>
+        </form>
 
-<div class="container mt-4">
-    <h2>Адмін-панель</h2>
-    <p>Вітаю в адмінській частині Student Helper.</p>
-
-    <div class="list-group mt-3">
-        <a asp-controller="Admin" asp-action="Users" class="list-group-item list-group-item-action">
-            Користувачі
-        </a>
-        <a asp-controller="Admin" asp-action="Groups" class="list-group-item list-group-item-action">
-            Групи
-        </a>
-        <a asp-controller="Admin" asp-action="Teachers" class="list-group-item list-group-item-action">
-            Викладачі
-        </a>
+        <!-- РЎРїРёСЃРѕРє С–СЃРЅСѓСЋС‡РёС… РіСЂСѓРї -->
+        <table class="table">
+            <thead>
+                <tr><th>ID</th><th>РќР°Р·РІР°</th></tr>
+            </thead>
+            <tbody>
+                @foreach(var g in Model) {
+                    <tr><td>@g.Id</td><td>@g.Name</td></tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>

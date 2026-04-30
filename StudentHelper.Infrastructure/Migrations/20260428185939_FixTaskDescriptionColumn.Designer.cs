@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StudentHelper.Infrastructure.Data;
@@ -11,9 +12,11 @@ using StudentHelper.Infrastructure.Data;
 namespace StudentHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(StudentHelperDbContext))]
-    partial class StudentHelperDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260428185939_FixTaskDescriptionColumn")]
+    partial class FixTaskDescriptionColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -292,25 +295,15 @@ namespace StudentHelper.Infrastructure.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("integer");
-
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("interval");
 
                     b.Property<int>("GroupId")
                         .HasColumnType("integer");
 
-                    b.Property<bool?>("IsEvenWeek")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("LessonType")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Room")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<string>("Recurrence")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<TimeSpan>("StartTime")
                         .HasColumnType("interval");
@@ -320,6 +313,10 @@ namespace StudentHelper.Infrastructure.Migrations
 
                     b.Property<int>("TeacherId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
