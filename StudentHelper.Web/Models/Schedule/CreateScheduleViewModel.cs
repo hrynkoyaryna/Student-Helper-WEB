@@ -28,7 +28,12 @@ public class CreateScheduleViewModel
 
     public string? Type { get; set; }
 
+    // Legacy free-form recurrence kept for compatibility
     public string? Recurrence { get; set; }
+
+    // Structured recurrence
+    public string? RecurrenceType { get; set; }
+    public DateOnly? RecurrenceUntil { get; set; }
 
     public string? Place { get; set; }
 

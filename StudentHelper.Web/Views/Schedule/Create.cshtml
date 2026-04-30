@@ -1,12 +1,29 @@
 @model StudentHelper.Web.Models.Schedule.CreateScheduleViewModel
 
 @{
-    ViewData["Title"] = "Додати розклад";
+    ViewData["Title"] = "Створити пару";
 }
 
 <div class="card">
     <div class="card-body">
-        <h3>Додати подію в розклад групи</h3>
+        <h3>Створити пару для групи</h3>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            <script>
+                // Redirect to calendar after short delay as a fallback if server did not redirect
+                setTimeout(function() { window.location = '@Url.Action("Index", "Calendar")'; }, 1200);
+            </script>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+        }
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+
         <form asp-action="Create" method="post">
             @Html.AntiForgeryToken()
             <div class="row">
@@ -23,11 +40,11 @@
                     <select asp-for="SubjectId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Subjects, "Id", "Title", Model.SubjectId))">
                         <option value="">-- Виберіть предмет --</option>
                     </select>
-                    <div class="form-text">Або введіть назву предмету нижче</div>
+                    <div class="form-text">Або введіть нову назву предмета нижче</div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <label asp-for="TeacherId" class="form-label">Викладач (необов'язково)</label>
+                    <label asp-for="TeacherId" class="form-label">Викладач (за списком)</label>
                     <select asp-for="TeacherId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Teachers, "Id", "FullName", Model.TeacherId))">
                         <option value="">-- Виберіть викладача --</option>
                     </select>
@@ -56,32 +73,51 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="SubjectTitle" class="form-label">Назва предмету (якщо не в списку)</label>
+                <label asp-for="SubjectTitle" class="form-label">Назва предмета (якщо відсутній у списку)</label>
                 <input asp-for="SubjectTitle" class="form-control" />
             </div>
 
             <div class="mb-3">
-                <label asp-for="TeacherName" class="form-label">Ім'я викладача (якщо не в списку)</label>
+                <label asp-for="TeacherName" class="form-label">Ім'я викладача (якщо відсутній у списку)</label>
                 <input asp-for="TeacherName" class="form-control" />
             </div>
 
             <div class="mb-3">
-                <label asp-for="Place" class="form-label">Аудиторія/Місце</label>
+                <label asp-for="Place" class="form-label">Аудиторія / місце</label>
                 <input asp-for="Place" class="form-control" />
             </div>
 
             <div class="mb-3">
-                <label asp-for="Type" class="form-label">Тип</label>
+                <label asp-for="Type" class="form-label">Тип (Lecture / Lab)</label>
                 <input asp-for="Type" class="form-control" />
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Recurrence" class="form-label">Повторення (опційно)</label>
-                <input asp-for="Recurrence" class="form-control" />
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="RecurrenceType" class="form-label">Повторюваність</label>
+                    <select asp-for="RecurrenceType" class="form-select">
+                        <option value="None">Не повторювати</option>
+                        <option value="Daily">Щодня</option>
+                        <option value="Weekly">Щотижня</option>
+                        <option value="BiWeekly">Через тиждень</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="RecurrenceUntil" class="form-label">Повторювати до (включно)</label>
+                    <input asp-for="RecurrenceUntil" class="form-control" type="date" />
+                </div>
             </div>
 
+            <input type="hidden" asp-for="Recurrence" />
+
             <button type="submit" class="btn btn-primary">Створити</button>
-            <a asp-action="Index" asp-controller="Students" class="btn btn-secondary ms-2">Назад</a>
+            <a asp-action="Index" asp-controller="Calendar" class="btn btn-secondary ms-2">Назад</a>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

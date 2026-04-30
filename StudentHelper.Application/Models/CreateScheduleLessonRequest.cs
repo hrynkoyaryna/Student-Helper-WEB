@@ -23,7 +23,14 @@ public class CreateScheduleLessonRequest
 
     public string Type { get; set; } = "Lecture";
 
+    // Legacy free-form recurrence string (kept for compatibility)
     public string Recurrence { get; set; } = string.Empty;
+
+    // New structured recurrence: None, Daily, Weekly, BiWeekly
+    public string? RecurrenceType { get; set; }
+
+    // Optional end date for recurrence
+    public DateOnly? RecurrenceUntil { get; set; }
 
     public string? Place { get; set; }
 }

@@ -1,0 +1,103 @@
+@using System.Globalization
+@model StudentHelper.Web.Models.Schedule.GroupScheduleViewModel
+
+@{
+    ViewData["Title"] = "Розклад групи";
+    var ukCulture = new CultureInfo("uk-UA");
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="fw-bold mb-0" style="font-size: 2.2rem;">Розклад групи</h1>
+        <div class="d-flex align-items-center gap-2">
+            <form method="get" asp-action="Index" class="d-flex gap-2 align-items-center">
+                <select name="groupId" class="form-select">
+                    <option value="">-- Виберіть групу --</option>
+                    @foreach (var g in Model.Groups)
+                    {
+                        if (g.Id == Model.SelectedGroupId)
+                        {
+                            <option value="@g.Id" selected="selected">@g.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@g.Id">@g.Name</option>
+                        }
+                    }
+                </select>
+                <input type="date" name="weekStartDate" value="@Model.WeekStartDate.ToString("yyyy-MM-dd")" class="form-control" />
+                <button type="submit" class="btn btn-primary">Показати</button>
+            </form>
+
+            <a asp-controller="Schedule" asp-action="Create" class="btn btn-success ms-2">Додати пару</a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <p class="text-muted mb-3">Тиждень: @Model.WeekStartDate.ToString("dd.MM.yyyy") — @Model.WeekEndDate.ToString("dd.MM.yyyy")</p>
+
+    <div class="calendar-scroll-container border rounded-4 bg-white shadow-sm" style="overflow-x: auto;">
+        <table class="table table-bordered mb-0" style="min-width: 1200px; table-layout: fixed; border-collapse: collapse;">
+            <thead>
+                <tr class="text-center align-middle bg-light">
+                    <th style="width: 80px;" class="text-muted fw-normal border-0 py-3">Час</th>
+                    @foreach (var day in Model.Days)
+                    {
+                        <th class="border-start border-bottom-0 py-3" style="width: 200px;">
+                            <div class="fw-bold text-capitalize @(day == DateOnly.FromDateTime(DateTime.Today) ? "text-info" : "")">
+                                @day.ToString("dddd", ukCulture)
+                            </div>
+                            <div class="small text-muted fw-normal">@day.ToString("dd.MM")</div>
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var slot in Model.TimeSlots)
+                {
+                    <tr>
+                        <td class="text-center align-middle fw-bold text-muted small border-end bg-light" style="height: 80px;">
+                            @slot.ToString("HH:mm")
+                        </td>
+                        @foreach (var day in Model.Days)
+                        {
+                            <td class="p-0 position-relative day-cell border-start" style="vertical-align: top; height: 80px;">
+                                @{
+                                    var eventsInSlot = Model.Events.Where(e => 
+                                        DateOnly.FromDateTime(e.StartAt) == day && 
+                                        TimeOnly.FromDateTime(e.StartAt).Hour == slot.Hour).ToList();
+                                }
+
+                                @if (eventsInSlot.Any())
+                                {
+                                    <div class="d-flex flex-column gap-1 p-2" style="width: 100%; height: 100%; overflow-y: auto;">
+                                        @foreach (var ev in eventsInSlot)
+                                        {
+                                            <div class="badge rounded-2 text-white" style="background-color: @ev.Color;">
+                                                <div class="small fw-bold">@ev.Title</div>
+                                                <div style="opacity:0.9; font-size: 0.8rem;">@ev.StartAt.ToString("HH:mm") - @ev.EndAt.ToString("HH:mm")</div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .calendar-scroll-container { background: white; }
+    .badge { padding: 8px; display: block; }
+</style>

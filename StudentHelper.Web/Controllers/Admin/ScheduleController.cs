@@ -6,10 +6,11 @@ using StudentHelper.Application.Models;
 using StudentHelper.Web.Models.Schedule;
 using StudentHelper.Infrastructure.Data;
 using StudentHelper.Domain.Entities;
+using StudentHelper.Web.Models.Calendar;
 
 namespace StudentHelper.Web.Controllers.Admin;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class ScheduleController : Controller
 {
     private readonly IScheduleService _scheduleService;
@@ -23,7 +24,60 @@ public class ScheduleController : Controller
         _lookupService = lookupService;
     }
 
-    [Authorize(Roles = "Admin")]
+    [HttpGet]
+    public async Task<IActionResult> Index(int? groupId, string? weekStartDate)
+    {
+        var groups = await _lookupService.GetAllGroupsAsync();
+        var selectedGroupId = groupId ?? (groups.FirstOrDefault()?.Id ?? 0);
+
+        DateOnly startDate;
+        if (!string.IsNullOrWhiteSpace(weekStartDate) && DateOnly.TryParse(weekStartDate, out var parsed))
+        {
+            startDate = GetStartOfWeek(parsed);
+        }
+        else
+        {
+            startDate = GetStartOfWeek(DateOnly.FromDateTime(DateTime.Today));
+        }
+
+        var days = Enumerable.Range(0, 7).Select(i => startDate.AddDays(i)).ToList();
+        var hours = Enumerable.Range(8, 16).Select(h => new TimeOnly(h, 0)).ToList();
+
+        var events = new List<CalendarEventViewModel>();
+
+        if (selectedGroupId > 0)
+        {
+            var lessons = await _scheduleService.GetScheduleByGroupIdAsync(selectedGroupId);
+            events.AddRange(lessons.Select(l => new CalendarEventViewModel
+            {
+                Id = l.Id,
+                Title = $"{l.Subject.Title} - {l.Teacher.FullName}",
+                Start = l.Date.Add(l.StartTime),
+                End = l.Date.Add(l.EndTime),
+                Color = l.Type == "Lecture" ? "#0d6efd" : "#6610f2",
+                Type = "Lesson"
+            }));
+        }
+
+        var model = new GroupScheduleViewModel
+        {
+            Groups = groups,
+            SelectedGroupId = selectedGroupId,
+            WeekStartDate = startDate,
+            Days = days,
+            TimeSlots = hours,
+            Events = events
+        };
+
+        return View(model);
+    }
+
+    private static DateOnly GetStartOfWeek(DateOnly date)
+    {
+        int daysOffset = date.DayOfWeek == DayOfWeek.Sunday ? -6 : -(int)(date.DayOfWeek - DayOfWeek.Monday);
+        return date.AddDays(daysOffset);
+    }
+
     [HttpGet]
     public async Task<IActionResult> Create()
     {
@@ -40,7 +94,6 @@ public class ScheduleController : Controller
         return View(model);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateScheduleViewModel model)
@@ -60,10 +113,6 @@ public class ScheduleController : Controller
             _context.Subjects.Add(subj);
             await _context.SaveChangesAsync();
             subjectId = subj.Id;
-
-            // Invalidate subjects cache
-            // Remove cache entry so next calls reload
-            // Using IMemoryCache via lookup service implementation; easiest way is to clear by key via context requests
         }
 
         var teacherId = model.TeacherId;
@@ -87,6 +136,8 @@ public class ScheduleController : Controller
             GroupId = model.GroupId,
             Type = model.Type ?? "Lecture",
             Recurrence = model.Recurrence ?? string.Empty,
+            RecurrenceType = model.RecurrenceType,
+            RecurrenceUntil = model.RecurrenceUntil,
             Place = model.Place
         };
 
@@ -94,6 +145,7 @@ public class ScheduleController : Controller
         if (!result.Success)
         {
             ModelState.AddModelError(string.Empty, result.Message);
+            TempData["ErrorMessage"] = result.Message;
             model.Groups = await _lookupService.GetAllGroupsAsync();
             model.Subjects = await _lookupService.GetAllSubjectsAsync();
             model.Teachers = await _lookupService.GetAllTeachersAsync();
@@ -101,7 +153,8 @@ public class ScheduleController : Controller
         }
 
         TempData["SuccessMessage"] = result.Message;
-        return RedirectToAction("Index", "Calendar");
+        // Redirect to admin schedule index for the group so admin can see the created lessons
+        return RedirectToAction("Index", new { groupId = model.GroupId, weekStartDate = model.Date.ToString("yyyy-MM-dd") });
     }
 
     [HttpGet]

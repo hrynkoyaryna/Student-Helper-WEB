@@ -72,6 +72,10 @@ builder.Services.AddScoped<IExamsRepository, ExamsRepository>();
 builder.Services.AddScoped<INotesRepository, NotesRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 
+// Register schedule repository and service
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IScheduleService, StudentHelper.Infrastructure.Services.ScheduleService>();
+
 builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
