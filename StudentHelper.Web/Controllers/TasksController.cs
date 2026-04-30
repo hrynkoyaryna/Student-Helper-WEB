@@ -41,11 +41,12 @@ public class TasksController : BaseController
 
         var subjectsResult = await _taskService.GetUserSubjectsAsync(userId);
         var tasksResult = await _taskService.GetUserTasksAsync(userId, status, subject, searchTerm, page);
-        
+        var dueSoonResult = await _taskService.GetTasksDueSoonAsync(userId, DateTime.UtcNow);
+
         // Отримуємо загальну кількість завдань для розрахунку пагінації
         var totalCount = await _taskService.GetUserTasksCountAsync(userId, status, subject, searchTerm);
 
-        if (!subjectsResult.Success || !tasksResult.Success)
+        if (!subjectsResult.Success || !tasksResult.Success || !dueSoonResult.Success)
         {
             return BadRequest("Не вдалося завантажити список завдань.");
         }
@@ -66,6 +67,7 @@ public class TasksController : BaseController
             SearchTerm = searchTerm,
             Subjects = subjectsResult.Value ?? new List<string>(),
             Tasks = tasksResult.Value ?? new List<TaskItem>(),
+            DueSoonTasks = dueSoonResult.Value ?? new List<TaskItem>(),
             CurrentPage = page,
             TotalItems = totalCount,
             ItemsPerPage = itemsPerPage,
@@ -85,6 +87,8 @@ public class TasksController : BaseController
 
         return View(model);
     }
+
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
