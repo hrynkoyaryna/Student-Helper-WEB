@@ -132,6 +132,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Home" asp-action="AboutApp">Про додаток</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="UserRequests" asp-action="Index">Звернення</a>
+                            </li>
 
                             @if (User.IsInRole("Admin"))
                             {
@@ -146,6 +149,11 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Schedule" asp-action="Create">Створити розклад</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="UserRequests" asp-action="AdminIndex">
+                                        Звернення користувачів
+                                    </a>
                                 </li>
                             }
                         }

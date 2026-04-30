@@ -124,14 +124,13 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<StudentHelperDbContext>();
         context.Database.Migrate();
 
-        await DbSeeder.SeedAdminAsync(services);
+        // await DbSeeder.SeedAdminAsync(services);
     }
     catch (Exception ex)
     {
         Console.WriteLine($">>> Error: {ex.Message}");
     }
 }
-
 app.UseSerilogRequestLogging();
 
 if (!app.Environment.IsDevelopment())
@@ -200,3 +199,4 @@ public class ConsoleEmailSender : IEmailSender
         return Task.CompletedTask;
     }
 }
+

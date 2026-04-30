@@ -1,0 +1,57 @@
+﻿@model StudentHelper.Web.Models.UserRequests.CreateUserRequestViewModel
+
+@{
+    ViewData["Title"] = "Створити звернення";
+}
+
+<h2>Створити звернення</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Category" class="form-label">Категорія</label>
+        <select asp-for="Category" class="form-select">
+            <option value="">Оберіть категорію</option>
+            <option value="Розклад">Розклад</option>
+            <option value="Завдання">Завдання</option>
+            <option value="Екзамени">Екзамени</option>
+            <option value="Нотатки">Нотатки</option>
+            <option value="Профіль / акаунт">Профіль / акаунт</option>
+            <option value="Технічна проблема">Технічна проблема</option>
+            <option value="Пропозиція">Пропозиція</option>
+            <option value="Інше">Інше</option>
+        </select>
+        <span asp-validation-for="Category" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="RequestType" class="form-label">Тип звернення</label>
+        <select asp-for="RequestType" class="form-select">
+            <option value="">Оберіть тип</option>
+            <option value="Помилка">Помилка</option>
+            <option value="Пропозиція">Пропозиція</option>
+            <option value="Запит на зміну">Запит на зміну</option>
+            <option value="Скарга">Скарга</option>
+            <option value="Інше">Інше</option>
+        </select>
+        <span asp-validation-for="RequestType" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Subject" class="form-label">Тема</label>
+        <input asp-for="Subject" class="form-control" />
+        <span asp-validation-for="Subject" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Опис</label>
+        <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Надіслати</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

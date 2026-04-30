@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StudentHelper.Infrastructure.Data;
@@ -11,9 +12,11 @@ using StudentHelper.Infrastructure.Data;
 namespace StudentHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(StudentHelperDbContext))]
-    partial class StudentHelperDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260430204733_AddUserRequests")]
+    partial class AddUserRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

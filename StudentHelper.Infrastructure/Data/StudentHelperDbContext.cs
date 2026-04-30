@@ -20,6 +20,7 @@ public class StudentHelperDbContext : IdentityDbContext<User, IdentityRole<int>,
     public DbSet<Exam> Exams => Set<Exam>();
     public DbSet<PersonalEvent> PersonalEvents => Set<PersonalEvent>();
     public DbSet<Note> Notes => Set<Note>();
+    public DbSet<UserRequest> UserRequests => Set<UserRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

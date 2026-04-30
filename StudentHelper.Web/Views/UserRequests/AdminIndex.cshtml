@@ -1,0 +1,46 @@
+﻿@model List<StudentHelper.Domain.Entities.UserRequest>
+
+@{
+    ViewData["Title"] = "Звернення користувачів";
+}
+
+<h2>Звернення користувачів</h2>
+
+@if (!Model.Any())
+{
+    <p>Звернень ще немає.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Користувач</th>
+                <th>Категорія</th>
+                <th>Тип</th>
+                <th>Тема</th>
+                <th>Статус</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var request in Model)
+            {
+                <tr>
+                    <td>@request.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@request.User?.UserName</td>
+                    <td>@request.Category</td>
+                    <td>@request.RequestType</td>
+                    <td>@request.Subject</td>
+                    <td>@request.Status</td>
+                    <td>
+                        <a asp-action="EditStatus" asp-route-id="@request.Id" class="btn btn-sm btn-outline-primary">
+                            Обробити
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

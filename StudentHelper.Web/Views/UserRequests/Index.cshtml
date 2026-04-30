@@ -1,0 +1,49 @@
+﻿@using StudentHelper.Domain.Entities
+@model IEnumerable<UserRequest>
+
+@{
+    ViewData["Title"] = "Мої звернення";
+}
+
+<h2>Мої звернення</h2>
+
+<a asp-controller="UserRequests" asp-action="Create" class="btn btn-primary mb-3">
+    Створити звернення
+</a>
+
+@if (Model == null || !Model.Any())
+{
+    <p>У вас ще немає звернень.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Категорія</th>
+                <th>Тип</th>
+                <th>Тема</th>
+                <th>Статус</th>
+                <th>Відповідь адміна</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var adminResponse = string.IsNullOrWhiteSpace(item.AdminResponse)
+                ? "-"
+                : item.AdminResponse;
+
+                <tr>
+                    <td>@item.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@item.Category</td>
+                    <td>@item.RequestType</td>
+                    <td>@item.Subject</td>
+                    <td>@item.Status</td>
+                    <td>@adminResponse</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

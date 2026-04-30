@@ -51,7 +51,7 @@ public class StudentsControllerGroupTests
             UserName = "student1",
             Email = "student1@test.com",
             Password = "Password123!",
-            FirstName = "Ім'я",
+            FirstName = "Імя",
             LastName = "Прізвище",
             GroupName = "GroupX",
         };
@@ -83,7 +83,7 @@ public class StudentsControllerGroupTests
             Id = 1,
             UserName = "student1",
             Email = "student1@test.com",
-            FirstName = "Ім'я",
+            FirstName = "Імя",
             LastName = "Прізвище",
         };
 
@@ -116,7 +116,7 @@ public class StudentsControllerGroupTests
             Id = 1,
             UserName = "student1",
             Email = "student1@test.com",
-            FirstName = "Ім'я",
+            FirstName = "Імя",
             LastName = "Прізвище",
             GroupName = "GroupY",
         };
