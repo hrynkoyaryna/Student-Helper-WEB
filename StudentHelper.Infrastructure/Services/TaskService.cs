@@ -44,7 +44,7 @@ public class TaskService : ITaskService
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             var minSearchChars = _settings.Value.MinSearchCharacters;
-            
+
             if (searchTerm.Length >= minSearchChars)
             {
                 query = query.Where(t =>
@@ -76,7 +76,7 @@ public class TaskService : ITaskService
 
         return tasks;
     }
-    
+
     public async Task<int> GetUserTasksCountAsync(int userId, string? status = null, string? subject = null, string? searchTerm = null)
     {
         IQueryable<TaskItem> query = _context.Tasks
@@ -95,7 +95,7 @@ public class TaskService : ITaskService
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             var minSearchChars = _settings.Value.MinSearchCharacters;
-            
+
             if (searchTerm.Length >= minSearchChars)
             {
                 query = query.Where(t =>
@@ -130,7 +130,7 @@ public class TaskService : ITaskService
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             var minSearchChars = _settings.Value.MinSearchCharacters;
-            
+
             if (searchTerm.Length >= minSearchChars)
             {
                 query = query.Where(t =>
@@ -174,7 +174,7 @@ public class TaskService : ITaskService
     public async Task<Result> CreateTaskAsync(TaskItem task)
     {
         var maxLength = _settings.Value.MaxTaskDescriptionLength;
-        
+
         if (!string.IsNullOrEmpty(task.Description) && task.Description.Length > maxLength)
         {
             _logger.LogWarning("Task description too long for user {UserId}", task.UserId);
@@ -194,7 +194,7 @@ public class TaskService : ITaskService
     public async Task<Result> UpdateTaskAsync(TaskItem task, int userId)
     {
         var maxLength = _settings.Value.MaxTaskDescriptionLength;
-        
+
         if (!string.IsNullOrEmpty(task.Description) && task.Description.Length > maxLength)
         {
             _logger.LogWarning("Task description too long for user {UserId}", userId);
@@ -260,6 +260,23 @@ public class TaskService : ITaskService
 
         _logger.LogInformation("Changed task {TaskId} status to {Status}", id, task.Status);
         return "Статус завдання оновлено";
+    }
+
+    public async Task<Result<List<TaskItem>>> GetTasksDueSoonAsync(int userId, DateTime currentTimeUtc)
+    {
+        currentTimeUtc = NormalizeToUtc(currentTimeUtc);
+        var dueUntilUtc = currentTimeUtc.AddHours(24);
+
+        var tasks = await _context.Tasks
+            .Where(t =>
+                t.UserId == userId &&
+                t.Status != "Виконане" &&
+                t.Deadline > currentTimeUtc &&
+                t.Deadline <= dueUntilUtc)
+            .OrderBy(t => t.Deadline)
+            .ToListAsync();
+
+        return tasks;
     }
 
     public async Task<Result<List<string>>> GetUserSubjectsAsync(int userId)

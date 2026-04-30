@@ -22,13 +22,14 @@ public class TaskServiceTests
 
     private static TaskService CreateService(StudentHelperDbContext context)
     {
-        var settings = Options.Create(new ApplicationSettings 
-        { 
+        var settings = Options.Create(new ApplicationSettings
+        {
             MinSearchCharacters = 3,
             ItemsPerPage = 10,
             CalendarStartHour = 8,
             MaxTaskDescriptionLength = 500
         });
+
         return new TaskService(context, new NullLogger<TaskService>(), settings);
     }
 
@@ -335,8 +336,6 @@ public class TaskServiceTests
 
         await context.SaveChangesAsync();
 
-        // Note: ILike is PostgreSQL-specific, tested in integration tests
-        // This test verifies data is loaded correctly
         var service = CreateService(context);
         var result = await service.GetUserTasksAsync(1);
 
@@ -373,7 +372,6 @@ public class TaskServiceTests
 
         await context.SaveChangesAsync();
 
-        // Note: ILike is PostgreSQL-specific, tested in integration tests
         var service = CreateService(context);
         var result = await service.GetUserTasksAsync(1);
 
@@ -410,7 +408,6 @@ public class TaskServiceTests
 
         await context.SaveChangesAsync();
 
-        // Note: ILike is PostgreSQL-specific, so we filter by status only in unit test
         var service = CreateService(context);
         var result = await service.GetUserTasksAsync(1, status: "Поточне");
 
@@ -464,5 +461,81 @@ public class TaskServiceTests
         Assert.Equal("Поточне завдання Web", result.Value[0].Title);
         Assert.Equal("Поточне", result.Value[0].Status);
         Assert.Equal("Web", result.Value[0].Subject);
+    }
+
+    [Fact]
+    public async Task GetTasksDueSoonAsync_Should_Return_Only_NotCompleted_User_Tasks_Within_24_Hours()
+    {
+        using var context = CreateContext();
+
+        var now = new DateTime(2026, 4, 30, 10, 0, 0, DateTimeKind.Utc);
+
+        context.Tasks.AddRange(
+            new TaskItem
+            {
+                Title = "Завдання через 3 години",
+                Deadline = now.AddHours(3),
+                Status = "Поточне",
+                Subject = "Програмування",
+                UserId = 1,
+            },
+            new TaskItem
+            {
+                Title = "Завдання рівно через 24 години",
+                Deadline = now.AddHours(24),
+                Status = "Поточне",
+                Subject = "Бази даних",
+                UserId = 1,
+            },
+            new TaskItem
+            {
+                Title = "Завдання через 25 годин",
+                Deadline = now.AddHours(25),
+                Status = "Поточне",
+                Subject = "Математика",
+                UserId = 1,
+            },
+            new TaskItem
+            {
+                Title = "Виконане завдання через 2 години",
+                Deadline = now.AddHours(2),
+                Status = "Виконане",
+                Subject = "Web",
+                UserId = 1,
+            },
+            new TaskItem
+            {
+                Title = "Чуже завдання через 1 годину",
+                Deadline = now.AddHours(1),
+                Status = "Поточне",
+                Subject = "Web",
+                UserId = 2,
+            },
+            new TaskItem
+            {
+                Title = "Прострочене завдання",
+                Deadline = now.AddHours(-1),
+                Status = "Прострочене",
+                Subject = "Алгоритми",
+                UserId = 1,
+            });
+
+        await context.SaveChangesAsync();
+
+        var service = CreateService(context);
+
+        var result = await service.GetTasksDueSoonAsync(1, now);
+
+        Assert.True(result.Success);
+        Assert.NotNull(result.Value);
+        Assert.Equal(2, result.Value.Count);
+
+        Assert.Equal("Завдання через 3 години", result.Value[0].Title);
+        Assert.Equal("Завдання рівно через 24 години", result.Value[1].Title);
+
+        Assert.DoesNotContain(result.Value, t => t.Status == "Виконане");
+        Assert.DoesNotContain(result.Value, t => t.UserId != 1);
+        Assert.DoesNotContain(result.Value, t => t.Deadline <= now);
+        Assert.DoesNotContain(result.Value, t => t.Deadline > now.AddHours(24));
     }
 }

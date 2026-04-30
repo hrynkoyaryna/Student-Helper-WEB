@@ -34,5 +34,7 @@ public interface ITaskService
 
     Task<Result> ChangeStatusAsync(int id, int userId, string status);
 
+    Task<Result<List<TaskItem>>> GetTasksDueSoonAsync(int userId, DateTime currentTimeUtc);
+
     Task<Result<List<string>>> GetUserSubjectsAsync(int userId);
 }
