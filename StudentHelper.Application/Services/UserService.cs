@@ -41,7 +41,7 @@ public class UserService : IUserService
         try 
         {
             await _scheduleRepository.CreateGroupAsync(group); 
-            return Result.Ok();
+            return Result.Ok("Групу успішно створено!");
         }
         catch (Exception ex)
         {

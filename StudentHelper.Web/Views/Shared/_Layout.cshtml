@@ -132,13 +132,13 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Schedule" asp-action="Index">Розклад</a>
                             </li>
                             @if (User.IsInRole("Admin"))
-    {
-        <li class="nav-item">
-            <a class="nav-link text-primary" asp-controller="Schedule" asp-action="CreateGroup" style="font-weight: 600;">
-                <i class="bi bi-people-fill"></i> Група
-            </a>
-        </li>
-    }
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-primary" asp-controller="Admin" asp-action="Index" style="font-weight: 600;">
+                                        <i class="bi bi-people-fill"></i> Група
+                                    </a>
+                                </li>
+                            }
                         }
                     </ul>
                     @if (User.Identity?.IsAuthenticated == true)

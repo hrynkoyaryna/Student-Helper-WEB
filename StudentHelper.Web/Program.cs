@@ -1,3 +1,4 @@
+using System.Net.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StudentHelper.Application.Interfaces;
@@ -74,6 +75,31 @@ else
 {
     builder.Services.AddSingleton<StudentHelper.Application.Interfaces.IEmailSender, ConsoleEmailSender>();
 }
+
+// Typed HttpClient registration for external quotes API (quotable.io)
+var quotesApiSection = builder.Configuration.GetSection("ExternalApis:QuotesApi");
+var quotesBase = quotesApiSection.GetValue<string>("BaseUrl") ?? "https://api.quotable.io";
+
+builder.Services.AddHttpClient<IQuoteClient, QuoteClient>(client =>
+{
+    client.BaseAddress = new Uri(quotesBase);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.Timeout = TimeSpan.FromSeconds(10);
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    // In development allow bypassing invalid certs (useful for local proxies / corporate SSL inspection)
+    if (builder.Environment.IsDevelopment())
+    {
+        return new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        };
+    }
+
+    return new HttpClientHandler();
+})
+.SetHandlerLifetime(TimeSpan.FromMinutes(5));
 
 var app = builder.Build();
 

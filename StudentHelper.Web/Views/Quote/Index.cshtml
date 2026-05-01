@@ -1,0 +1,23 @@
+@model StudentHelper.Application.Models.QuoteResponse
+
+@{
+    ViewData["Title"] = "Цитата дня";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            @if (Model != null)
+            {
+                <blockquote class="blockquote">
+                    <p>@Model.Content</p>
+                    <footer class="blockquote-footer">@Model.Author</footer>
+                </blockquote>
+            }
+            else
+            {
+                <p>Не вдалося завантажити цитату.</p>
+            }
+        </div>
+    </div>
+</div>
