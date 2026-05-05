@@ -9,6 +9,19 @@ public interface ITaskService
         int userId,
         string? status = null,
         string? subject = null,
+        string? searchTerm = null,
+        int pageNumber = 1);
+
+    Task<Result<List<TaskItem>>> GetAllUserTasksAsync(
+        int userId,
+        string? status = null,
+        string? subject = null,
+        string? searchTerm = null);
+
+    Task<int> GetUserTasksCountAsync(
+        int userId,
+        string? status = null,
+        string? subject = null,
         string? searchTerm = null);
 
     Task<Result<TaskItem>> GetTaskByIdAsync(int id, int userId);
@@ -20,6 +33,8 @@ public interface ITaskService
     Task<Result> DeleteTaskAsync(int id, int userId);
 
     Task<Result> ChangeStatusAsync(int id, int userId, string status);
+
+    Task<Result<List<TaskItem>>> GetTasksDueSoonAsync(int userId, DateTime currentTimeUtc);
 
     Task<Result<List<string>>> GetUserSubjectsAsync(int userId);
 }

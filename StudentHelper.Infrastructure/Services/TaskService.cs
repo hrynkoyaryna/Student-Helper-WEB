@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
@@ -11,14 +12,103 @@ public class TaskService : ITaskService
 {
     private readonly StudentHelperDbContext _context;
     private readonly ILogger<TaskService> _logger;
+    private readonly IOptions<ApplicationSettings> _settings;
 
-    public TaskService(StudentHelperDbContext context, ILogger<TaskService> logger)
+    public TaskService(StudentHelperDbContext context, ILogger<TaskService> logger, IOptions<ApplicationSettings> settings)
     {
         _context = context;
         _logger = logger;
+        _settings = settings;
     }
 
     public async Task<Result<List<TaskItem>>> GetUserTasksAsync(
+        int userId,
+        string? status = null,
+        string? subject = null,
+        string? searchTerm = null,
+        int pageNumber = 1)
+    {
+        IQueryable<TaskItem> query = _context.Tasks
+            .Where(t => t.UserId == userId);
+
+        if (!string.IsNullOrWhiteSpace(status))
+        {
+            query = query.Where(t => t.Status == status);
+        }
+
+        if (!string.IsNullOrWhiteSpace(subject))
+        {
+            query = query.Where(t => t.Subject == subject);
+        }
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var minSearchChars = _settings.Value.MinSearchCharacters;
+
+            if (searchTerm.Length >= minSearchChars)
+            {
+                query = query.Where(t =>
+                    EF.Functions.ILike(t.Title, $"%{searchTerm}%") ||
+                    EF.Functions.ILike(t.Description!, $"%{searchTerm}%") ||
+                    EF.Functions.ILike(t.Subject!, $"%{searchTerm}%"));
+            }
+            else
+            {
+                _logger.LogWarning("Search query '{SearchTerm}' is too short. Minimum: {MinChars}", searchTerm, minSearchChars);
+            }
+        }
+
+        var itemsPerPage = _settings.Value.ItemsPerPage;
+        var skipCount = (pageNumber - 1) * itemsPerPage;
+
+        var tasks = await query
+            .OrderBy(t => t.Deadline)
+            .Skip(skipCount)
+            .Take(itemsPerPage)
+            .ToListAsync();
+
+        foreach (var task in tasks)
+        {
+            UpdateOverdueStatusIfNeeded(task);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return tasks;
+    }
+
+    public async Task<int> GetUserTasksCountAsync(int userId, string? status = null, string? subject = null, string? searchTerm = null)
+    {
+        IQueryable<TaskItem> query = _context.Tasks
+            .Where(t => t.UserId == userId);
+
+        if (!string.IsNullOrWhiteSpace(status))
+        {
+            query = query.Where(t => t.Status == status);
+        }
+
+        if (!string.IsNullOrWhiteSpace(subject))
+        {
+            query = query.Where(t => t.Subject == subject);
+        }
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var minSearchChars = _settings.Value.MinSearchCharacters;
+
+            if (searchTerm.Length >= minSearchChars)
+            {
+                query = query.Where(t =>
+                    EF.Functions.ILike(t.Title, $"%{searchTerm}%") ||
+                    EF.Functions.ILike(t.Description!, $"%{searchTerm}%") ||
+                    EF.Functions.ILike(t.Subject!, $"%{searchTerm}%"));
+            }
+        }
+
+        return await query.CountAsync();
+    }
+
+    public async Task<Result<List<TaskItem>>> GetAllUserTasksAsync(
         int userId,
         string? status = null,
         string? subject = null,
@@ -39,10 +129,15 @@ public class TaskService : ITaskService
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            query = query.Where(t =>
-                EF.Functions.ILike(t.Title, $"%{searchTerm}%") ||
-                EF.Functions.ILike(t.Description!, $"%{searchTerm}%") ||
-                EF.Functions.ILike(t.Subject!, $"%{searchTerm}%"));
+            var minSearchChars = _settings.Value.MinSearchCharacters;
+
+            if (searchTerm.Length >= minSearchChars)
+            {
+                query = query.Where(t =>
+                    EF.Functions.ILike(t.Title, $"%{searchTerm}%") ||
+                    EF.Functions.ILike(t.Description!, $"%{searchTerm}%") ||
+                    EF.Functions.ILike(t.Subject!, $"%{searchTerm}%"));
+            }
         }
 
         var tasks = await query
@@ -78,6 +173,14 @@ public class TaskService : ITaskService
 
     public async Task<Result> CreateTaskAsync(TaskItem task)
     {
+        var maxLength = _settings.Value.MaxTaskDescriptionLength;
+
+        if (!string.IsNullOrEmpty(task.Description) && task.Description.Length > maxLength)
+        {
+            _logger.LogWarning("Task description too long for user {UserId}", task.UserId);
+            return Result.Fail($"Опис не може перевищувати {maxLength} символів");
+        }
+
         task.Deadline = NormalizeToUtc(task.Deadline);
         UpdateOverdueStatusIfNeeded(task);
 
@@ -90,6 +193,14 @@ public class TaskService : ITaskService
 
     public async Task<Result> UpdateTaskAsync(TaskItem task, int userId)
     {
+        var maxLength = _settings.Value.MaxTaskDescriptionLength;
+
+        if (!string.IsNullOrEmpty(task.Description) && task.Description.Length > maxLength)
+        {
+            _logger.LogWarning("Task description too long for user {UserId}", userId);
+            return Result.Fail($"Опис не може перевищувати {maxLength} символів");
+        }
+
         var existingTask = await _context.Tasks
             .FirstOrDefaultAsync(t => t.Id == task.Id && t.UserId == userId);
 
@@ -149,6 +260,23 @@ public class TaskService : ITaskService
 
         _logger.LogInformation("Changed task {TaskId} status to {Status}", id, task.Status);
         return "Статус завдання оновлено";
+    }
+
+    public async Task<Result<List<TaskItem>>> GetTasksDueSoonAsync(int userId, DateTime currentTimeUtc)
+    {
+        currentTimeUtc = NormalizeToUtc(currentTimeUtc);
+        var dueUntilUtc = currentTimeUtc.AddHours(24);
+
+        var tasks = await _context.Tasks
+            .Where(t =>
+                t.UserId == userId &&
+                t.Status != "Виконане" &&
+                t.Deadline > currentTimeUtc &&
+                t.Deadline <= dueUntilUtc)
+            .OrderBy(t => t.Deadline)
+            .ToListAsync();
+
+        return tasks;
     }
 
     public async Task<Result<List<string>>> GetUserSubjectsAsync(int userId)

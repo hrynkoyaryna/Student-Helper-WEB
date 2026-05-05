@@ -12,8 +12,8 @@ using StudentHelper.Infrastructure.Data;
 namespace StudentHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(StudentHelperDbContext))]
-    [Migration("20260326173028_TotalReset")]
-    partial class TotalReset
+    [Migration("20260421113013_AddMissingGroupId")]
+    partial class AddMissingGroupId
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -180,7 +180,13 @@ namespace StudentHelper.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DateTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("GroupId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Subject")
                         .IsRequired()
@@ -189,7 +195,12 @@ namespace StudentHelper.Infrastructure.Migrations
                     b.Property<int>("TeacherId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("TeacherId");
 
@@ -250,15 +261,19 @@ namespace StudentHelper.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("EndAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("StartAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -283,7 +298,7 @@ namespace StudentHelper.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("interval");
@@ -345,7 +360,11 @@ namespace StudentHelper.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Deadline")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -522,11 +541,17 @@ namespace StudentHelper.Infrastructure.Migrations
 
             modelBuilder.Entity("StudentHelper.Domain.Entities.Exam", b =>
                 {
+                    b.HasOne("StudentHelper.Domain.Entities.Group", "Group")
+                        .WithMany("Exams")
+                        .HasForeignKey("GroupId");
+
                     b.HasOne("StudentHelper.Domain.Entities.Teacher", "Teacher")
                         .WithMany("Exams")
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Group");
 
                     b.Navigation("Teacher");
                 });
@@ -603,6 +628,8 @@ namespace StudentHelper.Infrastructure.Migrations
 
             modelBuilder.Entity("StudentHelper.Domain.Entities.Group", b =>
                 {
+                    b.Navigation("Exams");
+
                     b.Navigation("ScheduleLessons");
 
                     b.Navigation("Users");

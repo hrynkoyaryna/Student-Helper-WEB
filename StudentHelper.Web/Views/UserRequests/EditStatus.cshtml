@@ -1,0 +1,32 @@
+﻿@model StudentHelper.Web.Models.UserRequests.UpdateUserRequestStatusViewModel
+
+@{
+    ViewData["Title"] = "Обробити звернення";
+}
+
+<h2>Обробити звернення</h2>
+
+<form asp-action="EditStatus" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label">Статус</label>
+        <select asp-for="Status" class="form-select">
+            <option value="Нове">Нове</option>
+            <option value="Переглянуто">Переглянуто</option>
+            <option value="В роботі">В роботі</option>
+            <option value="Прийнято">Прийнято</option>
+            <option value="Відхилено">Відхилено</option>
+            <option value="Закрито">Закрито</option>
+        </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="AdminResponse" class="form-label">Відповідь адміністратора</label>
+        <textarea asp-for="AdminResponse" class="form-control" rows="5"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Зберегти</button>
+    <a asp-action="AdminIndex" class="btn btn-secondary">Назад</a>
+</form>

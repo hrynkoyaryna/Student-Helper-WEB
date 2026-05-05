@@ -1,0 +1,58 @@
+@model StudentHelper.Web.Models.Students.EditStudentViewModel
+
+@{
+    ViewData["Title"] = "Редагувати студента";
+}
+
+<h2 class="mb-4">Редагувати студента</h2>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+
+    <div class="mb-3">
+        <label asp-for="UserName" class="form-label"></label>
+        <input asp-for="UserName" class="form-control" />
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FirstName" class="form-label"></label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LastName" class="form-label"></label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="GroupName" class="form-label"></label>
+        <input asp-for="GroupName" class="form-control" list="GroupsList" placeholder="Введіть назву групи або оберіть зі списку" />
+        <datalist id="GroupsList">
+            @if (ViewBag.GroupNames is IEnumerable<string> groups)
+            {
+                foreach (var g in groups)
+                {
+                    <option value="@g"></option>
+                }
+            }
+        </datalist>
+        <span asp-validation-for="GroupName" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Зберегти</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

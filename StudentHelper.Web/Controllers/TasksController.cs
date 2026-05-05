@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using StudentHelper.Application.Interfaces;
+using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Web.Models.Tasks;
+using StudentHelper.Web.Filters;
 
 namespace StudentHelper.Web.Controllers;
 
@@ -9,26 +12,52 @@ public class TasksController : BaseController
 {
     private readonly ITaskService _taskService;
     private readonly ILogger<TasksController> _logger;
+    private readonly IOptions<ApplicationSettings> _settings;
 
-    public TasksController(ITaskService taskService, ILogger<TasksController> logger)
+    public TasksController(ITaskService taskService, ILogger<TasksController> logger, IOptions<ApplicationSettings> settings)
     {
         _taskService = taskService;
         _logger = logger;
+        _settings = settings;
     }
 
     public async Task<IActionResult> Index(
         string status = "Поточне",
         string? subject = null,
-        string? searchTerm = null)
+        string? searchTerm = null,
+        int page = 1)
     {
         var userId = GetCurrentUserId();
+        
+        // Перевірка мінімальної довжини пошуку
+        if (!string.IsNullOrWhiteSpace(searchTerm) && searchTerm.Length < _settings.Value.MinSearchCharacters)
+        {
+            TempData["WarningMessage"] = $"Пошук повинен мати щонайменше {_settings.Value.MinSearchCharacters} символів. Показуються всі завдання.";
+            searchTerm = null; // Очищаємо пошук
+        }
+
+        // Валідація номера сторінки
+        if (page < 1) page = 1;
 
         var subjectsResult = await _taskService.GetUserSubjectsAsync(userId);
-        var tasksResult = await _taskService.GetUserTasksAsync(userId, status, subject, searchTerm);
+        var tasksResult = await _taskService.GetUserTasksAsync(userId, status, subject, searchTerm, page);
+        var dueSoonResult = await _taskService.GetTasksDueSoonAsync(userId, DateTime.UtcNow);
 
-        if (!subjectsResult.Success || !tasksResult.Success)
+        // Отримуємо загальну кількість завдань для розрахунку пагінації
+        var totalCount = await _taskService.GetUserTasksCountAsync(userId, status, subject, searchTerm);
+
+        if (!subjectsResult.Success || !tasksResult.Success || !dueSoonResult.Success)
         {
             return BadRequest("Не вдалося завантажити список завдань.");
+        }
+
+        var itemsPerPage = _settings.Value.ItemsPerPage;
+        var totalPages = (int)Math.Ceiling((double)totalCount / itemsPerPage);
+        
+        // Валідація - якщо сторінка більше за максимальну, перенаправляємо на останню
+        if (page > totalPages && totalPages > 0)
+        {
+            return RedirectToAction(nameof(Index), new { status, subject, searchTerm, page = totalPages });
         }
 
         var model = new TaskIndexViewModel
@@ -37,7 +66,12 @@ public class TasksController : BaseController
             SelectedSubject = subject,
             SearchTerm = searchTerm,
             Subjects = subjectsResult.Value ?? new List<string>(),
-            Tasks = tasksResult.Value ?? new List<TaskItem>()
+            Tasks = tasksResult.Value ?? new List<TaskItem>(),
+            DueSoonTasks = dueSoonResult.Value ?? new List<TaskItem>(),
+            CurrentPage = page,
+            TotalItems = totalCount,
+            ItemsPerPage = itemsPerPage,
+            TotalPages = totalPages
         };
 
         return View(model);
@@ -54,8 +88,11 @@ public class TasksController : BaseController
         return View(model);
     }
 
+
+
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RateLimitingFilter(maxRequests: 40, timeWindowSeconds: 60)]
     public async Task<IActionResult> Create(TaskCreateEditViewModel model)
     {
         if (!ModelState.IsValid)
@@ -172,6 +209,7 @@ public class TasksController : BaseController
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [RateLimitingFilter(maxRequests: 20, timeWindowSeconds: 60)]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var deleted = await _taskService.DeleteTaskAsync(id, GetCurrentUserId());

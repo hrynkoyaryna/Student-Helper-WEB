@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using StudentHelper.Application.Interfaces;
+using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Web.Models.Notes;
+using StudentHelper.Web.Filters;
 
 namespace StudentHelper.Web.Controllers;
 
@@ -9,16 +12,26 @@ public class NotesController : BaseController
 {
     private readonly INotesService _notesService;
     private readonly ILogger<NotesController> _logger;
+    private readonly IOptions<ApplicationSettings> _settings;
 
-    public NotesController(INotesService notesService, ILogger<NotesController> logger)
+    public NotesController(INotesService notesService, ILogger<NotesController> logger, IOptions<ApplicationSettings> settings)
     {
         _notesService = notesService;
         _logger = logger;
+        _settings = settings;
     }
 
     public async Task<IActionResult> Index(string? search = null)
     {
         var userId = GetCurrentUserId();
+        
+        // Перевірка мінімальної довжини пошуку
+        if (!string.IsNullOrWhiteSpace(search) && search.Length < _settings.Value.MinSearchCharacters)
+        {
+            TempData["WarningMessage"] = $"Пошук повинен мати щонайменше {_settings.Value.MinSearchCharacters} символів. Показуються всі нотатки.";
+            search = null; // Очищаємо пошук
+        }
+        
         var notes = await _notesService.GetUserNotesAsync(userId, search);
 
         var model = new NotesIndexViewModel
@@ -37,6 +50,7 @@ public class NotesController : BaseController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RateLimitingFilter(maxRequests: 3, timeWindowSeconds: 60)]
     public async Task<IActionResult> Create(NoteCreateEditViewModel model)
     {
         if (!ModelState.IsValid)

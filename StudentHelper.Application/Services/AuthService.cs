@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
@@ -11,11 +13,15 @@ public class AuthService : IAuthService
 {
     private readonly UserManager<User> _userManager;
     private readonly IEmailSender _emailSender;
+    private readonly ILogger<AuthService> _logger;
+    private readonly IOptions<ApplicationSettings> _settings;
 
-    public AuthService(UserManager<User> userManager, IEmailSender emailSender)
+    public AuthService(UserManager<User> userManager, IEmailSender emailSender, ILogger<AuthService> logger, IOptions<ApplicationSettings> settings)
     {
         _userManager = userManager;
         _emailSender = emailSender;
+        _logger = logger;
+        _settings = settings;
     }
 
     // ========== LOGIN USE-CASE ==========
@@ -25,6 +31,13 @@ public class AuthService : IAuthService
         if (user == null)
         {
             return Result<int?>.Fail("Невірний email або пароль");
+        }
+
+        // Check if user is blocked
+        if (user.IsBlocked)
+        {
+            _logger.LogWarning("Blocked user attempted to login: {Email}", email);
+            return Result<int?>.Fail("Ваш акаунт заблокований. Будь ласка, зв'яжіться з адміністратором");
         }
 
         var passwordValid = await _userManager.CheckPasswordAsync(user, password);

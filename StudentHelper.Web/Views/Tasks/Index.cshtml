@@ -17,7 +17,53 @@
         </div>
     }
 
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning rounded-4 shadow-sm">
+            <i class="fas fa-exclamation-triangle"></i> @TempData["WarningMessage"]
+        </div>
+    }
+
     <div class="bg-white rounded-4 shadow-sm p-4">
+        @if (Model.DueSoonTasks.Any())
+        {
+            <div class="alert alert-warning rounded-4 shadow-sm mb-4">
+                <h5 class="fw-bold mb-3">⚠️ Термінові завдання</h5>
+                <p class="mb-3">
+                    Ці завдання мають дедлайн протягом наступних 24 годин.
+                </p>
+
+                <div class="row g-2">
+                    @foreach (var task in Model.DueSoonTasks)
+                    {
+                        <div class="col-12">
+                            <div class="bg-white rounded-3 p-3 border">
+                                <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+                                    <div>
+                                        <strong>@task.Title</strong>
+
+                                        <div class="small text-secondary">
+                                            Предмет: @task.Subject
+                                        </div>
+
+                                        <div class="small text-danger fw-semibold">
+                                            Дедлайн: @task.Deadline.ToString("dd.MM.yyyy HH:mm")
+                                        </div>
+                                    </div>
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@task.Id"
+                                       class="btn btn-outline-warning btn-sm align-self-start">
+                                        Деталі
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
         <div class="d-flex flex-wrap gap-2 mb-4">
             <a asp-action="Index"
                asp-route-status="Поточне"
@@ -101,12 +147,15 @@
                             <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
                                 <div>
                                     <h4 class="mb-2">@task.Title</h4>
+
                                     <div class="text-secondary mb-1">
                                         <strong>Предмет:</strong> @task.Subject
                                     </div>
+
                                     <div class="text-secondary mb-1">
                                         <strong>Дедлайн:</strong> @task.Deadline.ToString("dd.MM.yyyy HH:mm")
                                     </div>
+
                                     <div>
                                         <span class="badge bg-info text-dark">@task.Status</span>
                                     </div>
@@ -120,6 +169,7 @@
                                     <form asp-action="ChangeStatus" method="post" class="d-flex gap-2">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@task.Id" />
+
                                         <select name="status" class="form-select form-select-sm">
                                             @if (task.Status == "Поточне")
                                             {
@@ -148,6 +198,7 @@
                                                 <option value="Прострочене">Прострочене</option>
                                             }
                                         </select>
+
                                         <button type="submit" class="btn btn-primary btn-sm">Оновити</button>
                                     </form>
                                 </div>
@@ -157,8 +208,89 @@
                 }
             </div>
         }
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav aria-label="Навігація по сторінках" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-status="@Model.SelectedStatus"
+                               asp-route-subject="@Model.SelectedSubject"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-page="@(Model.CurrentPage - 1)"
+                               aria-label="Попередня сторінка">
+                                ← Попередня
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">← Попередня</span>
+                        </li>
+                    }
+
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        if (i == Model.CurrentPage)
+                        {
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link">
+                                    @i
+                                    <span class="visually-hidden">(поточна)</span>
+                                </span>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-status="@Model.SelectedStatus"
+                                   asp-route-subject="@Model.SelectedSubject"
+                                   asp-route-searchTerm="@Model.SearchTerm"
+                                   asp-route-page="@i">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                    }
+
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-status="@Model.SelectedStatus"
+                               asp-route-subject="@Model.SelectedSubject"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-page="@(Model.CurrentPage + 1)"
+                               aria-label="Наступна сторінка">
+                                Наступна →
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">Наступна →</span>
+                        </li>
+                    }
+                </ul>
+            </nav>
+
+            <div class="text-center text-muted small mt-2">
+                Сторінка @Model.CurrentPage з @Model.TotalPages
+                (@Model.TotalItems елементів, по @Model.ItemsPerPage на сторінці)
+            </div>
+        }
     </div>
 </div>
+
 <script>
     let timeout = null;
     const searchInput = document.getElementById("searchInput");
@@ -166,12 +298,10 @@
     const savedCursorPosition = sessionStorage.getItem("taskSearchCursorPosition");
     const shouldFocus = sessionStorage.getItem("taskSearchFocus");
 
-    if (searchInput && shouldFocus === "true")
-    {
+    if (searchInput && shouldFocus === "true") {
         searchInput.focus();
 
-        if (savedCursorPosition !== null)
-        {
+        if (savedCursorPosition !== null) {
             const position = parseInt(savedCursorPosition, 10);
             searchInput.setSelectionRange(position, position);
         }
@@ -180,13 +310,15 @@
         sessionStorage.removeItem("taskSearchCursorPosition");
     }
 
-    searchInput.addEventListener("input", function () {
-        clearTimeout(timeout);
+    if (searchInput) {
+        searchInput.addEventListener("input", function () {
+            clearTimeout(timeout);
 
-        timeout = setTimeout(() => {
-            sessionStorage.setItem("taskSearchFocus", "true");
-            sessionStorage.setItem("taskSearchCursorPosition", searchInput.selectionStart);
-            this.form.submit();
-        }, 400);
-    });
+            timeout = setTimeout(() => {
+                sessionStorage.setItem("taskSearchFocus", "true");
+                sessionStorage.setItem("taskSearchCursorPosition", searchInput.selectionStart);
+                this.form.submit();
+            }, 400);
+        });
+    }
 </script>

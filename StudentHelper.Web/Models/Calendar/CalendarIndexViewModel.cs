@@ -1,6 +1,4 @@
-using StudentHelper.Application.Models.Calendar;
-
-namespace StudentHelper.Web.Models.Calendar;
+﻿namespace StudentHelper.Web.Models.Calendar;
 
 public class CalendarIndexViewModel
 {

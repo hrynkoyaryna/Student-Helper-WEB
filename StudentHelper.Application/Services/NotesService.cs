@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Domain.Entities;
 using StudentHelper.Application.Models;
@@ -9,11 +10,13 @@ public class NotesService : INotesService
 {
     private readonly INotesRepository _repository;
     private readonly ILogger<NotesService> _logger;
+    private readonly IOptions<ApplicationSettings> _settings;
 
-    public NotesService(INotesRepository repository, ILogger<NotesService> logger)
+    public NotesService(INotesRepository repository, ILogger<NotesService> logger, IOptions<ApplicationSettings> settings)
     {
         _repository = repository;
         _logger = logger;
+        _settings = settings;
     }
 
     public async Task<List<Note>> GetUserNotesAsync(int userId, string? searchQuery = null)
@@ -22,6 +25,14 @@ public class NotesService : INotesService
 
         if (!string.IsNullOrWhiteSpace(searchQuery))
         {
+            var minSearchChars = _settings.Value.MinSearchCharacters;
+            
+            if (searchQuery.Length < minSearchChars)
+            {
+                _logger.LogWarning("Search query '{SearchQuery}' is too short. Minimum: {MinChars}", searchQuery, minSearchChars);
+                return notes;
+            }
+
             var lowerSearch = searchQuery.ToLower();
             notes = notes.Where(n =>
                 n.Title.ToLower().Contains(lowerSearch) ||

@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Перевищено ліміт запитів";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="alert alert-warning" role="alert">
+                <h1 class="alert-heading">
+                    <i class="fas fa-exclamation-circle"></i> Перевищено ліміт запитів
+                </h1>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Система обмежує кількість запитів</h5>
+                    <p class="card-text">
+                        Ви зробили занадто багато запитів за короткий час. 
+                        Для захисту серверу від перевантаження запити з вашої IP адреси були тимчасово заблоковані.
+                    </p>
+
+                    <div class="alert alert-info">
+                        <strong>Рекомендації:</strong>
+                        <ul>
+                            <li>Зачекайте приблизно хвилину перш ніж робити наступні запити</li>
+                            <li>Переконайтесь, що ви не запускаєте автоматичні скрипти для масового завантаження даних</li>
+                            <li>Якщо це помилка, спробуйте оновити сторінку через деякий час</li>
+                        </ul>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="javascript:history.back()" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i> Повернутись назад
+                        </a>
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                            <i class="fas fa-home"></i> На головну
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 text-muted text-center">
+                <small>
+                    Статус: <strong>429 Too Many Requests</strong>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .alert-heading {
+        font-size: 1.5rem;
+        margin: 0;
+        color: #856404;
+    }
+
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .btn {
+        margin: 0.25rem;
+    }
+</style>

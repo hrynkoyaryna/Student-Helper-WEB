@@ -1,0 +1,97 @@
+@model IEnumerable<StudentHelper.Domain.Entities.User>
+
+@{
+    ViewData["Title"] = "Керування студентами";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Список студентів</h2>
+    @* Кнопка створення нового студента *@
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-lg"></i> Додати студента
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Прізвище та ім'я</th>
+                    <th>Email / Логін</th>
+                    <th>Група</th>
+                    <th>Статус</th>
+                    <th class="text-end">Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var student in Model)
+                {
+                    <tr>
+                        <td>@student.LastName @student.FirstName</td>
+                        <td>@student.Email</td>
+                        <td>@(student.Group?.Name ?? "Не призначено")</td>
+                        <td>
+                            @if (student.IsBlocked)
+                            {
+                                <span class="badge bg-danger">Заблокований</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Активний</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group" role="group">
+                                <a asp-action="Edit" asp-route-id="@student.Id" class="btn btn-outline-warning btn-sm">
+                                    Редагувати
+                                </a>
+                                <a asp-action="ChangePassword" asp-route-id="@student.Id" class="btn btn-outline-info btn-sm">
+                                    Пароль
+                                </a>
+                                @if (student.IsBlocked)
+                                {
+                                    <form asp-action="UnblockStudent" asp-controller="Admin" asp-route-id="@student.Id" method="post" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-success btn-sm" title="Розблокувати студента">
+                                            ✓ Розблок.
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="BlockStudent" asp-controller="Admin" asp-route-id="@student.Id" method="post" onsubmit="return confirm('Ви впевнені, що хочете заблокувати цього студента?');" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Заблокувати студента">
+                                            ⊗ Блок.
+                                        </button>
+                                    </form>
+                                }
+                                <form asp-action="Delete" asp-route-id="@student.Id" method="post" onsubmit="return confirm('Ви впевнені, що хочете видалити цього студента?');" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Видалити</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

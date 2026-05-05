@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Сторінка не знайдена";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="alert alert-danger" role="alert">
+                <h1 class="alert-heading">
+                    <i class="fas fa-exclamation-triangle"></i> 404 - Сторінка не знайдена
+                </h1>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">На жаль, запитана сторінка не існує</h5>
+                    <p class="card-text">
+                        Сторінка, яку ви намагаєтесь відкрити, не знайдена на сервері.
+                    </p>
+
+                    <div class="text-center mt-4">
+                        <a href="javascript:history.back()" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i> Повернутись назад
+                        </a>
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                            <i class="fas fa-home"></i> На головну
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

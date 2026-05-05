@@ -12,6 +12,7 @@ public class TaskItem
 
     public string Subject { get; set; } = string.Empty;
 
+    [System.ComponentModel.DataAnnotations.MaxLength(500)]
     public string? Description { get; set; }
 
     public int UserId { get; set; }

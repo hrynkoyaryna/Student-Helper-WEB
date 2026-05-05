@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Application.Models;
 using StudentHelper.Application.Models.Calendar;
@@ -11,13 +12,16 @@ public class CalendarService : ICalendarService
 {
     private readonly IPersonalEventRepository personalEventRepository;
     private readonly ILogger<CalendarService> logger;
+    private readonly IOptions<ApplicationSettings> settings;
 
     public CalendarService(
         IPersonalEventRepository personalEventRepository,
-        ILogger<CalendarService> logger)
+        ILogger<CalendarService> logger,
+        IOptions<ApplicationSettings> settings)
     {
         this.personalEventRepository = personalEventRepository;
         this.logger = logger;
+        this.settings = settings;
     }
 
     public async Task<Result> CreateEventAsync(
@@ -131,9 +135,14 @@ public class CalendarService : ICalendarService
         var events = await this.personalEventRepository.GetByUserIdAsync(userId, cancellationToken);
         
         var result = new List<dynamic>();
+        var calendarStartHour = settings.Value.CalendarStartHour;
         
         foreach (var e in events)
         {
+            // Фільтруємо за CalendarStartHour - якщо подія закінчується раніше за початок календаря, пропускаємо
+            if (e.EndAt.Hour < calendarStartHour)
+                continue;
+            
             dynamic eventData = new ExpandoObject();
             eventData.Id = e.Id;
             eventData.Title = e.Title;
