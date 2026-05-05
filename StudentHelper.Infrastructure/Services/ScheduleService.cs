@@ -1,25 +1,24 @@
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using StudentHelper.Application.Interfaces;
 using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
-using StudentHelper.Infrastructure.Data;
 
 namespace StudentHelper.Infrastructure.Services;
 
 public class ScheduleService : IScheduleService
 {
     private readonly IScheduleRepository _repository;
-    private readonly StudentHelperDbContext _context;
     private readonly ILogger<ScheduleService> _logger;
 
-    public ScheduleService(
-        IScheduleRepository repository,
-        StudentHelperDbContext context,
-        ILogger<ScheduleService> logger)
+    public ScheduleService(IScheduleRepository repository, ILogger<ScheduleService> logger)
     {
         _repository = repository;
-        _context = context;
         _logger = logger;
     }
 
@@ -27,111 +26,115 @@ public class ScheduleService : IScheduleService
     {
         try
         {
-            if (request.Date == default) return Result.Fail("Вкажіть дату");
-            if (request.SubjectId <= 0) return Result.Fail("Вкажіть предмет");
-            if (request.TeacherId == null || request.TeacherId <= 0) return Result.Fail("Вкажіть викладача");
-            if (request.GroupId <= 0) return Result.Fail("Вкажіть групу");
-            if (request.StartTime >= request.EndTime) return Result.Fail("Час початку має бути раніше за час закінчення");
-
-            var groupExists = await _context.Groups.AnyAsync(g => g.Id == request.GroupId, cancellationToken);
-            if (!groupExists) return Result.Fail("Групу не знайдено");
-
-            var teacherExists = await _context.Teachers.AnyAsync(t => t.Id == request.TeacherId, cancellationToken);
-            if (!teacherExists) return Result.Fail("Викладача не знайдено");
-
-            var subjectExists = await _context.Subjects.AnyAsync(s => s.Id == request.SubjectId, cancellationToken);
-            if (!subjectExists) return Result.Fail("Предмет не знайдено");
-
-            // Build occurrences based on recurrence type
-            var occurrences = new List<DateOnly>();
-            var start = request.Date;
-            occurrences.Add(start);
-
-            if (!string.IsNullOrWhiteSpace(request.RecurrenceType) && request.RecurrenceType != "None")
+            var lesson = new ScheduleLesson
             {
-                var until = request.RecurrenceUntil ?? request.Date.AddDays(7 * 16); // default ~ semester
-
-                Func<DateOnly, DateOnly> step = request.RecurrenceType switch
-                {
-                    "Daily" => d => d.AddDays(1),
-                    "Weekly" => d => d.AddDays(7),
-                    "BiWeekly" => d => d.AddDays(14),
-                    _ => d => d.AddDays(7),
-                };
-
-                var next = step(start);
-                var safety = 0;
-                while (next <= until && safety < 1000)
-                {
-                    occurrences.Add(next);
-                    next = step(next);
-                    safety++;
-                }
-            }
-
-            var startTs = request.StartTime.ToTimeSpan();
-            var endTs = request.EndTime.ToTimeSpan();
-
-            // conflict checks
-            foreach (var occ in occurrences)
-            {
-                var exLessons = await _context.ScheduleLessons
-                    .Where(s => s.Date.Year == occ.Year && s.Date.Month == occ.Month && s.Date.Day == occ.Day)
-                    .Where(s => s.GroupId == request.GroupId || s.TeacherId == request.TeacherId || (!string.IsNullOrWhiteSpace(request.Place) && s.Place == request.Place))
-                    .ToListAsync(cancellationToken);
-
-                foreach (var ex in exLessons)
-                {
-                    if (startTs < ex.EndTime && endTs > ex.StartTime)
-                    {
-                        if (ex.GroupId == request.GroupId)
-                        {
-                            return Result.Fail($"Конфлікт: у групи вже є пара {ex.StartTime} - {ex.EndTime} на {occ:yyyy-MM-dd}");
-                        }
-                        if (ex.TeacherId == request.TeacherId)
-                        {
-                            return Result.Fail($"Конфлікт: у викладача вже є пара {ex.StartTime} - {ex.EndTime} на {occ:yyyy-MM-dd}");
-                        }
-                        if (!string.IsNullOrWhiteSpace(request.Place) && ex.Place == request.Place)
-                        {
-                            return Result.Fail($"Конфлікт: аудиторія '{request.Place}' вже зайнята {ex.StartTime} - {ex.EndTime} на {occ:yyyy-MM-dd}");
-                        }
-                    }
-                }
-            }
-
-            foreach (var occ in occurrences)
-            {
-                var lesson = new ScheduleLesson
-                {
-                    Date = occ.ToDateTime(new TimeOnly(0, 0)),
-                    StartTime = startTs,
-                    EndTime = endTs,
-                    SubjectId = request.SubjectId,
-                    TeacherId = request.TeacherId!.Value,
-                    GroupId = request.GroupId,
-                    Type = request.Type ?? "Lecture",
-                    Recurrence = request.Recurrence ?? string.Empty,
-                    Place = request.Place
-                };
-
-                await _repository.AddAsync(lesson, cancellationToken);
-            }
-
-            await _repository.SaveChangesAsync(cancellationToken);
-
-            _logger.LogInformation("Schedule lessons created for group {GroupId}. Count: {Count}", request.GroupId, occurrences.Count);
-            return Result.Ok($"Пари успішно додано. Створено: {occurrences.Count}");
+                GroupId = request.GroupId,
+                SubjectId = request.SubjectId,
+                TeacherId = request.TeacherId ?? 0,
+                Date = request.Date.ToDateTime(request.StartTime),
+                DayOfWeek = request.Date.DayOfWeek,
+                StartTime = request.StartTime.ToTimeSpan(),
+                EndTime = request.EndTime.ToTimeSpan(),
+                Room = request.Place ?? request.Room ?? "Рќ/Р”",
+                LessonType = request.Type ?? request.LessonType ?? "Р›РµРєС†С–СЏ"
+            };
+            await _repository.AddAsync(lesson);
+            await _repository.SaveChangesAsync();
+            return Result.Ok("РЈСЂРѕРє СѓСЃРїС–С€РЅРѕ СЃС‚РІРѕСЂРµРЅРѕ.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error while creating schedule lesson");
-            return Result.Fail("Виникла помилка при створенні пари: " + ex.Message);
+            _logger.LogError(ex, "Error creating lesson");
+            return Result.Fail("РџРѕРјРёР»РєР°: " + ex.Message);
         }
     }
 
     public async Task<List<ScheduleLesson>> GetScheduleByGroupIdAsync(int groupId, CancellationToken cancellationToken = default)
     {
-        return await _repository.GetByGroupIdAsync(groupId, cancellationToken);
+        return new List<ScheduleLesson>(await _repository.GetByGroupIdAsync(groupId));
+    }
+
+    public async Task<Result> CreateLessonForGroupAsync(CreateScheduleLessonRequest request)
+    {
+        try
+        {
+            var lessonsToCreate = new List<ScheduleLesson>();
+            DateTime current = request.StartDate;
+            while (current.DayOfWeek != request.DayOfWeek) current = current.AddDays(1);
+
+            while (current <= request.EndDate)
+            {
+                bool shouldAdd = true;
+                if (request.IsEvenWeek.HasValue)
+                {
+                    int weekNumber = ISOWeek.GetWeekOfYear(current);
+                    bool isEven = weekNumber % 2 == 0;
+                    if (request.IsEvenWeek.Value != isEven) shouldAdd = false;
+                }
+                if (shouldAdd)
+                {
+                    lessonsToCreate.Add(new ScheduleLesson
+                    {
+                        GroupId = request.GroupId,
+                        SubjectId = request.SubjectId,
+                        TeacherId = request.TeacherId ?? 0,
+                        DayOfWeek = request.DayOfWeek,
+                        Date = current,
+                        StartTime = request.StartTime.ToTimeSpan(),
+                        EndTime = request.EndTime.ToTimeSpan(),
+                        Room = request.Room ?? "Рќ/Р”",
+                        LessonType = request.LessonType ?? "Р›РµРєС†С–СЏ",
+                        IsEvenWeek = request.IsEvenWeek
+                    });
+                }
+                current = current.AddDays(7);
+            }
+
+            if (!lessonsToCreate.Any()) return Result.Fail("РќРµ Р·РЅР°Р№РґРµРЅРѕ Р¶РѕРґРЅРѕС— РґР°С‚Рё.");
+            await _repository.AddRangeAsync(lessonsToCreate);
+            await _repository.SaveChangesAsync();
+            return Result.Ok();
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"РџРѕРјРёР»РєР°: {ex.Message}");
+        }
+    }
+
+    public async Task<IEnumerable<ScheduleLesson>> GetGroupScheduleAsync(int groupId)
+    {
+        return await _repository.GetByGroupIdAsync(groupId);
+    }
+
+    public async Task<ScheduleLesson?> GetLessonByIdAsync(int lessonId)
+    {
+        return await _repository.GetByIdAsync(lessonId);
+    }
+
+    public async Task<Result> DeleteLessonAsync(int lessonId)
+    {
+        var lesson = await _repository.GetByIdAsync(lessonId);
+        if (lesson == null) return Result.Fail("Р—Р°РЅСЏС‚С‚СЏ РЅРµ Р·РЅР°Р№РґРµРЅРѕ.");
+        await _repository.DeleteAsync(lesson);
+        return Result.Ok();
+    }
+
+    public async Task<Result> CreateGroupAsync(string name)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(name)) return Result.Fail("РќР°Р·РІР° РЅРµ РјРѕР¶Рµ Р±СѓС‚Рё РїРѕСЂРѕР¶РЅСЊРѕСЋ.");
+            var allGroups = await _repository.GetAllGroupsAsync();
+            if (allGroups.Any(g => g.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                return Result.Fail("Р“СЂСѓРїР° РІР¶Рµ С–СЃРЅСѓС”.");
+            await _repository.CreateGroupAsync(new Group { Name = name });
+            return Result.Ok();
+        }
+        catch (Exception ex) { return Result.Fail(ex.Message); }
+    }
+
+    public async Task AddRangeAsync(IEnumerable<ScheduleLesson> lessons)
+    {
+        await _repository.AddRangeAsync(lessons);
     }
 }

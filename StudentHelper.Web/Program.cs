@@ -58,7 +58,7 @@ builder.Services.AddScoped<StudentHelper.Application.Interfaces.ITeacherReposito
 builder.Services.AddScoped<StudentHelper.Application.Services.ICalendarService, StudentHelper.Application.Services.CalendarService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserService, StudentHelper.Infrastructure.Services.UserService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<INotesService, NotesService>();
 builder.Services.AddScoped<IExamsService, ExamsService>();

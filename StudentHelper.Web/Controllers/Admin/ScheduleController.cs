@@ -86,7 +86,7 @@ public class ScheduleController : Controller
             Date = DateOnly.FromDateTime(DateTime.Today),
             StartTime = new TimeOnly(9,0),
             EndTime = new TimeOnly(10,0),
-            Groups = await _lookupService.GetAllGroupsAsync(),
+            Groups = (await _lookupService.GetAllGroupsAsync()).Select(g => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = g.Id.ToString(), Text = g.Name }).ToList(),
             Subjects = await _lookupService.GetAllSubjectsAsync(),
             Teachers = await _lookupService.GetAllTeachersAsync()
         };
@@ -100,7 +100,7 @@ public class ScheduleController : Controller
     {
         if (!ModelState.IsValid)
         {
-            model.Groups = await _lookupService.GetAllGroupsAsync();
+            model.Groups = (await _lookupService.GetAllGroupsAsync()).Select(g => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = g.Id.ToString(), Text = g.Name }).ToList();
             model.Subjects = await _lookupService.GetAllSubjectsAsync();
             model.Teachers = await _lookupService.GetAllTeachersAsync();
             return View(model);
@@ -146,7 +146,7 @@ public class ScheduleController : Controller
         {
             ModelState.AddModelError(string.Empty, result.Message);
             TempData["ErrorMessage"] = result.Message;
-            model.Groups = await _lookupService.GetAllGroupsAsync();
+            model.Groups = (await _lookupService.GetAllGroupsAsync()).Select(g => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem { Value = g.Id.ToString(), Text = g.Name }).ToList();
             model.Subjects = await _lookupService.GetAllSubjectsAsync();
             model.Teachers = await _lookupService.GetAllTeachersAsync();
             return View(model);

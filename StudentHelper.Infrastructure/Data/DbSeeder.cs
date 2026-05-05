@@ -30,7 +30,7 @@ public static class DbSeeder
         }
 
         var adminEmail = "admin@lnu.edu.ua";
-        var adminPassword = "Admin123!";
+        var adminPassword = "Abc123!";
 
         var admin = await userManager.FindByEmailAsync(adminEmail);
 
