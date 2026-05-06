@@ -12,8 +12,8 @@ using StudentHelper.Infrastructure.Data;
 namespace StudentHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(StudentHelperDbContext))]
-    [Migration("20260417014937_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260506162030_InitialOnKateBranch")]
+    partial class InitialOnKateBranch
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -185,6 +185,9 @@ namespace StudentHelper.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<int?>("GroupId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasColumnType("text");
@@ -196,6 +199,8 @@ namespace StudentHelper.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("TeacherId");
 
@@ -300,6 +305,9 @@ namespace StudentHelper.Infrastructure.Migrations
 
                     b.Property<int>("GroupId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Place")
+                        .HasColumnType("text");
 
                     b.Property<string>("Recurrence")
                         .IsRequired()
@@ -429,6 +437,9 @@ namespace StudentHelper.Infrastructure.Migrations
                     b.Property<int?>("GroupId")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsBlocked")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -481,6 +492,53 @@ namespace StudentHelper.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("StudentHelper.Domain.Entities.UserRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminResponse")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RequestType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRequests");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -536,11 +594,17 @@ namespace StudentHelper.Infrastructure.Migrations
 
             modelBuilder.Entity("StudentHelper.Domain.Entities.Exam", b =>
                 {
+                    b.HasOne("StudentHelper.Domain.Entities.Group", "Group")
+                        .WithMany("Exams")
+                        .HasForeignKey("GroupId");
+
                     b.HasOne("StudentHelper.Domain.Entities.Teacher", "Teacher")
                         .WithMany("Exams")
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Group");
 
                     b.Navigation("Teacher");
                 });
@@ -615,8 +679,21 @@ namespace StudentHelper.Infrastructure.Migrations
                     b.Navigation("Group");
                 });
 
+            modelBuilder.Entity("StudentHelper.Domain.Entities.UserRequest", b =>
+                {
+                    b.HasOne("StudentHelper.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("StudentHelper.Domain.Entities.Group", b =>
                 {
+                    b.Navigation("Exams");
+
                     b.Navigation("ScheduleLessons");
 
                     b.Navigation("Users");

@@ -5,17 +5,17 @@ namespace StudentHelper.Web.Models.Schedule;
 
 public class CreateScheduleViewModel
 {
-    [Required]
+    [Required(ErrorMessage = "Поле 'Дата' є обов'язковим")]
     public DateOnly Date { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Поле 'Початок' є обов'язковим")]
     public TimeOnly StartTime { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Поле 'Кінець' є обов'язковим")]
     public TimeOnly EndTime { get; set; }
 
-    // Allow either selecting subject id or entering subject title
-    public int SubjectId { get; set; }
+    // Робимо nullable int?, щоб форма могла відправляти пусте значення при ручному введенні назви
+    public int? SubjectId { get; set; }
 
     public string? SubjectTitle { get; set; }
 
@@ -23,15 +23,15 @@ public class CreateScheduleViewModel
 
     public string? TeacherName { get; set; }
 
-    [Required]
-    public int GroupId { get; set; }
+    // Теж nullable int?, щоб працювало введення нової групи
+    public int? GroupId { get; set; }
+    
+    public string? GroupName { get; set; }
 
     public string? Type { get; set; }
 
-    // Legacy free-form recurrence kept for compatibility
     public string? Recurrence { get; set; }
 
-    // Structured recurrence
     public string? RecurrenceType { get; set; }
     public DateOnly? RecurrenceUntil { get; set; }
 

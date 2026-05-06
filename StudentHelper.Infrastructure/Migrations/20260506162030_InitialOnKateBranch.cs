@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace StudentHelper.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialOnKateBranch : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -98,6 +98,7 @@ namespace StudentHelper.Infrastructure.Migrations
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
                     GroupId = table.Column<int>(type: "integer", nullable: true),
+                    IsBlocked = table.Column<bool>(type: "boolean", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -134,11 +135,17 @@ namespace StudentHelper.Infrastructure.Migrations
                     DateTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     TeacherId = table.Column<int>(type: "integer", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<int>(type: "integer", nullable: false)
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    GroupId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Exams", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Exams_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Exams_Teachers_TeacherId",
                         column: x => x.TeacherId,
@@ -160,7 +167,8 @@ namespace StudentHelper.Infrastructure.Migrations
                     EndTime = table.Column<TimeSpan>(type: "interval", nullable: false),
                     SubjectId = table.Column<int>(type: "integer", nullable: false),
                     TeacherId = table.Column<int>(type: "integer", nullable: false),
-                    GroupId = table.Column<int>(type: "integer", nullable: false)
+                    GroupId = table.Column<int>(type: "integer", nullable: false),
+                    Place = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -340,6 +348,33 @@ namespace StudentHelper.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserRequests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    Category = table.Column<string>(type: "text", nullable: false),
+                    RequestType = table.Column<string>(type: "text", nullable: false),
+                    Subject = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false),
+                    AdminResponse = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserRequests_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
@@ -398,6 +433,11 @@ namespace StudentHelper.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Exams_GroupId",
+                table: "Exams",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Exams_TeacherId",
                 table: "Exams",
                 column: "TeacherId");
@@ -430,6 +470,11 @@ namespace StudentHelper.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_UserId",
                 table: "Tasks",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRequests_UserId",
+                table: "UserRequests",
                 column: "UserId");
         }
 
@@ -465,6 +510,9 @@ namespace StudentHelper.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tasks");
+
+            migrationBuilder.DropTable(
+                name: "UserRequests");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

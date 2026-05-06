@@ -1,117 +1,155 @@
 @model StudentHelper.Web.Models.Schedule.CreateScheduleViewModel
 
 @{
-    ViewData["Title"] = "Створити пару";
+    ViewData["Title"] = "РЎС‚РІРѕСЂРµРЅРЅСЏ СЂРѕР·РєР»Р°РґСѓ";
 }
 
 <div class="card">
     <div class="card-body">
-        <h3>Створити пару для групи</h3>
+        <h3>РЎС‚РІРѕСЂРёС‚Рё СЂРѕР·РєР»Р°Рґ РґР»СЏ РіСЂСѓРїРё</h3>
+        
+        <div class="alert alert-info" role="alert">
+            <strong>РћР±РѕРІ'СЏР·РєРѕРІС– РїРѕР»СЏ:</strong> Р“СЂСѓРїР°, РџСЂРµРґРјРµС‚, Р”Р°С‚Р°, Р§Р°СЃ, Р’РёРєР»Р°РґР°С‡
+        </div>
 
         @if (TempData["SuccessMessage"] != null)
         {
             <div class="alert alert-success">@TempData["SuccessMessage"]</div>
             <script>
-                // Redirect to calendar after short delay as a fallback if server did not redirect
                 setTimeout(function() { window.location = '@Url.Action("Index", "Calendar")'; }, 1200);
             </script>
         }
 
         @if (TempData["ErrorMessage"] != null)
         {
-            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+            <div class="alert alert-danger">
+                <strong>РџРѕРјРёР»РєР°:</strong> @TempData["ErrorMessage"]
+            </div>
         }
 
         @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
 
         <form asp-action="Create" method="post">
             @Html.AntiForgeryToken()
+            
+            <!-- GROUP SECTION -->
             <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label asp-for="GroupId" class="form-label">Група</label>
+                <div class="col-md-5 mb-3">
+                    <label asp-for="GroupId" class="form-label">
+                        <span class="text-danger">*</span> Р“СЂСѓРїР° (РІРёР±С–СЂ)
+                    </label>
                     <select asp-for="GroupId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Groups, "Id", "Name", Model.GroupId))">
-                        <option value="">-- Виберіть групу --</option>
+                        <option value="">-- Р’РёР±РµСЂС–С‚СЊ РіСЂСѓРїСѓ --</option>
                     </select>
                     <span asp-validation-for="GroupId" class="text-danger"></span>
+                    <small class="text-muted">РђР±Рѕ РІРІРµРґС–С‚СЊ РЅРѕРІСѓ РіСЂСѓРїСѓ РЅРёР¶С‡Рµ</small>
                 </div>
 
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">Предмет</label>
-                    <select asp-for="SubjectId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Subjects, "Id", "Title", Model.SubjectId))">
-                        <option value="">-- Виберіть предмет --</option>
-                    </select>
-                    <div class="form-text">Або введіть нову назву предмета нижче</div>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <label asp-for="TeacherId" class="form-label">Викладач (за списком)</label>
-                    <select asp-for="TeacherId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Teachers, "Id", "FullName", Model.TeacherId))">
-                        <option value="">-- Виберіть викладача --</option>
-                    </select>
-                    <div class="form-text">Або введіть ім'я викладача нижче</div>
+                <div class="col-md-5 mb-3">
+                    <label asp-for="GroupName" class="form-label">Р“СЂСѓРїР° (РЅРѕРІР°)</label>
+                    <input asp-for="GroupName" class="form-control" placeholder="РќР°РїСЂ. РџРњР†-31" />
+                    <small class="text-muted">РЇРєС‰Рѕ РІРёР±СЂР°Р»Рё РіСЂСѓРїСѓ РІРёС‰Рµ, С†Рµ РїРѕР»Рµ С–РіРЅРѕСЂСѓС”С‚СЊСЃСЏ</small>
                 </div>
             </div>
-
+            
+            <!-- SUBJECT SECTION -->
             <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label asp-for="Date" class="form-label">Дата</label>
+                <div class="col-md-5 mb-3">
+                    <label asp-for="SubjectId" class="form-label">
+                        <span class="text-danger">*</span> РџСЂРµРґРјРµС‚
+                    </label>
+                    <select asp-for="SubjectId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Subjects, "Id", "Title", Model.SubjectId))">
+                        <option value="">-- Р’РёР±РµСЂС–С‚СЊ РїСЂРµРґРјРµС‚ --</option>
+                    </select>
+                    <span asp-validation-for="SubjectId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-5 mb-3">
+                    <label asp-for="SubjectTitle" class="form-label">РђР±Рѕ РЅРѕРІР° РЅР°Р·РІР°</label>
+                    <input asp-for="SubjectTitle" class="form-control" placeholder="РќР°РїСЂ. РњР°С‚РµРјР°С‚РёРєР°" />
+                </div>
+            </div>
+            
+            <!-- DATE AND TIME SECTION -->
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label asp-for="Date" class="form-label"><span class="text-danger">*</span> Р”Р°С‚Р°</label>
                     <input asp-for="Date" class="form-control" type="date" />
                     <span asp-validation-for="Date" class="text-danger"></span>
                 </div>
 
-                <div class="col-md-4 mb-3">
-                    <label asp-for="StartTime" class="form-label">Початок</label>
+                <div class="col-md-2 mb-3">
+                    <label asp-for="StartTime" class="form-label"><span class="text-danger">*</span> РџРѕС‡Р°С‚РѕРє</label>
                     <input asp-for="StartTime" class="form-control" type="time" />
                     <span asp-validation-for="StartTime" class="text-danger"></span>
                 </div>
 
-                <div class="col-md-4 mb-3">
-                    <label asp-for="EndTime" class="form-label">Кінець</label>
+                <div class="col-md-2 mb-3">
+                    <label asp-for="EndTime" class="form-label"><span class="text-danger">*</span> РљС–РЅРµС†СЊ</label>
                     <input asp-for="EndTime" class="form-control" type="time" />
                     <span asp-validation-for="EndTime" class="text-danger"></span>
                 </div>
-            </div>
 
-            <div class="mb-3">
-                <label asp-for="SubjectTitle" class="form-label">Назва предмета (якщо відсутній у списку)</label>
-                <input asp-for="SubjectTitle" class="form-control" />
+                <div class="col-md-3 mb-3">
+                    <label asp-for="Place" class="form-label">РђСѓРґРёС‚РѕСЂС–СЏ</label>
+                    <input asp-for="Place" class="form-control" placeholder="РќР°РїСЂ. Р°СѓРґ. 201" />
+                </div>
             </div>
+            
+            <!-- TEACHER AND TYPE SECTION -->
+            <div class="row">
+                <div class="col-md-5 mb-3">
+                    <label asp-for="TeacherId" class="form-label">
+                        <span class="text-danger">*</span> Р’РёРєР»Р°РґР°С‡ (РІРёР±С–СЂ)
+                    </label>
+                    <select asp-for="TeacherId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Teachers, "Id", "FullName", Model.TeacherId))">
+                        <option value="">-- Р’РёР±РµСЂС–С‚СЊ РІРёРєР»Р°РґР°С‡Р° --</option>
+                    </select>
+                    <span asp-validation-for="TeacherId" class="text-danger"></span>
+                    <small class="text-muted">РђР±Рѕ РІРІРµРґС–С‚СЊ РЅРѕРІРµ С–Рј'СЏ РЅРёР¶С‡Рµ</small>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="TeacherName" class="form-label">Ім'я викладача (якщо відсутній у списку)</label>
-                <input asp-for="TeacherName" class="form-control" />
+                <div class="col-md-5 mb-3">
+                    <label asp-for="TeacherName" class="form-label">Р’РёРєР»Р°РґР°С‡ (РЅРѕРІРёР№)</label>
+                    <input asp-for="TeacherName" class="form-control" placeholder="РќР°РїСЂ. РџРµС‚СЂРµРЅРєРѕ Р†.Р’." />
+                    <small class="text-muted">РЇРєС‰Рѕ РІРёР±СЂР°Р»Рё РІРёРєР»Р°РґР°С‡Р° РІРёС‰Рµ, С†Рµ РїРѕР»Рµ С–РіРЅРѕСЂСѓС”С‚СЊСЃСЏ</small>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label asp-for="Place" class="form-label">Аудиторія / місце</label>
-                <input asp-for="Place" class="form-control" />
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Type" class="form-label">РўРёРї Р·Р°РЅСЏС‚С‚СЏ</label>
+                    <select asp-for="Type" class="form-select">
+                        <option value="">-- Р’РёР±РµСЂС–С‚СЊ С‚РёРї --</option>
+                        <option value="Lecture">Р›РµРєС†С–СЏ</option>
+                        <option value="Lab">Р›Р°Р±РѕСЂР°С‚РѕСЂРЅР°</option>
+                        <option value="Seminar">РЎРµРјС–РЅР°СЂ</option>
+                        <option value="Practical">РџСЂР°РєС‚РёС‡РЅР°</option>
+                    </select>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label asp-for="Type" class="form-label">Тип (Lecture / Lab)</label>
-                <input asp-for="Type" class="form-control" />
-            </div>
-
+            
+            <!-- RECURRENCE SECTION -->
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label asp-for="RecurrenceType" class="form-label">Повторюваність</label>
+                    <label asp-for="RecurrenceType" class="form-label">РџРѕРІС‚РѕСЂРµРЅРЅСЏ</label>
                     <select asp-for="RecurrenceType" class="form-select">
-                        <option value="None">Не повторювати</option>
-                        <option value="Daily">Щодня</option>
-                        <option value="Weekly">Щотижня</option>
-                        <option value="BiWeekly">Через тиждень</option>
+                        <option value="None">РќРµ РїРѕРІС‚РѕСЂСЋС”С‚СЊСЃСЏ</option>
+                        <option value="Daily">Р©РѕРґРЅСЏ</option>
+                        <option value="Weekly">Р©РѕС‚РёР¶РЅСЏ</option>
+                        <option value="BiWeekly">Р Р°Р· РЅР° РґРІР° С‚РёР¶РЅС–</option>
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="RecurrenceUntil" class="form-label">Повторювати до (включно)</label>
+                    <label asp-for="RecurrenceUntil" class="form-label">РџРѕРІС‚РѕСЂСЋРІР°С‚Рё РґРѕ (РґР°С‚Р°)</label>
                     <input asp-for="RecurrenceUntil" class="form-control" type="date" />
                 </div>
             </div>
 
             <input type="hidden" asp-for="Recurrence" />
 
-            <button type="submit" class="btn btn-primary">Створити</button>
-            <a asp-action="Index" asp-controller="Calendar" class="btn btn-secondary ms-2">Назад</a>
+            <button type="submit" class="btn btn-primary">РЎС‚РІРѕСЂРёС‚Рё СЂРѕР·РєР»Р°Рґ</button>
+            <a asp-action="Index" asp-controller="Calendar" class="btn btn-secondary ms-2">РќР°Р·Р°Рґ</a>
         </form>
     </div>
 </div>
