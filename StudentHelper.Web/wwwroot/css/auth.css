@@ -1,0 +1,303 @@
+/* Authentication Pages Styling */
+body.auth-page {
+    background-color: var(--bg-light);
+    font-family: var(--font-family);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.auth-box,
+.auth-box.register-box {
+    background: var(--bg-white);
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+}
+
+.auth-logo-container {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.auth-logo {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    border-radius: 15px;
+}
+
+.app-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin: 8px 0 28px 0;
+}
+
+.form-group {
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 7px;
+    color: rgb(74, 74, 74);
+    font-weight: 600;
+    font-size: 14px;
+    padding-left: 2px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid rgb(226, 232, 240);
+    border-radius: 12px;
+    box-sizing: border-box;
+    font-size: 15px;
+    background-color: rgb(248, 250, 252);
+    color: var(--text-dark);
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(91, 200, 216, 0.15);
+}
+
+.form-control::placeholder {
+    color: rgb(160, 174, 192);
+}
+
+.field-hint {
+    font-size: 11px;
+    color: rgb(160, 174, 192);
+    margin-top: 5px;
+    padding-left: 4px;
+    text-align: left;
+}
+
+.remember-me-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-top: -8px;
+}
+
+.remember-me-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+    margin-right: 8px;
+}
+
+.remember-me-group label {
+    margin: 0;
+    font-weight: 500;
+    color: var(--text-light);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.auth-box .btn-primary {
+    width: 100%;
+    padding: 16px;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background 0.3s ease, transform 0.1s ease;
+}
+
+.auth-box .btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+.auth-box .btn-primary:active {
+    transform: scale(0.98);
+}
+
+.text-danger {
+    color: var(--danger);
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+    padding-left: 4px;
+}
+
+.footer-links {
+    margin-top: 25px;
+    font-size: 15px;
+    color: var(--text-light);
+}
+
+.footer-links a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+.validation-summary {
+    background-color: rgb(254, 226, 226);
+    border: 1px solid rgb(248, 113, 113);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    color: var(--danger);
+    font-size: 14px;
+}
+
+.validation-summary ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+/* Forgot Password Link */
+.forgot-password-link {
+    display: block;
+    margin-top: 15px;
+    text-align: center;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.forgot-password-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+/* Info and message boxes */
+.info-text {
+    background-color: rgb(220, 245, 254);
+    border-left: 4px solid rgb(91, 200, 216);
+    padding: 14px 14px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    color: rgb(26, 26, 26);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.success-message {
+    background-color: rgb(220, 255, 225);
+    border: 1px solid rgb(113, 230, 150);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    color: rgb(26, 26, 26);
+    font-size: 14px;
+}
+
+/* Aliases for legacy class names */
+.login-box {
+    background: var(--bg-white);
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+}
+
+.logo-container {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.logo-container img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    border-radius: 15px;
+}
+
+/* Reset password specific */
+.reset-password-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: rgb(244, 247, 246);
+}
+
+.reset-password-box {
+    background: white;
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+}
+
+.reset-password-box h2 {
+    color: rgb(26, 26, 26);
+    font-size: 20px;
+    margin-top: 0;
+}
+
+.app-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: rgb(91, 200, 216);
+}
+
+@media (max-width: 480px) {
+    .auth-box {
+        padding: 30px 20px;
+    }
+
+    .login-box {
+        padding: 30px 20px;
+    }
+
+    .reset-password-box {
+        padding: 30px 20px;
+    }
+
+    .auth-logo,
+    .logo-container img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .app-name,
+    .app-title {
+        font-size: 18px;
+    }
+
+    .form-control {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+
+    .auth-box .btn-primary,
+    .login-box .btn-primary,
+    .reset-password-box .btn-primary {
+        padding: 14px;
+        font-size: 15px;
+    }
+}

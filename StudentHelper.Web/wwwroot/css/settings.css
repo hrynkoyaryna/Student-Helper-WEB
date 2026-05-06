@@ -1,0 +1,224 @@
+/* Settings Page Styling */
+
+.settings-page {
+    background-color: #f8fafc;
+}
+
+.settings-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.settings-header {
+    margin-bottom: 2rem;
+}
+
+.settings-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.settings-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.settings-card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.settings-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #f3f4f6;
+    background-color: #fafbfc;
+}
+
+.settings-card-header h5 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.settings-card-body {
+    padding: 1.5rem;
+}
+
+.settings-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.settings-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.settings-form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.settings-form-row .settings-form-group {
+    margin-bottom: 0;
+}
+
+.settings-label {
+    display: block;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.settings-input,
+.settings-select,
+.settings-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    background-color: white;
+}
+
+.settings-input:focus,
+.settings-select:focus,
+.settings-textarea:focus {
+    outline: none;
+    border-color: #5bc8d8;
+    box-shadow: 0 0 0 3px rgba(91, 200, 216, 0.1);
+}
+
+.settings-input::placeholder {
+    color: #9ca3af;
+}
+
+.settings-textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.settings-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.settings-btn-primary {
+    background-color: #5bc8d8;
+    color: white;
+}
+
+.settings-btn-primary:hover {
+    background-color: #44bcc8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(91, 200, 216, 0.3);
+}
+
+.settings-btn-outline {
+    background-color: transparent;
+    color: #5bc8d8;
+    border: 2px solid #5bc8d8;
+}
+
+.settings-btn-outline:hover {
+    background-color: #5bc8d8;
+    color: white;
+}
+
+.settings-btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.settings-btn-danger:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.settings-help-text {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+}
+
+.settings-alert {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid;
+}
+
+.settings-alert-success {
+    background-color: #f0fdf4;
+    border-color: #22c55e;
+    color: #166534;
+}
+
+.settings-alert-danger {
+    background-color: #fef2f2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+.settings-alert-info {
+    background-color: #f0f9ff;
+    border-color: #0ea5e9;
+    color: #0c2340;
+}
+
+.settings-close-btn {
+    float: right;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: inherit;
+    opacity: 0.5;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.settings-close-btn:hover {
+    opacity: 0.75;
+}
+
+@media (max-width: 768px) {
+    .settings-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .settings-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .settings-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

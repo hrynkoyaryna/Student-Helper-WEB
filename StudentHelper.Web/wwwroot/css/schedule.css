@@ -1,0 +1,192 @@
+/* Schedule specific styles */
+.schedule-container {
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.schedule-header {
+    background-color: var(--bg-light);
+    padding: 1.5rem;
+    border-bottom: 2px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.schedule-title {
+    margin: 0;
+    color: var(--text-dark);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Table Styles */
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.schedule-table thead {
+    background-color: var(--bg-light);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.schedule-table th {
+    padding: 1rem;
+    text-align: left;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.schedule-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-light);
+}
+
+.schedule-table tbody tr {
+    transition: var(--transition-base);
+}
+
+.schedule-table tbody tr:hover {
+    background-color: var(--bg-light);
+}
+
+.schedule-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Time Slot */
+.time-slot {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Lesson Item */
+.lesson-item {
+    padding: 0.75rem;
+    background-color: var(--bg-light);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    margin-bottom: 0.5rem;
+    transition: var(--transition-base);
+}
+
+.lesson-item:hover {
+    background-color: var(--primary-light);
+    transform: translateX(4px);
+}
+
+.lesson-name {
+    color: var(--text-dark);
+    font-weight: 600;
+    margin: 0;
+}
+
+.lesson-details {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0.25rem 0;
+}
+
+.lesson-teacher {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+.lesson-teacher::before {
+    content: "👤";
+}
+
+.lesson-room {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+.lesson-room::before {
+    content: "🏢";
+}
+
+/* Group/Class Column */
+.group-header {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+}
+
+/* Empty State */
+.empty-state {
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state-title {
+    font-size: 1.25rem;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+    .schedule-table {
+        font-size: 0.875rem;
+    }
+    
+    .schedule-table th,
+    .schedule-table td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .schedule-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    /* Stack on mobile */
+    .schedule-table tbody tr {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+    }
+    
+    .schedule-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: none;
+        border-bottom: 1px solid var(--border-light);
+    }
+    
+    .schedule-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-right: 0.5rem;
+    }
+}

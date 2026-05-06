@@ -6,36 +6,36 @@
 
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 style="font-size: 32px; font-weight: 800; color: rgb(26, 26, 26);">📚 Екзамени</h1>
+        <h1 class="exams-page-header">📚 Екзамени</h1>
         <div>
             @if (User.Identity != null && User.Identity.IsAuthenticated && !User.IsInRole("Admin"))
             {
-                <a asp-action="Create" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px;">Додати екзамен</a>
+                <a asp-action="Create" class="btn btn-primary px-4 shadow-sm btn-rounded">Додати екзамен</a>
             }
             @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
             {
-                <a asp-action="CreateGroupExam" class="btn btn-success px-4 shadow-sm ms-2" style="border-radius: 8px;">Додати екзамен для групи</a>
+                <a asp-action="CreateGroupExam" class="btn btn-success px-4 shadow-sm ms-2 btn-rounded">Додати екзамен для групи</a>
             }
         </div>
     </div>
 
-    <div class="bg-white rounded-4 shadow-sm p-4">
-        <div class="d-flex flex-wrap gap-2 mb-4">
+    <div class="exams-container">
+        <div class="exams-filter-buttons">
             <a asp-action="Index" asp-route-time="all" asp-route-subject="@Model.SelectedSubject" asp-route-sort="@Model.SortOrder"
-               class="btn @(Model.TimeFilter == "all" ? "btn-primary" : "btn-outline-primary")" style="border-radius: 8px;">Усі</a>
+               class="btn @(Model.TimeFilter == "all" ? "btn-primary" : "btn-outline-primary") exams-filter-btn">Усі</a>
             <a asp-action="Index" asp-route-time="upcoming" asp-route-subject="@Model.SelectedSubject" asp-route-sort="@Model.SortOrder"
-               class="btn @(Model.TimeFilter == "upcoming" ? "btn-primary" : "btn-outline-primary")" style="border-radius: 8px;">Майбутні</a>
+               class="btn @(Model.TimeFilter == "upcoming" ? "btn-primary" : "btn-outline-primary") exams-filter-btn">Майбутні</a>
             <a asp-action="Index" asp-route-time="past" asp-route-subject="@Model.SelectedSubject" asp-route-sort="@Model.SortOrder"
-               class="btn @(Model.TimeFilter == "past" ? "btn-primary" : "btn-outline-primary")" style="border-radius: 8px;">Минулі</a>
+               class="btn @(Model.TimeFilter == "past" ? "btn-primary" : "btn-outline-primary") exams-filter-btn">Минулі</a>
         </div>
 
-        <form method="get" asp-action="Index" class="row g-3 align-items-end mb-4">
+        <form method="get" asp-action="Index" class="exams-form">
             <input type="hidden" name="time" value="@Model.TimeFilter" />
             <input type="hidden" name="sort" value="@Model.SortOrder" />
 
-            <div class="col-md-4">
+            <div class="flex-grow-1" style="min-width: 200px;">
                 <label class="form-label fw-semibold">Предмет</label>
-                <select name="subject" class="form-select" style="border-radius: 8px;">
+                <select name="subject" class="form-select">
                     <option value="">Усі предмети</option>
                     @foreach (var subject in Model.Subjects)
                     {
@@ -44,17 +44,17 @@
                 </select>
             </div>
 
-            <div class="col-md-auto">
-                <button type="submit" class="btn btn-primary px-4" style="border-radius: 8px;">Фільтрувати</button>
-                <a asp-action="Index" class="btn btn-outline-secondary px-4" style="border-radius: 8px;">Скинути</a>
+            <div>
+                <button type="submit" class="btn btn-primary px-4 btn-rounded">Фільтрувати</button>
+                <a asp-action="Index" class="btn btn-outline-secondary px-4 btn-rounded">Скинути</a>
             </div>
         </form>
 
         @if (!Model.Exams.Any())
         {
-            <div class="text-center py-5 text-secondary">
-                <h5 class="mb-2">Немає екзаменів</h5>
-                <p class="mb-0">Додай новий екзамен або зміни фільтр.</p>
+            <div class="exams-empty-state">
+                <h5>Немає екзаменів</h5>
+                <p>Додай новий екзамен або зміни фільтр.</p>
             </div>
         }
         else
@@ -63,35 +63,35 @@
                 @foreach (var exam in Model.Exams)
                 {
                     <div class="col-12">
-                        <div class="border rounded-4 p-4 shadow-sm bg-white hover-shadow transition">
-                            <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center">
+                        <div class="exam-card">
+                            <div class="exam-card-header">
                                 <div>
-                                    <h4 class="mb-2 fw-bold text-dark">
+                                    <h4 class="exam-subject">
                                         @exam.Subject
                                         @if (exam.GroupId.HasValue)
                                         {
-                                            <span class="badge bg-info ms-2">Групповий</span>
+                                            <span class="badge exam-subject-badge">Групповий</span>
                                         }
                                     </h4>
-                                    <div class="text-secondary mb-1">
-                                        <span class="me-2"></span><strong>Дата:</strong> @exam.DateTime.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                    <div class="exam-info">
+                                        <span></span><strong>Дата:</strong> @exam.DateTime.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                                     </div>
-                                    <div class="text-secondary">
-                                        <span class="me-2"></span><strong>Викладач:</strong> @(string.IsNullOrEmpty(exam.TeacherName) ? "Не вказано" : exam.TeacherName)
+                                    <div class="exam-info">
+                                        <span></span><strong>Викладач:</strong> @(string.IsNullOrEmpty(exam.TeacherName) ? "Не вказано" : exam.TeacherName)
                                     </div>
                                 </div>
 
-                                <div class="d-flex flex-wrap gap-2 justify-content-md-end">
-                                    <a asp-action="Details" asp-route-id="@exam.Id" class="btn btn-outline-secondary btn-sm px-3">Деталі</a>
+                                <div class="exam-actions">
+                                    <a asp-action="Details" asp-route-id="@exam.Id" class="btn btn-outline-secondary btn-sm exam-action-btn">Деталі</a>
                                     @if (exam.GroupId == null)
                                     {
-                                        <a asp-action="Edit" asp-route-id="@exam.Id" class="btn btn-outline-primary btn-sm px-3">Редагувати</a>
-                                        <a asp-action="Delete" asp-route-id="@exam.Id" class="btn btn-outline-danger btn-sm px-3">Видалити</a>
+                                        <a asp-action="Edit" asp-route-id="@exam.Id" class="btn btn-outline-primary btn-sm exam-action-btn">Редагувати</a>
+                                        <a asp-action="Delete" asp-route-id="@exam.Id" class="btn btn-outline-danger btn-sm exam-action-btn">Видалити</a>
                                     }
                                     else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
                                     {
-                                        <a asp-action="EditGroupExam" asp-route-id="@exam.Id" class="btn btn-outline-primary btn-sm px-3">Редагувати</a>
-                                        <a asp-action="Delete" asp-route-id="@exam.Id" class="btn btn-outline-danger btn-sm px-3">Видалити</a>
+                                        <a asp-action="EditGroupExam" asp-route-id="@exam.Id" class="btn btn-outline-primary btn-sm exam-action-btn">Редагувати</a>
+                                        <a asp-action="Delete" asp-route-id="@exam.Id" class="btn btn-outline-danger btn-sm exam-action-btn">Видалити</a>
                                     }
                                 </div>
                             </div>
@@ -102,17 +102,3 @@
         }
     </div>
 </div>
-
-<style>
-    .hover-shadow:hover {
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
-        border-color: #6bc8d7 !important;
-    }
-    .transition {
-        transition: all 0.2s ease-in-out;
-    }
-    .btn-primary { background-color: #6bc8d7; border-color: #6bc8d7; }
-    .btn-primary:hover { background-color: #5bb8c7; border-color: #5bb8c7; }
-    .btn-outline-primary { color: #6bc8d7; border-color: #6bc8d7; }
-    .btn-outline-primary:hover { background-color: #6bc8d7; border-color: #6bc8d7; color: white; }
-</style>

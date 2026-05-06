@@ -199,4 +199,3 @@ public class ConsoleEmailSender : IEmailSender
         return Task.CompletedTask;
     }
 }
-

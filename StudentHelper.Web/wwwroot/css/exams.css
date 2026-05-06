@@ -1,0 +1,258 @@
+/* Exams specific styles */
+.exams-container {
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Exams List */
+.exams-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.exam-item {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.5rem;
+    align-items: center;
+    transition: var(--transition-base);
+}
+
+.exam-item:hover {
+    background-color: var(--bg-light);
+}
+
+.exam-item:last-child {
+    border-bottom: none;
+}
+
+/* Exam Icon */
+.exam-icon {
+    font-size: 2.5rem;
+    opacity: 0.6;
+}
+
+/* Exam Info */
+.exam-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.exam-title {
+    color: var(--text-dark);
+    font-weight: 600;
+    margin: 0;
+    font-size: 1.125rem;
+}
+
+.exam-subject {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+.exam-details {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.exam-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.exam-detail-icon {
+    font-size: 1rem;
+}
+
+/* Exam Date Badge */
+.exam-date-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    min-width: 80px;
+    text-align: center;
+}
+
+.exam-date-badge.upcoming {
+    background-color: rgba(23, 162, 184, 0.1);
+    color: var(--info);
+}
+
+.exam-date-badge.warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: rgb(240, 150, 0);
+}
+
+.exam-date-badge.passed {
+    background-color: rgba(52, 168, 83, 0.1);
+    color: var(--success);
+}
+
+.exam-date-day {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.exam-date-month {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Progress */
+.exam-progress {
+    width: 100%;
+    max-width: 300px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.progress-bar-container {
+    height: 8px;
+    background-color: var(--bg-light);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Exam Actions */
+.exam-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.exam-action-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-white);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    color: var(--text-light);
+    transition: var(--transition-base);
+    font-size: 0.875rem;
+}
+
+.exam-action-btn:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Exam Stats */
+.exam-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem;
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.stat-card {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+}
+
+/* Filters */
+.exam-filters {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+}
+
+.filter-button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-white);
+    border-radius: 20px;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: var(--transition-base);
+    font-weight: 500;
+}
+
+.filter-button.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Empty State */
+.exams-empty {
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.exams-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .exam-item {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .exam-date-badge {
+        width: 100%;
+        max-width: 100px;
+        align-self: flex-start;
+    }
+    
+    .exam-actions {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+    
+    .exam-filters {
+        flex-direction: column;
+    }
+    
+    .filter-button {
+        width: 100%;
+    }
+}

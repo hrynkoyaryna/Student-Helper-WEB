@@ -4,28 +4,6 @@
     ViewData["Title"] = "Додати подію";
 }
 
-<style>
-    .create-event-container { max-width: 860px; margin: 0 auto; padding: 40px 20px; }
-    .create-event-card { background-color: white; border-radius: 16px; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08); padding: 32px; border: 1px solid #e5e7eb; }
-    .create-event-title { font-size: 32px; font-weight: 800; color: #111827; margin-bottom: 28px; }
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; font-weight: 700; margin-bottom: 8px; color: #374151; }
-    .form-group input, .form-group textarea { width: 100%; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 15px; box-sizing: border-box; outline: none; }
-    .form-group textarea { min-height: 120px; resize: vertical; }
-    .form-group input:focus, .form-group textarea:focus { border-color: #5bc8d8; box-shadow: 0 0 0 4px rgba(91, 200, 216, 0.18); }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-    .validation-error { color: #dc2626; font-size: 14px; margin-top: 6px; display: block; }
-    .validation-summary-errors { color: #dc2626; margin-bottom: 20px; font-weight: 700; padding: 12px 14px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; }
-    .form-actions { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
-    .action-btn { padding: 12px 22px; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; text-decoration: none; display: inline-block; transition: background-color 0.2s ease; }
-    .save-btn { background-color: #5bc8d8; color: white; }
-    .save-btn:hover { background-color: #43b5c7; }
-    .cancel-btn { background-color: #e5e7eb; color: #374151; }
-    .cancel-btn:hover { background-color: #d1d5db; color: #111827; }
-
-    @@media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } .create-event-card { padding: 22px; } .create-event-title { font-size: 26px; } }
-</style>
-
 <div class="create-event-container">
     <div class="create-event-card">
         <h1 class="create-event-title">Додати нову подію</h1>

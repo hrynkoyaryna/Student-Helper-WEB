@@ -154,12 +154,12 @@ public class ScheduleController : Controller
 
         try
         {
-            // Визначаємо або створюємо групу
+            // Визначаємо або створюємо групу (з перевіркою на дублікати)
             var groupId = model.GroupId ?? 0;
             if (groupId <= 0 && !string.IsNullOrWhiteSpace(model.GroupName))
             {
                 _logger.LogInformation("Creating or finding group: {GroupName}", model.GroupName);
-                var group = await _context.Groups.FirstOrDefaultAsync(g => g.Name == model.GroupName.Trim());
+                var group = await _context.Groups.FirstOrDefaultAsync(g => g.Name.ToLower() == model.GroupName.Trim().ToLower());
                 if (group != null)
                 {
                     groupId = group.Id;
@@ -185,15 +185,25 @@ public class ScheduleController : Controller
                 return View(model);
             }
 
-            // Визначаємо або створюємо предмет
+            // Визначаємо або створюємо предмет (з перевіркою на дублікати)
             var subjectId = model.SubjectId ?? 0;
             if (subjectId <= 0 && !string.IsNullOrWhiteSpace(model.SubjectTitle))
             {
-                _logger.LogInformation("Creating subject: {SubjectTitle}", model.SubjectTitle);
-                var subj = new Subject { Title = model.SubjectTitle.Trim() };
-                _context.Subjects.Add(subj);
-                await _context.SaveChangesAsync();
-                subjectId = subj.Id;
+                _logger.LogInformation("Creating or finding subject: {SubjectTitle}", model.SubjectTitle);
+                var subj = await _context.Subjects.FirstOrDefaultAsync(s => s.Title.ToLower() == model.SubjectTitle.Trim().ToLower());
+                if (subj != null)
+                {
+                    subjectId = subj.Id;
+                    _logger.LogInformation("Found existing subject: {SubjectId}", subjectId);
+                }
+                else
+                {
+                    subj = new Subject { Title = model.SubjectTitle.Trim() };
+                    _context.Subjects.Add(subj);
+                    await _context.SaveChangesAsync();
+                    subjectId = subj.Id;
+                    _logger.LogInformation("Created new subject: {SubjectId}", subjectId);
+                }
             }
 
             if (subjectId <= 0)
@@ -206,15 +216,25 @@ public class ScheduleController : Controller
                 return View(model);
             }
 
-            // Визначаємо або створюємо викладача
+            // Визначаємо або створюємо викладача (з перевіркою на дублікати)
             var teacherId = model.TeacherId ?? 0;
             if (teacherId <= 0 && !string.IsNullOrWhiteSpace(model.TeacherName))
             {
-                _logger.LogInformation("Creating teacher: {TeacherName}", model.TeacherName);
-                var teacher = new Teacher { FullName = model.TeacherName.Trim() };
-                _context.Teachers.Add(teacher);
-                await _context.SaveChangesAsync();
-                teacherId = teacher.Id;
+                _logger.LogInformation("Creating or finding teacher: {TeacherName}", model.TeacherName);
+                var teacher = await _context.Teachers.FirstOrDefaultAsync(t => t.FullName.ToLower() == model.TeacherName.Trim().ToLower());
+                if (teacher != null)
+                {
+                    teacherId = teacher.Id;
+                    _logger.LogInformation("Found existing teacher: {TeacherId}", teacherId);
+                }
+                else
+                {
+                    teacher = new Teacher { FullName = model.TeacherName.Trim() };
+                    _context.Teachers.Add(teacher);
+                    await _context.SaveChangesAsync();
+                    teacherId = teacher.Id;
+                    _logger.LogInformation("Created new teacher: {TeacherId}", teacherId);
+                }
             }
 
             _logger.LogInformation("Creating schedule lesson: GroupId={GroupId}, SubjectId={SubjectId}, TeacherId={TeacherId}, Date={Date}", groupId, subjectId, teacherId, model.Date);

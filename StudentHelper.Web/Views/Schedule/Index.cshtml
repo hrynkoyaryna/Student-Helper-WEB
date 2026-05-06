@@ -2,17 +2,17 @@
 @model StudentHelper.Web.Models.Schedule.GroupScheduleViewModel
 
 @{
-    ViewData["Title"] = "Розклад групи";
+    ViewData["Title"] = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ";
     var ukCulture = new CultureInfo("uk-UA");
 }
 
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="fw-bold mb-0" style="font-size: 2.2rem;">Розклад групи</h1>
+        <h1 class="fw-bold mb-0" style="font-size: 2.2rem;">пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ</h1>
         <div class="d-flex align-items-center gap-2">
             <form method="get" asp-action="Index" class="d-flex gap-2 align-items-center">
                 <select name="groupId" class="form-select">
-                    <option value="">-- Виберіть групу --</option>
+                    <option value="">-- пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ --</option>
                     @foreach (var g in Model.Groups)
                     {
                         if (g.Id == Model.SelectedGroupId)
@@ -26,10 +26,10 @@
                     }
                 </select>
                 <input type="date" name="weekStartDate" value="@Model.WeekStartDate.ToString("yyyy-MM-dd")" class="form-control" />
-                <button type="submit" class="btn btn-primary">Показати</button>
+                <button type="submit" class="btn btn-primary">пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ</button>
             </form>
 
-            <a asp-controller="Schedule" asp-action="Create" class="btn btn-success ms-2">Додати пару</a>
+            <a asp-controller="Schedule" asp-action="Create" class="btn btn-success ms-2">пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ</a>
         </div>
     </div>
 
@@ -42,13 +42,13 @@
         <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
     }
 
-    <p class="text-muted mb-3">Тиждень: @Model.WeekStartDate.ToString("dd.MM.yyyy") — @Model.WeekEndDate.ToString("dd.MM.yyyy")</p>
+    <p class="text-muted mb-3">пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: @Model.WeekStartDate.ToString("dd.MM.yyyy") пїЅ @Model.WeekEndDate.ToString("dd.MM.yyyy")</p>
 
     <div class="calendar-scroll-container border rounded-4 bg-white shadow-sm" style="overflow-x: auto;">
         <table class="table table-bordered mb-0" style="min-width: 1200px; table-layout: fixed; border-collapse: collapse;">
             <thead>
                 <tr class="text-center align-middle bg-light">
-                    <th style="width: 80px;" class="text-muted fw-normal border-0 py-3">Час</th>
+                    <th style="width: 80px;" class="text-muted fw-normal border-0 py-3">пїЅпїЅпїЅ</th>
                     @foreach (var day in Model.Days)
                     {
                         <th class="border-start border-bottom-0 py-3" style="width: 200px;">
@@ -96,8 +96,3 @@
         </table>
     </div>
 </div>
-
-<style>
-    .calendar-scroll-container { background: white; }
-    .badge { padding: 8px; display: block; }
-</style>

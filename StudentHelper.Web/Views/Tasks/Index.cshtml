@@ -291,23 +291,9 @@
     </div>
 </div>
 
-<script>
-    let timeout = null;
-    const searchInput = document.getElementById("searchInput");
-
-    const savedCursorPosition = sessionStorage.getItem("taskSearchCursorPosition");
-    const shouldFocus = sessionStorage.getItem("taskSearchFocus");
-
-    if (searchInput && shouldFocus === "true") {
-        searchInput.focus();
-
-        if (savedCursorPosition !== null) {
-            const position = parseInt(savedCursorPosition, 10);
-            searchInput.setSelectionRange(position, position);
-        }
-
-        sessionStorage.removeItem("taskSearchFocus");
-        sessionStorage.removeItem("taskSearchCursorPosition");
+@section Scripts {
+    <script src="~/js/tasks-search.min.js" asp-append-version="true"></script>
+}
     }
 
     if (searchInput) {

@@ -1,0 +1,150 @@
+/* Buttons with Rounded Corners */
+.btn-rounded {
+    border-radius: 8px;
+}
+
+/* Inline Display Utilities */
+.form-inline {
+    display: inline;
+}
+
+.display-inline {
+    display: inline;
+}
+
+/* Shadow and Spacing Utilities */
+.shadow-sm {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.px-4 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.ms-2 {
+    margin-left: 0.5rem;
+}
+
+.mb-1 {
+    margin-bottom: 0.25rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.mt-4 {
+    margin-top: 1.5rem;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.justify-content-center {
+    justify-content: center;
+}
+
+.gap-1 {
+    gap: 0.25rem;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.gap-3 {
+    gap: 1rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Exams Page */
+.exam-filters {
+    margin-bottom: 2rem;
+}
+
+.exam-filter-btn {
+    border-radius: 8px;
+}
+
+.exam-table {
+    table-layout: auto;
+}
+
+/* Calendar and Schedule Pages */
+.calendar-scroll-container {
+    overflow-x: auto;
+    border-radius: 1.5rem;
+    background-color: var(--bg-white);
+    box-shadow: var(--shadow-md);
+}
+
+.calendar-table {
+    min-width: 1200px;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.schedule-table {
+    min-width: 1400px;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.calendar-time-cell {
+    width: 80px;
+    height: 100px;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+    color: var(--text-muted);
+    border-right: 1px solid var(--border-color);
+    background-color: var(--bg-light);
+    font-size: 0.875rem;
+}
+
+.calendar-day-header {
+    width: 250px;
+    font-weight: 700;
+    text-transform: capitalize;
+    padding: 0.75rem;
+}
+
+.calendar-time-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* Students Page */
+.student-action-form {
+    display: inline;
+}
+
+/* Responsive Table */
+@media (max-width: 1200px) {
+    .calendar-scroll-container {
+        overflow-x: scroll;
+    }
+
+    .calendar-table,
+    .schedule-table {
+        min-width: 100%;
+    }
+}

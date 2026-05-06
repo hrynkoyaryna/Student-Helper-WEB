@@ -8,35 +8,35 @@
 
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-1">
-        <h1 class="fw-bold mb-0" style="font-size: 3rem;">Календар</h1>
-        <div class="d-flex align-items-center gap-1">
-            <div class="btn-group shadow-sm">
+        <h1 class="calendar-page-title">Календар</h1>
+        <div class="calendar-actions">
+            <div class="calendar-nav-controls">
                 <a asp-action="Index" asp-route-weekStartDate="@Model.WeekStartDate.AddDays(-7).ToString("yyyy-MM-dd")" class="btn btn-info text-white">←</a>
                 <a asp-action="Index" asp-route-weekStartDate="@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")" class="btn btn-info text-white px-4">Сьогодні</a>
                 <a asp-action="Index" asp-route-weekStartDate="@Model.WeekStartDate.AddDays(7).ToString("yyyy-MM-dd")" class="btn btn-info text-white">→</a>
             </div>
-            <a asp-action="Create" class="btn btn-dark ms-2 fw-bold py-2 px-3 shadow-sm" style="border-radius: 8px;">Додати подію</a>
+            <a asp-action="Create" class="btn btn-dark fw-bold py-2 px-3 shadow-sm btn-rounded">Додати подію</a>
 
             @if (User.IsInRole("Admin"))
             {
-                <a asp-controller="Schedule" asp-action="Create" class="btn btn-primary ms-2 fw-bold py-2 px-3 shadow-sm" style="border-radius: 8px; background-color: #198754; border: none;">Створити пару</a>
+                <a asp-controller="Schedule" asp-action="Create" class="btn btn-primary fw-bold py-2 px-3 shadow-sm btn-rounded">Створити пару</a>
             }
         </div>
     </div>
-    <p class="text-muted mb-4">Тиждень: @Model.WeekStartDate.ToString("dd.MM.yyyy") — @Model.WeekEndDate.ToString("dd.MM.yyyy")</p>
+    <p class="calendar-info-text">Тиждень: @Model.WeekStartDate.ToString("dd.MM.yyyy") — @Model.WeekEndDate.ToString("dd.MM.yyyy")</p>
 
-    <div class="calendar-scroll-container border rounded-4 bg-white shadow-sm" style="overflow-x: auto;">
-        <table class="table table-bordered mb-0" style="min-width: 1400px; table-layout: fixed; border-collapse: collapse;">
+    <div class="calendar-scroll-container">
+        <table class="calendar-table">
             <thead>
                 <tr class="text-center align-middle bg-light">
-                    <th style="width: 80px;" class="text-muted fw-normal border-0 py-3">Час</th>
+                    <th class="calendar-header-hour">Час</th>
                     @foreach (var day in Model.Days)
                     {
-                        <th class="border-start border-bottom-0 py-3" style="width: 250px;">
-                            <div class="fw-bold text-capitalize @(day == DateOnly.FromDateTime(DateTime.Today) ? "text-info" : "")">
+                        <th class="calendar-header-day">
+                            <div class="calendar-header-day-name @(day == DateOnly.FromDateTime(DateTime.Today) ? "text-info" : "")">
                                 @day.ToString("dddd", ukCulture)
                             </div>
-                            <div class="small text-muted fw-normal">@day.ToString("dd.MM")</div>
+                            <div class="calendar-header-day-date">@day.ToString("dd.MM")</div>
                         </th>
                     }
                 </tr>
@@ -45,12 +45,12 @@
                 @foreach (var slot in Model.TimeSlots)
                 {
                     <tr>
-                        <td class="text-center align-middle fw-bold text-muted small border-end bg-light" style="height: 100px;">
+                        <td class="calendar-time-cell">
                             @slot.ToString("HH:mm")
                         </td>
                         @foreach (var day in Model.Days)
                         {
-                            <td class="p-0 position-relative day-cell border-start" style="vertical-align: top; height: 100px;">
+                            <td class="day-cell">
                                 @{
                                     var eventsInSlot = Model.Events.Where(e => 
                                         DateOnly.FromDateTime(e.StartAt) == day && 
@@ -59,38 +59,28 @@
 
                                 @if (eventsInSlot.Any())
                                 {
-                                    <div class="d-flex flex-column gap-1 p-2" style="width: 100%; height: 100%; overflow-y: auto;">
+                                    <div class="event-item-container">
                                         @foreach (var ev in eventsInSlot)
                                         {
-                                            var durationMin = (ev.EndAt - ev.StartAt).TotalMinutes;
-                                            var heightPx = (durationMin / 60.0) * 100;
-                                            var topOffsetPx = (ev.StartAt.Minute / 60.0) * 100;
-
                                             var targetController = ev.Type switch {
                                                 "Task" => "Tasks",
                                                 "Exam" => "Exams",
                                                 _ => "Calendar"
                                             };
                                             
-                                            var targetAction = "Details"; 
+                                            var targetAction = "Details";
 
-                                            <div class="event-item rounded-2 shadow-sm text-white" 
-                                                 style="background-color: @ev.Color; 
-                                                        padding: 6px 8px;
-                                                        cursor: pointer;
-                                                        overflow: hidden;
-                                                        flex-shrink: 0;
-                                                        font-size: 0.75rem;
-                                                        min-width: 0;"
+                                            <div class="event-item" 
+                                                 style="background-color: @ev.Color;"
                                                  onclick="location.href='@Url.Action(targetAction, targetController, new { id = ev.Id })'">
                                                 
-                                                <div class="text-uppercase fw-bold" style="font-size: 0.6rem; opacity: 0.8; letter-spacing: 0.5px;">
+                                                <div class="event-item-type">
                                                     @(ev.Type == "Task" ? "Завдання" : (ev.Type == "Exam" ? "Екзамен" : "Подія"))
                                                 </div>
 
-                                                <div class="fw-bold text-truncate">@ev.Title</div>
+                                                <div class="event-item-title">@ev.Title</div>
                                                 
-                                                <div style="opacity: 0.9;">
+                                                <div class="event-item-time">
                                                      @ev.StartAt.ToString("HH:mm") - @ev.EndAt.ToString("HH:mm")
                                                 </div>
                                             </div>
@@ -105,34 +95,3 @@
         </table>
     </div>
 </div>
-
-<style>
-    body { background-color: #f8f9fa; }
-    .table td, .table th { border-color: #eee !important; }
-    .btn-info { background-color: #6bc8d7; border: none; }
-    .btn-info:hover { background-color: #5bb8c7; }
-    .btn-dark { background-color: #1a1d21; border-radius: 8px; }
-    
-    .event-item { 
-        transition: all 0.2s ease;
-        border-left: 4px solid rgba(0,0,0,0.15);
-    }
-    
-    .event-item:hover { 
-        filter: brightness(110%); 
-        transform: scale(1.02);
-        z-index: 100 !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
-    }
-
-    .calendar-scroll-container::-webkit-scrollbar { height: 10px; }
-    .calendar-scroll-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-    .calendar-scroll-container::-webkit-scrollbar-thumb { background: #6bc8d7; border-radius: 10px; border: 2px solid #f1f1f1; }
-
-    /* Scrollbar для клітинок з подіями */
-    .day-cell::-webkit-scrollbar { width: 6px; }
-    .day-cell::-webkit-scrollbar-track { background: transparent; }
-    .day-cell::-webkit-scrollbar-thumb { background: rgba(107, 200, 215, 0.4); border-radius: 3px; }
-    .day-cell::-webkit-scrollbar-thumb:hover { background: rgba(107, 200, 215, 0.8); }
-
-</style>

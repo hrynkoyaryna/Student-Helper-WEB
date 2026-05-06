@@ -1,0 +1,75 @@
+[
+  {
+    "outputFileName": "wwwroot/css/bundle.min.css",
+    "inputFiles": [
+      "wwwroot/css/theme.css",
+      "wwwroot/css/site.css",
+      "wwwroot/css/components.css",
+      "wwwroot/css/layout.css",
+      "wwwroot/css/forms.css",
+      "wwwroot/css/utilities.css",
+      "wwwroot/css/pages.css",
+      "wwwroot/css/pages-extended.css",
+      "wwwroot/css/auth.css",
+      "wwwroot/css/calendar-schedule.css",
+      "wwwroot/css/exams-page.css",
+      "wwwroot/css/errors.css",
+      "wwwroot/css/settings.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/calendar.min.css",
+    "inputFiles": [
+      "wwwroot/css/calendar.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/schedule.min.css",
+    "inputFiles": [
+      "wwwroot/css/schedule.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/tasks.min.css",
+    "inputFiles": [
+      "wwwroot/css/tasks.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/notes.min.css",
+    "inputFiles": [
+      "wwwroot/css/notes.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/exams.min.css",
+    "inputFiles": [
+      "wwwroot/css/exams.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/site.min.js",
+    "inputFiles": [
+      "wwwroot/js/site.js",
+      "wwwroot/js/forms.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/calendar.min.js",
+    "inputFiles": [
+      "wwwroot/js/calendar.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/schedule.min.js",
+    "inputFiles": [
+      "wwwroot/js/schedule.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/tasks.min.js",
+    "inputFiles": [
+      "wwwroot/js/tasks.js"
+    ]
+  }
+]

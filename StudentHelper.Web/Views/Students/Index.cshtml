@@ -67,7 +67,7 @@
                                 </a>
                                 @if (student.IsBlocked)
                                 {
-                                    <form asp-action="UnblockStudent" asp-controller="Admin" asp-route-id="@student.Id" method="post" style="display:inline;">
+                                    <form asp-action="UnblockStudent" asp-controller="Admin" asp-route-id="@student.Id" method="post" class="form-inline">
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn btn-outline-success btn-sm" title="Розблокувати студента">
                                             ✓ Розблок.
@@ -76,14 +76,14 @@
                                 }
                                 else
                                 {
-                                    <form asp-action="BlockStudent" asp-controller="Admin" asp-route-id="@student.Id" method="post" onsubmit="return confirm('Ви впевнені, що хочете заблокувати цього студента?');" style="display:inline;">
+                                    <form asp-action="BlockStudent" asp-controller="Admin" asp-route-id="@student.Id" method="post" onsubmit="return confirm('Ви впевнені, що хочете заблокувати цього студента?');" class="form-inline">
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn btn-outline-danger btn-sm" title="Заблокувати студента">
                                             ⊗ Блок.
                                         </button>
                                     </form>
                                 }
-                                <form asp-action="Delete" asp-route-id="@student.Id" method="post" onsubmit="return confirm('Ви впевнені, що хочете видалити цього студента?');" style="display:inline;">
+                                <form asp-action="Delete" asp-route-id="@student.Id" method="post" onsubmit="return confirm('Ви впевнені, що хочете видалити цього студента?');" class="form-inline">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-outline-danger btn-sm">Видалити</button>
                                 </form>

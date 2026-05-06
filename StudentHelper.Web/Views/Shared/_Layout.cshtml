@@ -6,102 +6,10 @@
     <title>@ViewData["Title"]</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <!-- Main CSS Bundle -->
+    <link rel="stylesheet" href="~/css/bundle.min.css" asp-append-version="true" />
+    <!-- Scoped CSS -->
     <link rel="stylesheet" href="~/StudentHelper.Web.styles.css" asp-append-version="true" />
-    <style>
-        :root {
-            --primary-color: rgb(91, 200, 216);
-            --primary-dark: rgb(68, 184, 200);
-            --text-dark: rgb(26, 26, 26);
-            --text-light: rgb(113, 128, 150);
-            --bg-light: rgb(244, 247, 246);
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text-dark);
-        }
-
-        .navbar {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            padding: 12px 0;
-        }
-
-        .navbar-brand {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--primary-color) !important;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .navbar-brand::before {
-            content: "📚";
-            font-size: 24px;
-        }
-
-        .nav-link {
-            color: var(--text-light) !important;
-            font-weight: 500;
-            padding: 8px 15px !important;
-            transition: color 0.2s ease;
-        }
-
-        .nav-link:hover {
-            color: var(--primary-color) !important;
-        }
-
-        .btn-outline-primary {
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-outline-primary:hover {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-        }
-
-        .btn-outline-secondary {
-            color: var(--text-light);
-            border-color: var(--text-light);
-        }
-
-        .btn-outline-secondary:hover {
-            background-color: var(--text-light);
-            color: white;
-            border-color: var(--text-light);
-        }
-
-        footer {
-            background-color: var(--bg-light);
-            margin-top: 100px;
-            padding: 30px 0;
-            color: var(--text-light);
-        }
-
-        footer a {
-            color: var(--primary-color);
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        main {
-            min-height: calc(100vh - 200px);
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -120,9 +28,12 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Calendar" asp-action="Index">Календар</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Tasks" asp-action="Index">Завдання</a>
-                            </li>
+                            @if (!User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Tasks" asp-action="Index">Завдання</a>
+                                </li>
+                            }
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Notes" asp-action="Index">Нотатки</a>
                             </li>
@@ -133,7 +44,14 @@
                                 <a class="nav-link" asp-area="" asp-controller="Home" asp-action="AboutApp">Про додаток</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="UserRequests" asp-action="Index">Звернення</a>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="nav-link" asp-controller="UserRequests" asp-action="AdminIndex">Звернення</a>
+                                }
+                                else
+                                {
+                                    <a class="nav-link" asp-controller="UserRequests" asp-action="Index">Звернення</a>
+                                }
                             </li>
 
                             @if (User.IsInRole("Admin"))
@@ -149,11 +67,6 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Schedule" asp-action="Create">Створити розклад</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="UserRequests" asp-action="AdminIndex">
-                                        Звернення користувачів
-                                    </a>
                                 </li>
                             }
                         }
@@ -174,7 +87,7 @@
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
-                                        <form method="post" asp-controller="Account" asp-action="Logout" style="margin: 0;">
+                                        <form method="post" asp-controller="Account" asp-action="Logout" class="form-inline">
                                             <button type="submit" class="dropdown-item">
                                                 Вихід
                                             </button>
@@ -202,16 +115,17 @@
 
     <footer class="border-top text-muted">
         <div class="container-fluid">
-            <div style="padding: 40px 20px; text-align: center;">
-                <p style="margin-bottom: 10px;">&copy; 2026 Student Helper - <a asp-area="" asp-controller="Home" asp-action="Privacy">Конфіденційність</a></p>
-                <p style="font-size: 12px; opacity: 0.7;">Офіційна платформа для управління навчанням студентів</p>
+            <div class="footer-content">
+                <p class="footer-copyright">&copy; 2026 Student Helper - <a asp-area="" asp-controller="Home" asp-action="Privacy">Конфіденційність</a></p>
+                <p class="footer-tagline">Офіційна платформа для управління навчанням студентів</p>
             </div>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- Main JS utilities bundle -->
+    <script src="~/js/site.min.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -80,34 +80,10 @@
     </div>
 </div>
 
-<style>
-    body { background-color: #f8f9fa; }
-    .form-control:focus, .form-select:focus {
-        border-color: #6bc8d7;
-        box-shadow: 0 0 0 0.25rem rgba(116, 224, 240, 0.25);
-    }
-    .btn-info { background-color: #6bc8d7; border: none; color: white; }
-    .btn-info:hover { background-color: #5bb8c7; color: white; }
-</style>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const textarea = document.getElementById('descriptionInput');
-            const charCount = document.getElementById('charCount');
-            
-            if (textarea && charCount) {
-                // Оновити при завантаженні
-                updateCharCount();
-                
-                // Оновити при введенні
-                textarea.addEventListener('input', updateCharCount);
-            }
-            
-            function updateCharCount() {
-                const currentLength = textarea.value.length;
-                charCount.textContent = currentLength + ' / 500 символів';
+    <script src="~/js/tasks-edit.min.js" asp-append-version="true"></script>
+}
                 
                 if (currentLength >= 500) {
                     charCount.classList.add('text-warning');
