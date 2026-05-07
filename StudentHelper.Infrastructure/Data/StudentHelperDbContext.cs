@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using StudentHelper.Application.Models;
 using StudentHelper.Domain.Entities;
 
 namespace StudentHelper.Infrastructure.Data;
@@ -21,6 +22,7 @@ public class StudentHelperDbContext : IdentityDbContext<User, IdentityRole<int>,
     public DbSet<PersonalEvent> PersonalEvents => Set<PersonalEvent>();
     public DbSet<Note> Notes => Set<Note>();
     public DbSet<UserRequest> UserRequests => Set<UserRequest>();
+    public DbSet<NotificationModel> Notifications => Set<NotificationModel>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,6 +83,14 @@ public class StudentHelperDbContext : IdentityDbContext<User, IdentityRole<int>,
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
+
+        // Налаштування для NotificationModel
+        modelBuilder.Entity<NotificationModel>()
+            .HasKey(n => n.Id);
+
+        modelBuilder.Entity<NotificationModel>()
+            .Property(n => n.CreatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         modelBuilder.Entity<IdentityRole<int>>().HasData(
             new IdentityRole<int> { Id = 1, Name = "Admin", NormalizedName = "ADMIN" },

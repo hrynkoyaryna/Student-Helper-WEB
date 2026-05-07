@@ -8,6 +8,7 @@ public class ApplicationSettings
     public int MaxTaskDescriptionLength { get; set; }
     public PasswordSettings PasswordSettings { get; set; } = new();
     public CacheSettings CacheSettings { get; set; } = new();
+    public int NotificationCheckIntervalSeconds { get; set; } = 300;
 }
 
 public class PasswordSettings

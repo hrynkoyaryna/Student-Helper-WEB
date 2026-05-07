@@ -6,8 +6,11 @@
     <title>@ViewData["Title"]</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
     <!-- Main CSS Bundle -->
     <link rel="stylesheet" href="~/css/bundle.min.css" asp-append-version="true" />
+    <!-- Notifications CSS -->
+    <link rel="stylesheet" href="~/css/notifications.css" asp-append-version="true" />
     <!-- Scoped CSS -->
     <link rel="stylesheet" href="~/StudentHelper.Web.styles.css" asp-append-version="true" />
 </head>
@@ -75,6 +78,18 @@
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <div class="d-flex align-items-center gap-3">
+                            <!-- Notification Bell -->
+                            <div class="dropdown">
+                                <button class="notification-button btn btn-link" type="button" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false" title="Нотифікації">
+                                    <i class="bi bi-bell"></i>
+                                    <span id="notification-unread-badge" class="badge bg-danger">0</span>
+                                </button>
+                                <div class="notification-panel dropdown-menu dropdown-menu-end" id="notification-panel" aria-labelledby="notificationBell">
+                                    <p class="text-muted text-center p-3">Немає нотифікацій</p>
+                                </div>
+                            </div>
+
+                            <!-- User Menu -->
                             <div class="dropdown">
                                 <button class="btn btn-link dropdown-toggle text-secondary" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 14px; text-decoration: none;">
                                     @User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
@@ -124,6 +139,17 @@
 
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <!-- SignalR Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script>
+        // Expose HubConnectionBuilder and LogLevel on window for legacy code
+        if (window.signalR) {
+            window.HubConnectionBuilder = window.signalR.HubConnectionBuilder;
+            window.LogLevel = window.signalR.LogLevel;
+        }
+    </script>
+    <!-- Notification Manager -->
+    <script src="~/js/notification-manager.js" asp-append-version="true"></script>
     <!-- Main JS utilities bundle -->
     <script src="~/js/site.min.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

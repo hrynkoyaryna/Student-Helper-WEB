@@ -11,7 +11,9 @@ using StudentHelper.Domain.Entities;
 using StudentHelper.Infrastructure.Data;
 using StudentHelper.Infrastructure.Repositories;
 using StudentHelper.Infrastructure.Services;
+using StudentHelper.Web.Hubs;
 using StudentHelper.Web.Middleware;
+using StudentHelper.Web.Services;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -21,6 +23,9 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddControllersWithViews();
+
+// Додаємо SignalR
+builder.Services.AddSignalR();
 
 builder.Services.Configure<ApplicationSettings>(
     builder.Configuration.GetSection("ApplicationSettings"));
@@ -84,6 +89,12 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<INotesService, NotesService>();
 builder.Services.AddScoped<IExamsService, ExamsService>();
 
+// Додаємо сервіс для нотифікацій
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// Додаємо BackgroundService для перевірки подій
+builder.Services.AddHostedService<NotificationBackgroundService>();
+
 // Add memory cache and cacheable lookup service
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ICacheableLookupService, StudentHelper.Web.Services.CacheableLookupServiceWeb>();
@@ -107,10 +118,10 @@ var itemsPerPage = app.Configuration["ApplicationSettings:ItemsPerPage"];
 var smtpHost = app.Configuration["Smtp:Host"];
 
 Console.WriteLine("\n" + new string('=', 50));
-Console.WriteLine($">>> ����²��� ���Բ����ֲ�");
-Console.WriteLine($">>> ������� ����������: {currentEnv}");
-Console.WriteLine($">>> ItemsPerPage (� �����): {itemsPerPage}");
-Console.WriteLine($">>> SMTP Host: {(string.IsNullOrEmpty(smtpHost) ? "�������� (Console Mode)" : smtpHost)}");
+Console.WriteLine($">>> ====== APPLICATION STARTED ======");
+Console.WriteLine($">>> Environment: {currentEnv}");
+Console.WriteLine($">>> ItemsPerPage: {itemsPerPage}");
+Console.WriteLine($">>> SMTP Host: {(string.IsNullOrEmpty(smtpHost) ? "Console Mode (No SMTP)" : smtpHost)}");
 Console.WriteLine(new string('=', 50) + "\n");
 
 // Додаємо middleware для обробки глобальних винятків
@@ -145,6 +156,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 // Додаємо middleware для логування запитів (повинен бути перед іншими)
 app.UseRequestLogging();
+
+// Додаємо SignalR routing
+app.MapHub<NotificationHub>("/hubs/notification");
 
 app.MapControllerRoute(
     name: "default",

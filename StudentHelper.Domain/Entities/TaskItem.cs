@@ -17,4 +17,7 @@ public class TaskItem
 
     public int UserId { get; set; }
     public User User { get; set; } = null!;
+
+    // When the task was created - used to detect new tasks for notifications
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
