@@ -9,38 +9,61 @@
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-1">
         <h1 class="calendar-page-title">Календар</h1>
+
         <div class="calendar-actions">
             <div class="calendar-nav-controls">
-                <a asp-action="Index" asp-route-weekStartDate="@Model.WeekStartDate.AddDays(-7).ToString("yyyy-MM-dd")" class="btn btn-info text-white">←</a>
-                <a asp-action="Index" asp-route-weekStartDate="@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")" class="btn btn-info text-white px-4">Сьогодні</a>
-                <a asp-action="Index" asp-route-weekStartDate="@Model.WeekStartDate.AddDays(7).ToString("yyyy-MM-dd")" class="btn btn-info text-white">→</a>
+                <a asp-action="Index"
+                   asp-route-weekStartDate="@Model.WeekStartDate.AddDays(-7).ToString("yyyy-MM-dd")"
+                   class="btn btn-info text-white">←</a>
+
+                <a asp-action="Index"
+                   asp-route-weekStartDate="@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")"
+                   class="btn btn-info text-white px-4">Сьогодні</a>
+
+                <a asp-action="Index"
+                   asp-route-weekStartDate="@Model.WeekStartDate.AddDays(7).ToString("yyyy-MM-dd")"
+                   class="btn btn-info text-white">→</a>
             </div>
-            <a asp-action="Create" class="btn btn-dark fw-bold py-2 px-3 shadow-sm btn-rounded">Додати подію</a>
+
+            <a asp-action="Create" class="btn btn-dark fw-bold py-2 px-3 shadow-sm btn-rounded">
+                Додати подію
+            </a>
 
             @if (User.IsInRole("Admin"))
             {
-                <a asp-controller="Schedule" asp-action="Create" class="btn btn-primary fw-bold py-2 px-3 shadow-sm btn-rounded">Створити пару</a>
+                <a asp-controller="Schedule"
+                   asp-action="Create"
+                   class="btn btn-primary fw-bold py-2 px-3 shadow-sm btn-rounded">
+                    Створити пару
+                </a>
             }
         </div>
     </div>
-    <p class="calendar-info-text">Тиждень: @Model.WeekStartDate.ToString("dd.MM.yyyy") — @Model.WeekEndDate.ToString("dd.MM.yyyy")</p>
+
+    <p class="calendar-info-text">
+        Тиждень: @Model.WeekStartDate.ToString("dd.MM.yyyy") — @Model.WeekEndDate.ToString("dd.MM.yyyy")
+    </p>
 
     <div class="calendar-scroll-container">
         <table class="calendar-table">
             <thead>
                 <tr class="text-center align-middle bg-light">
                     <th class="calendar-header-hour">Час</th>
+
                     @foreach (var day in Model.Days)
                     {
                         <th class="calendar-header-day">
                             <div class="calendar-header-day-name @(day == DateOnly.FromDateTime(DateTime.Today) ? "text-info" : "")">
                                 @day.ToString("dddd", ukCulture)
                             </div>
-                            <div class="calendar-header-day-date">@day.ToString("dd.MM")</div>
+                            <div class="calendar-header-day-date">
+                                @day.ToString("dd.MM")
+                            </div>
                         </th>
                     }
                 </tr>
             </thead>
+
             <tbody>
                 @foreach (var slot in Model.TimeSlots)
                 {
@@ -48,13 +71,16 @@
                         <td class="calendar-time-cell">
                             @slot.ToString("HH:mm")
                         </td>
+
                         @foreach (var day in Model.Days)
                         {
                             <td class="day-cell">
                                 @{
-                                    var eventsInSlot = Model.Events.Where(e => 
-                                        DateOnly.FromDateTime(e.StartAt) == day && 
-                                        TimeOnly.FromDateTime(e.StartAt).Hour == slot.Hour).ToList();
+                                    var eventsInSlot = Model.Events
+                                    .Where(e =>
+                                    DateOnly.FromDateTime(e.StartAt) == day &&
+                                    TimeOnly.FromDateTime(e.StartAt).Hour == slot.Hour)
+                                    .ToList();
                                 }
 
                                 @if (eventsInSlot.Any())
@@ -62,28 +88,63 @@
                                     <div class="event-item-container">
                                         @foreach (var ev in eventsInSlot)
                                         {
-                                            var targetController = ev.Type switch {
+                                            var eventTypeText = ev.Type switch
+                                            {
+                                                "Task" => "Завдання",
+                                                "Exam" => "Екзамен",
+                                                "Lesson" => "Пара",
+                                                _ => "Подія"
+                                            };
+
+                                            var targetController = ev.Type switch
+                                            {
                                                 "Task" => "Tasks",
                                                 "Exam" => "Exams",
-                                                _ => "Calendar"
+                                                "Event" => "Calendar",
+                                                _ => ""
                                             };
-                                            
-                                            var targetAction = "Details";
 
-                                            <div class="event-item" 
-                                                 style="background-color: @ev.Color;"
-                                                 onclick="location.href='@Url.Action(targetAction, targetController, new { id = ev.Id })'">
-                                                
-                                                <div class="event-item-type">
-                                                    @(ev.Type == "Task" ? "Завдання" : (ev.Type == "Exam" ? "Екзамен" : "Подія"))
-                                                </div>
+                                            var canOpenDetails = ev.Type != "Lesson";
 
-                                                <div class="event-item-title">@ev.Title</div>
-                                                
-                                                <div class="event-item-time">
-                                                     @ev.StartAt.ToString("HH:mm") - @ev.EndAt.ToString("HH:mm")
+                                            if (canOpenDetails)
+                                            {
+                                                <div class="event-item"
+                                                     style="background-color: @ev.Color;"
+                                                     onclick="location.href='@Url.Action("Details", targetController, new { id = ev.Id })'">
+
+                                                    <div class="event-item-type">@eventTypeText</div>
+                                                    <div class="event-item-title">@ev.Title</div>
+
+                                                    <div class="event-item-time">
+                                                        @ev.StartAt.ToString("HH:mm") - @ev.EndAt.ToString("HH:mm")
+                                                    </div>
+
+                                                    @if (!string.IsNullOrWhiteSpace(ev.Description))
+                                                    {
+                                                        <div class="event-item-description">
+                                                            @ev.Description
+                                                        </div>
+                                                    }
                                                 </div>
-                                            </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="event-item" style="background-color: @ev.Color;">
+                                                    <div class="event-item-type">@eventTypeText</div>
+                                                    <div class="event-item-title">@ev.Title</div>
+
+                                                    <div class="event-item-time">
+                                                        @ev.StartAt.ToString("HH:mm") - @ev.EndAt.ToString("HH:mm")
+                                                    </div>
+
+                                                    @if (!string.IsNullOrWhiteSpace(ev.Description))
+                                                    {
+                                                        <div class="event-item-description">
+                                                            @ev.Description
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
                                         }
                                     </div>
                                 }
