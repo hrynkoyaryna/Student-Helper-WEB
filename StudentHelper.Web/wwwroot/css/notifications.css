@@ -113,16 +113,12 @@
 
 /* Notification Panel */
 .notification-panel {
-    position: absolute;
-    top: 100%;
-    right: 0;
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     min-width: 350px;
     max-height: 500px;
     overflow-y: auto;
-    margin-top: 8px;
     z-index: 1000;
 }
 
@@ -260,7 +256,7 @@
     }
 }
 
-/* Dark Mode Support (опціонально) */
+/* Dark Mode Support (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ) */
 @media (prefers-color-scheme: dark) {
     .notification-toast {
         background: #1e1e1e;

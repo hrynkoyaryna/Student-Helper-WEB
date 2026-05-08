@@ -62,9 +62,6 @@
                                 <a asp-action="Edit" asp-route-id="@student.Id" class="btn btn-outline-warning btn-sm">
                                     Редагувати
                                 </a>
-                                <a asp-action="ChangePassword" asp-route-id="@student.Id" class="btn btn-outline-info btn-sm">
-                                    Пароль
-                                </a>
                                 @if (student.IsBlocked)
                                 {
                                     <form asp-action="UnblockStudent" asp-controller="Admin" asp-route-id="@student.Id" method="post" class="form-inline">

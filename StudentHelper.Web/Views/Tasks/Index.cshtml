@@ -27,36 +27,35 @@
     <div class="bg-white rounded-4 shadow-sm p-4">
         @if (Model.DueSoonTasks.Any())
         {
-            <div class="alert alert-warning rounded-4 shadow-sm mb-4">
+            <div class="alert alert-warning rounded-4 shadow-sm mb-4" style="border: 2px solid #ffc107;">
                 <h5 class="fw-bold mb-3">⚠️ Термінові завдання</h5>
-                <p class="mb-3">
+                <p class="mb-4" style="font-size: 14px;">
                     Ці завдання мають дедлайн протягом наступних 24 годин.
                 </p>
 
-                <div class="row g-2">
+                <div style="display: flex; flex-direction: column; gap: 12px;">
                     @foreach (var task in Model.DueSoonTasks)
                     {
-                        <div class="col-12">
-                            <div class="bg-white rounded-3 p-3 border">
-                                <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
-                                    <div>
-                                        <strong>@task.Title</strong>
-
-                                        <div class="small text-secondary">
-                                            Предмет: @task.Subject
-                                        </div>
-
-                                        <div class="small text-danger fw-semibold">
-                                            Дедлайн: @task.Deadline.ToString("dd.MM.yyyy HH:mm")
-                                        </div>
+                        <div style="background: rgba(255,255,255,0.7); padding: 16px; border-radius: 12px; border-left: 4px solid #dc3545;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; font-size: 16px; margin-bottom: 8px; color: #212529;">@task.Title</div>
+                                    
+                                    <div style="font-size: 13px; color: #666; margin-bottom: 6px;">
+                                        <strong>Предмет:</strong> @task.Subject
                                     </div>
 
-                                    <a asp-action="Details"
-                                       asp-route-id="@task.Id"
-                                       class="btn btn-outline-warning btn-sm align-self-start">
-                                        Деталі
-                                    </a>
+                                    <div style="font-size: 13px; color: #dc3545; font-weight: 600;">
+                                        <strong>Дедлайн:</strong> @task.Deadline.ToString("dd.MM.yyyy HH:mm")
+                                    </div>
                                 </div>
+
+                                <a asp-action="Details"
+                                   asp-route-id="@task.Id"
+                                   class="btn btn-warning btn-sm"
+                                   style="white-space: nowrap; margin-top: 0;">
+                                    Деталі
+                                </a>
                             </div>
                         </div>
                     }
@@ -294,17 +293,3 @@
 @section Scripts {
     <script src="~/js/tasks-search.min.js" asp-append-version="true"></script>
 }
-    }
-
-    if (searchInput) {
-        searchInput.addEventListener("input", function () {
-            clearTimeout(timeout);
-
-            timeout = setTimeout(() => {
-                sessionStorage.setItem("taskSearchFocus", "true");
-                sessionStorage.setItem("taskSearchCursorPosition", searchInput.selectionStart);
-                this.form.submit();
-            }, 400);
-        });
-    }
-</script>

@@ -62,6 +62,18 @@
     border-color: var(--text-light);
 }
 
+.btn-outline-danger {
+    color: var(--danger);
+    border-color: var(--danger);
+    background-color: transparent;
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--danger);
+    color: white;
+    border-color: var(--danger);
+}
+
 .btn-success {
     background-color: var(--success);
     border-color: var(--success);
@@ -74,10 +86,35 @@
 .btn-danger {
     background-color: var(--danger);
     border-color: var(--danger);
+    color: white;
 }
 
 .btn-danger:hover {
     filter: brightness(1.1);
+}
+
+.btn-outline-success {
+    color: var(--success);
+    border-color: var(--success);
+    background-color: transparent;
+}
+
+.btn-outline-success:hover {
+    background-color: var(--success);
+    color: white;
+    border-color: var(--success);
+}
+
+.btn-outline-warning {
+    color: var(--warning);
+    border-color: var(--warning);
+    background-color: transparent;
+}
+
+.btn-outline-warning:hover {
+    background-color: var(--warning);
+    color: var(--text-dark);
+    border-color: var(--warning);
 }
 
 .btn-warning {
