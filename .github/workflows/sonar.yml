@@ -50,8 +50,7 @@ jobs:
 
         run: |
 
-          dotnet-sonarscanner begin /k:"hrynkoyaryna_Student-Helper-WEB" /o:"hrynkoyaryna" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-
+          dotnet-sonarscanner begin /k:"hrynkoyaryna_Student-Helper-WEB" /o:"hrynkoyaryna" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.coverage.exclusions="**/**"
           dotnet build
 
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
