@@ -1,4 +1,4 @@
-using Azure.Identity; // Додано для Key Vault
+using Azure.Identity;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,8 +23,12 @@ var builder = WebApplication.CreateBuilder(args);
 // --- ПУНКТ 3: Налаштування Azure Key Vault ---
 if (!builder.Environment.IsDevelopment())
 {
-    var keyVaultUri = new Uri("https://sh-vault-secrets.vault.azure.net/");
-    builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+    var vaultUriString = builder.Configuration["KeyVaultUri"];
+    if (!string.IsNullOrEmpty(vaultUriString))
+    {
+        var keyVaultUri = new Uri(vaultUriString);
+        builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+    }
 }
 // ----------------------------------------------
 
