@@ -3,24 +3,23 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - Student Helper</title>
+    
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
-    <!-- Main CSS Bundle -->
+    
     <link rel="stylesheet" href="~/css/bundle.min.css" asp-append-version="true" />
-    <!-- Notifications CSS -->
-    <link rel="stylesheet" href="~/css/notifications.css" asp-append-version="true" />
-    <!-- Scoped CSS -->
+    
     <link rel="stylesheet" href="~/StudentHelper.Web.styles.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Student Helper</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Меню навігації">
+                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">Student Helper</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -28,49 +27,25 @@
                     <ul class="navbar-nav flex-grow-1">
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Calendar" asp-action="Index">Календар</a>
-                            </li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Calendar" asp-action="Index">Календар</a></li>
                             @if (!User.IsInRole("Admin"))
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="Tasks" asp-action="Index">Завдання</a>
-                                </li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Tasks" asp-action="Index">Завдання</a></li>
                             }
+                            <li class="nav-item"><a class="nav-link" asp-controller="Notes" asp-action="Index">Нотатки</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Exams" asp-action="Index">Екзамени</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="AboutApp">Про додаток</a></li>
+                            
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Notes" asp-action="Index">Нотатки</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Exams" asp-action="Index">Екзамени</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="AboutApp">Про додаток</a>
-                            </li>
-                            <li class="nav-item">
-                                @if (User.IsInRole("Admin"))
-                                {
-                                    <a class="nav-link" asp-controller="UserRequests" asp-action="AdminIndex">Звернення</a>
-                                }
-                                else
-                                {
-                                    <a class="nav-link" asp-controller="UserRequests" asp-action="Index">Звернення</a>
-                                }
+                                <a class="nav-link" asp-controller="UserRequests" asp-action="@(User.IsInRole("Admin") ? "AdminIndex" : "Index")">Звернення</a>
                             </li>
 
                             @if (User.IsInRole("Admin"))
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Students" asp-action="Index">Студенти</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Groups" asp-action="Index">Групи</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Schedule" asp-action="Index">Розклад</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Schedule" asp-action="Create">Створити розклад</a>
-                                </li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Students" asp-action="Index">Студенти</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Groups" asp-action="Index">Групи</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Schedule" asp-action="Index">Розклад</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Schedule" asp-action="Create">Створити розклад</a></li>
                             }
                         }
                     </ul>
@@ -78,34 +53,26 @@
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <div class="d-flex align-items-center gap-3">
-                            <!-- Notification Bell -->
                             <div class="dropdown">
-                                <button class="notification-button btn btn-link" type="button" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false" title="Нотифікації">
-                                    <i class="bi bi-bell"></i>
-                                    <span id="notification-unread-badge" class="badge bg-danger">0</span>
+                                <button class="notification-button btn btn-link position-relative" type="button" id="notificationBell" data-bs-toggle="dropdown">
+                                    <i class="bi bi-bell fs-5"></i>
+                                    <span id="notification-unread-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
                                 </button>
-                                <div class="notification-panel dropdown-menu dropdown-menu-end" id="notification-panel" aria-labelledby="notificationBell">
-                                    <p class="text-muted text-center p-3">Немає нотифікацій</p>
+                                <div class="notification-panel dropdown-menu dropdown-menu-end shadow" id="notification-panel">
+                                    <p class="text-muted text-center p-3 m-0">Немає нотифікацій</p>
                                 </div>
                             </div>
 
-                            <!-- User Menu -->
                             <div class="dropdown">
-                                <button class="btn btn-link dropdown-toggle text-secondary" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 14px; text-decoration: none;">
+                                <button class="btn btn-link dropdown-toggle text-dark text-decoration-none" type="button" id="userMenu" data-bs-toggle="dropdown">
                                     @User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                                    <li>
-                                        <a class="dropdown-item" asp-controller="Settings" asp-action="Index">
-                                            Налаштування
-                                        </a>
-                                    </li>
+                                <ul class="dropdown-menu dropdown-menu-end shadow">
+                                    <li><a class="dropdown-item" asp-controller="Settings" asp-action="Index"><i class="bi bi-gear me-2"></i>Налаштування</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
-                                        <form method="post" asp-controller="Account" asp-action="Logout" class="form-inline">
-                                            <button type="submit" class="dropdown-item">
-                                                Вихід
-                                            </button>
+                                        <form method="post" asp-controller="Account" asp-action="Logout">
+                                            <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Вихід</button>
                                         </form>
                                     </li>
                                 </ul>
@@ -124,34 +91,24 @@
         </nav>
     </header>
 
-    <main role="main">
+    <main role="main" class="pb-5">
         @RenderBody()
     </main>
 
-    <footer class="border-top text-muted">
-        <div class="container-fluid">
-            <div class="footer-content">
-                <p class="footer-copyright">&copy; 2026 Student Helper - <a asp-area="" asp-controller="Home" asp-action="Privacy">Конфіденційність</a></p>
-                <p class="footer-tagline">Офіційна платформа для управління навчанням студентів</p>
-            </div>
+    <footer class="border-top text-muted bg-light py-4 mt-auto">
+        <div class="container text-center">
+            <p class="mb-1">&copy; 2026 Student Helper - <a asp-controller="Home" asp-action="Privacy">Конфіденційність</a></p>
+            <small>Офіційна платформа для управління навчанням</small>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
-    <!-- SignalR Client Library -->
+    
     <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
-    <script>
-        // Expose HubConnectionBuilder and LogLevel on window for legacy code
-        if (window.signalR) {
-            window.HubConnectionBuilder = window.signalR.HubConnectionBuilder;
-            window.LogLevel = window.signalR.LogLevel;
-        }
-    </script>
-    <!-- Notification Manager -->
-    <script src="~/js/notification-manager.js" asp-append-version="true"></script>
-    <!-- Main JS utilities bundle -->
+
     <script src="~/js/site.min.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

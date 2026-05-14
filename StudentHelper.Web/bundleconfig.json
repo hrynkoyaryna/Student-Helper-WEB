@@ -6,70 +6,94 @@
       "wwwroot/css/site.css",
       "wwwroot/css/components.css",
       "wwwroot/css/layout.css",
+      "wwwroot/css/buttons.css", 
       "wwwroot/css/forms.css",
       "wwwroot/css/utilities.css",
       "wwwroot/css/pages.css",
       "wwwroot/css/pages-extended.css",
+      "wwwroot/css/notifications.css",
       "wwwroot/css/auth.css",
       "wwwroot/css/calendar-schedule.css",
       "wwwroot/css/exams-page.css",
       "wwwroot/css/errors.css",
       "wwwroot/css/settings.css"
-    ]
+    ],
+    "minify": { "enabled": true }
   },
   {
     "outputFileName": "wwwroot/css/calendar.min.css",
     "inputFiles": [
       "wwwroot/css/calendar.css"
-    ]
+    ],
+    "minify": { "enabled": true }
   },
   {
     "outputFileName": "wwwroot/css/schedule.min.css",
     "inputFiles": [
       "wwwroot/css/schedule.css"
-    ]
+    ],
+    "minify": { "enabled": true }
   },
   {
     "outputFileName": "wwwroot/css/tasks.min.css",
     "inputFiles": [
       "wwwroot/css/tasks.css"
-    ]
+    ],
+    "minify": { "enabled": true }
   },
   {
     "outputFileName": "wwwroot/css/notes.min.css",
     "inputFiles": [
       "wwwroot/css/notes.css"
-    ]
+    ],
+    "minify": { "enabled": true }
   },
   {
     "outputFileName": "wwwroot/css/exams.min.css",
     "inputFiles": [
       "wwwroot/css/exams.css"
-    ]
+    ],
+    "minify": { "enabled": true }
   },
   {
     "outputFileName": "wwwroot/js/site.min.js",
     "inputFiles": [
       "wwwroot/js/site.js",
-      "wwwroot/js/forms.js"
-    ]
+      "wwwroot/js/forms.js",
+      "wwwroot/js/notification-manager.js"
+    ],
+    "minify": { "enabled": true, "renameLocals": false }
   },
   {
     "outputFileName": "wwwroot/js/calendar.min.js",
     "inputFiles": [
       "wwwroot/js/calendar.js"
-    ]
+    ],
+    "minify": { "enabled": true }
   },
   {
     "outputFileName": "wwwroot/js/schedule.min.js",
     "inputFiles": [
-      "wwwroot/js/schedule.js"
-    ]
+      "wwwroot/js/schedule.js",
+      "wwwroot/js/schedule-create.js"
+    ],
+    "minify": { "enabled": true }
   },
   {
     "outputFileName": "wwwroot/js/tasks.min.js",
     "inputFiles": [
-      "wwwroot/js/tasks.js"
-    ]
+      "wwwroot/js/tasks.js",
+      "wwwroot/js/tasks-create.js",
+      "wwwroot/js/tasks-edit.js",
+      "wwwroot/js/tasks-search.js"
+    ],
+    "minify": { "enabled": true }
+  },
+  {
+    "outputFileName": "wwwroot/js/notes.min.js",
+    "inputFiles": [
+      "wwwroot/js/notes-index.js"
+    ],
+    "minify": { "enabled": true }
   }
 ]

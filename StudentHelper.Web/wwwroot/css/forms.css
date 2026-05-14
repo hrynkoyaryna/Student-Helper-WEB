@@ -1,354 +1,156 @@
-/* Form Elements */
-.form-control, .form-select, textarea {
-    border: 1px solid var(--border-color);
+/* Базові змінні (якщо вони ще не визначені у тебе в main.css) */
+:root {
+    --primary-color: #6ed3d8;
+    --primary-dark: #5bbec3;
+    --border-color: #e5e7eb;
+    --text-dark: #1f2937;
+    --text-muted: #6b7280;
+    --bg-light: #f9fafb;
+    --danger: #ef4444;
+    --success: #10b981;
+    --border-radius: 12px;
+}
+
+/* Form Elements - Додано базові теги для автоматичної стилізації */
+input[type="text"],
+input[type="date"],
+input[type="time"],
+select,
+textarea,
+.form-control {
+    width: 100%;
+    border: 2px solid var(--border-color);
     border-radius: var(--border-radius);
-    padding: 0.5rem 0.75rem;
+    padding: 0.75rem 1rem;
     font-family: inherit;
     font-size: 1rem;
     color: var(--text-dark);
-    transition: var(--transition-base);
-    background-color: var(--bg-white);
+    transition: all 0.2s ease;
+    background-color: var(--bg-light);
+    box-sizing: border-box; /* Важливо для grid */
 }
 
-.form-control:focus, 
-.form-select:focus, 
-textarea:focus {
+input:focus, 
+textarea:focus,
+.form-control:focus {
     border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(91, 200, 216, 0.1);
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(110, 211, 216, 0.15);
 }
 
-.form-control::placeholder {
-    color: var(--text-muted);
+/* Контейнер сторінки */
+.create-event-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
 }
 
-.form-control:disabled, 
-.form-select:disabled {
-    background-color: var(--bg-light);
-    color: var(--text-muted);
-    cursor: not-allowed;
+.create-event-card {
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    padding: 2.5rem;
+    border: 1px solid var(--border-color);
 }
 
-textarea {
-    resize: vertical;
-    min-height: 100px;
+.create-event-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 2rem;
+    text-align: left;
 }
 
-/* Form Groups */
+/* Группування */
 .form-group {
     margin-bottom: 1.5rem;
 }
 
-.form-group.last {
-    margin-bottom: 0;
-}
-
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--text-dark);
-}
-
-label.required::after {
-    content: " *";
-    color: var(--danger);
-}
-
-.form-text {
-    display: block;
-    margin-top: 0.25rem;
-    font-size: 0.875rem;
-    color: var(--text-muted);
-}
-
-.form-text.error {
-    color: var(--danger);
-}
-
-.form-text.success {
-    color: var(--success);
-}
-
-/* Form Validation */
-.is-invalid {
-    border-color: var(--danger) !important;
-}
-
-.is-valid {
-    border-color: var(--success) !important;
-}
-
-.invalid-feedback {
-    display: block;
-    color: var(--danger);
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-.valid-feedback {
-    display: block;
-    color: var(--success);
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-/* Form Container */
-.form-container {
-    background-color: var(--bg-white);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 2rem;
-    box-shadow: var(--shadow-sm);
-}
-
-.form-container h2 {
-    margin-bottom: 1.5rem;
-}
-
-/* Checkboxes and Radios */
-.form-check {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
-}
-
-.form-check-input {
-    width: 1.25rem;
-    height: 1.25rem;
-    margin: 0;
-    cursor: pointer;
-    accent-color: var(--primary-color);
-}
-
-.form-check-label {
-    margin-bottom: 0;
-    cursor: pointer;
-    font-weight: normal;
-}
-
-/* Input Groups */
-.input-group {
-    display: flex;
-    gap: 0;
-    margin-bottom: 1rem;
-}
-
-.input-group-text {
-    background-color: var(--bg-light);
-    border: 1px solid var(--border-color);
-    padding: 0.5rem 0.75rem;
-    color: var(--text-light);
-}
-
-.input-group-text:first-child {
-    border-radius: var(--border-radius) 0 0 var(--border-radius);
-}
-
-.input-group-text:last-child {
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
-}
-
-.input-group .form-control {
-    border-radius: 0;
-}
-
-.input-group .form-control:first-child {
-    border-radius: var(--border-radius) 0 0 var(--border-radius);
-}
-
-.input-group .form-control:last-child {
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
-}
-
-/* Select Dropdown */
-.form-select option {
-    color: var(--text-dark);
-}
-
-/* Form Row */
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-}
-
-.form-row.full {
-    grid-template-columns: 1fr;
-}
-
-.form-row.two {
-    grid-template-columns: repeat(2, 1fr);
-}
-
-@media (max-width: 576px) {
-    .form-row, .form-row.two {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-container {
-        padding: 1.5rem;
-    }
-}
-
-/* Search Input */
-.search-input {
-    position: relative;
-}
-
-.search-input input {
-    padding-left: 2.5rem;
-}
-
-.search-input::before {
-    content: "🔍";
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-}
-
-/* Date and Time Inputs */
-input[type="date"], 
-input[type="time"], 
-input[type="datetime-local"],
-input[type="month"],
-input[type="week"] {
-    position: relative;
-}
-
-/* Password Input Toggle */
-.password-toggle {
-    position: relative;
-}
-
-.password-toggle button {
-    position: absolute;
-    right: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-light);
-    padding: 0.5rem;
-}
-
-.password-toggle button:hover {
-    color: var(--primary-color);
-}
-
-/* Form Container Styles */
-.create-event-container {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
-.create-event-card {
-    background-color: var(--bg-white);
-    border-radius: 16px;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-    padding: 32px;
-    border: 1px solid #e5e7eb;
-}
-
-.create-event-title {
-    font-size: 32px;
-    font-weight: 800;
-    color: var(--text-dark);
-    margin-bottom: 28px;
-}
-
-/* Form Group with Bold Labels */
 .form-group label {
+    display: block;
+    margin-bottom: 0.6rem;
     font-weight: 700;
+    color: var(--text-dark);
+    font-size: 0.95rem;
 }
 
-/* Form Row Grid */
+/* Grid для дат та часу */
 .form-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
 }
 
-.form-row.two {
-    grid-template-columns: repeat(2, 1fr);
-}
-
-.form-row.full {
-    grid-template-columns: 1fr;
-}
-
-@media (max-width: 768px) {
-    .form-row, .form-row.two, .form-row.full {
+@media (max-width: 600px) {
+    .form-row {
         grid-template-columns: 1fr;
     }
-    
-    .create-event-card {
-        padding: 22px;
-    }
-    
-    .create-event-title {
-        font-size: 26px;
-    }
 }
 
-/* Validation Error Messages */
-.validation-error {
-    color: var(--danger);
-    font-size: 14px;
-    margin-top: 6px;
-    display: block;
-}
-
-.validation-summary-errors {
-    color: var(--danger);
-    margin-bottom: 20px;
-    font-weight: 700;
-    padding: 12px 14px;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 10px;
-}
-
-/* Action Buttons */
-.action-btn {
-    padding: 12px 22px;
-    border: none;
-    border-radius: 10px;
+/* Стилізація Color Picker */
+input[type="color"] {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 2px solid var(--border-color);
+    width: 60px;
+    height: 60px;
+    padding: 4px;
+    border-radius: 50%;
     cursor: pointer;
+    background: #fff;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+/* Кнопки */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.action-btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
     font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
     text-decoration: none;
-    display: inline-block;
-    transition: background-color 0.2s ease;
+    font-size: 1rem;
+    border: none;
 }
 
 .save-btn {
     background-color: var(--primary-color);
-    color: white;
+    color: #fff;
 }
 
 .save-btn:hover {
     background-color: var(--primary-dark);
+    transform: translateY(-2px);
 }
 
 .cancel-btn {
-    background-color: #e5e7eb;
-    color: #374151;
+    background-color: #f3f4f6;
+    color: #4b5563;
 }
 
 .cancel-btn:hover {
-    background-color: #d1d5db;
-    color: var(--text-dark);
+    background-color: #e5e7eb;
 }
 
-/* Form Actions */
-.form-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 28px;
-    flex-wrap: wrap;
+/* Помилки валідації */
+.validation-error {
+    color: var(--danger);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: block;
 }
