@@ -1,3 +1,4 @@
+using Azure.Identity; // Додано для Key Vault
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,14 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
+// --- ПУНКТ 3: Налаштування Azure Key Vault ---
+//if (!builder.Environment.IsDevelopment())
+{
+    var keyVaultUri = new Uri("https://sh-vault-secrets.vault.azure.net/");
+    builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+}
+// ----------------------------------------------
+
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
@@ -30,6 +39,7 @@ builder.Services.AddSignalR();
 builder.Services.Configure<ApplicationSettings>(
     builder.Configuration.GetSection("ApplicationSettings"));
 
+// Тепер пароль у ConnectionString може підтягуватися автоматично з Key Vault
 builder.Services.AddDbContext<StudentHelperDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -77,7 +87,6 @@ builder.Services.AddScoped<IExamsRepository, ExamsRepository>();
 builder.Services.AddScoped<INotesRepository, NotesRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 
-// Register schedule repository and service
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<IScheduleService, StudentHelper.Infrastructure.Services.ScheduleService>();
 
@@ -89,13 +98,9 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<INotesService, NotesService>();
 builder.Services.AddScoped<IExamsService, ExamsService>();
 
-// Додаємо сервіс для нотифікацій
 builder.Services.AddScoped<INotificationService, NotificationService>();
-
-// Додаємо BackgroundService для перевірки подій
 builder.Services.AddHostedService<NotificationBackgroundService>();
 
-// Add memory cache and cacheable lookup service
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<ICacheableLookupService, StudentHelper.Web.Services.CacheableLookupServiceWeb>();
 
@@ -124,7 +129,6 @@ Console.WriteLine($">>> ItemsPerPage: {itemsPerPage}");
 Console.WriteLine($">>> SMTP Host: {(string.IsNullOrEmpty(smtpHost) ? "Console Mode (No SMTP)" : smtpHost)}");
 Console.WriteLine(new string('=', 50) + "\n");
 
-// Додаємо middleware для обробки глобальних винятків
 app.UseMiddleware<StudentHelper.Web.Middleware.GlobalExceptionHandlerMiddleware>();
 
 using (var scope = app.Services.CreateScope())
@@ -154,10 +158,8 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-// Додаємо middleware для логування запитів (повинен бути перед іншими)
 app.UseRequestLogging();
 
-// Додаємо SignalR routing
 app.MapHub<NotificationHub>("/hubs/notification");
 
 app.MapControllerRoute(
@@ -165,6 +167,8 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+// --- Класи та Допоміжні сервіси ---
 
 public class SmtpOptions
 {
