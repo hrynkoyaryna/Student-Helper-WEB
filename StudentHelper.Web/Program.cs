@@ -21,7 +21,7 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
 
 // --- ПУНКТ 3: Налаштування Azure Key Vault ---
-//if (!builder.Environment.IsDevelopment())
+if (!builder.Environment.IsDevelopment())
 {
     var keyVaultUri = new Uri("https://sh-vault-secrets.vault.azure.net/");
     builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
