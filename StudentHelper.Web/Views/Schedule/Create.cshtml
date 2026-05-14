@@ -1,158 +1,178 @@
-@model StudentHelper.Web.Models.Schedule.CreateScheduleViewModel
+@using StudentHelper.Web.Models.Schedule
+@model CreateScheduleViewModel
 
 @{
     ViewData["Title"] = "Створення розкладу";
 }
 
-<div class="card">
-    <div class="card-body">
-        <h3>Створити розклад для групи</h3>
-        
-        <div class="alert alert-info" role="alert">
-            <strong>Обов'язкові поля:</strong> Група, Предмет, Дата, Час, Викладач
+<style>
+    /* Уніфікація висоти: 45px для всіх елементів */
+    .form-app-control {
+        height: 45px !important;
+        border-radius: 10px !important;
+        border: 1px solid #dee2e6 !important;
+    }
+
+    /* Виправлення відступів для select */
+    select.form-app-control {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    /* Стиль для лейблів */
+    .label-custom {
+        font-weight: 700;
+        color: #6c757d;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+        <div class="card-header p-4 border-0" style="background-color: #5bc8d8;">
+            <h3 class="mb-0 fw-bold text-white" style="color: white !important;">
+                <i class="bi bi-calendar-plus me-2"></i> Створити розклад
+            </h3>
         </div>
 
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-        }
+        <div class="card-body p-4 bg-white">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger border-0 shadow-sm mb-4" style="border-radius: 10px;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                </div>
+            }
 
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-danger">
-                <strong>Помилка:</strong> @TempData["ErrorMessage"]
-            </div>
-        }
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                
+                <div class="row g-4">
+                    
+                    <div class="col-md-6">
+                        <label class="form-label label-custom">Група (вибір)</label>
+                        <select name="GroupId" id="GroupId" class="form-select form-app-control">
+                            <option value="">-- Виберіть групу --</option>
+                            @if (Model.Groups != null)
+                            {
+                                foreach (var item in (IEnumerable<dynamic>)Model.Groups)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            }
+                        </select>
+                        <small class="text-muted d-block mt-1">Або введіть нову групу нижче</small>
+                    </div>
 
-        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+                    <div class="col-md-6">
+                        <label class="form-label label-custom">Група (нова)</label>
+                        <input asp-for="GroupName" class="form-control form-app-control" placeholder="Напр. ПМІ-31" />
+                    </div>
 
-        <form asp-action="Create" method="post">
-            @Html.AntiForgeryToken()
-            
-            <!-- GROUP SECTION -->
-            <div class="row">
-                <div class="col-md-5 mb-3">
-                    <label asp-for="GroupId" class="form-label">
-                        <span class="text-danger">*</span> Група (вибір)
-                    </label>
-                    <select asp-for="GroupId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Groups, "Id", "Name", Model.GroupId))">
-                        <option value="">-- Виберіть групу --</option>
-                    </select>
-                    <span asp-validation-for="GroupId" class="text-danger"></span>
-                    <small class="text-muted">Або введіть нову групу нижче</small>
+                    <div class="col-md-6">
+                        <label class="form-label label-custom">Предмет</label>
+                        <select name="SubjectId" id="SubjectId" class="form-select form-app-control">
+                            <option value="">-- Виберіть предмет --</option>
+                            @if (Model.Subjects != null)
+                            {
+                                foreach (var item in (IEnumerable<dynamic>)Model.Subjects)
+                                {
+                                    <option value="@item.Id">@item.Title</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label label-custom">Або нова назва</label>
+                        <input asp-for="SubjectTitle" class="form-control form-app-control" placeholder="Напр. Математика" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label label-custom">Дата</label>
+                                <input asp-for="Date" class="form-control form-app-control" type="date" />
+                            </div>
+                            <div class="col-3">
+                                <label class="form-label label-custom">Початок</label>
+                                <input asp-for="StartTime" class="form-control form-app-control" type="time" />
+                            </div>
+                            <div class="col-3">
+                                <label class="form-label label-custom">Кінець</label>
+                                <input asp-for="EndTime" class="form-control form-app-control" type="time" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label label-custom">Аудиторія</label>
+                        <input asp-for="Place" class="form-control form-app-control" placeholder="Напр. ауд. 201" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label label-custom">Викладач (вибір)</label>
+                        <select name="TeacherId" id="TeacherId" class="form-select form-app-control">
+                            <option value="">-- Виберіть викладача --</option>
+                            @if (Model.Teachers != null)
+                            {
+                                foreach (var item in (IEnumerable<dynamic>)Model.Teachers)
+                                {
+                                    <option value="@item.Id">@item.FullName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label label-custom">Викладач (новий)</label>
+                        <input asp-for="TeacherName" class="form-control form-app-control" placeholder="Напр. Петренко І.В." />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label label-custom">Тип заняття</label>
+                        <select asp-for="Type" class="form-select form-app-control">
+                            <option value="">-- Виберіть тип --</option>
+                            <option value="Lecture">Лекція</option>
+                            <option value="Lab">Лабораторна</option>
+                            <option value="Seminar">Семінар</option>
+                            <option value="Practical">Практична</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label label-custom">Повторення</label>
+                                <select asp-for="RecurrenceType" class="form-select form-app-control">
+                                    <option value="None">Не повторюється</option>
+                                    <option value="Daily">Щодня</option>
+                                    <option value="Weekly">Щотижня</option>
+                                    <option value="BiWeekly">Раз на два тижні</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label label-custom">До (дата)</label>
+                                <input asp-for="RecurrenceUntil" class="form-control form-app-control" type="date" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="col-md-5 mb-3">
-                    <label asp-for="GroupName" class="form-label">Група (нова)</label>
-                    <input asp-for="GroupName" class="form-control" placeholder="Напр. ПМІ-31" />
-                    <small class="text-muted">Якщо вибрали групу вище, це поле ігнорується</small>
+                <div class="d-flex gap-3 mt-5 border-top pt-4">
+                    <button type="submit" class="btn-app btn-app-primary">
+                        <i class="bi bi-check-circle"></i> Створити розклад
+                    </button>
+                    <a asp-action="Index" asp-controller="Schedule" class="btn-app btn-app-back">
+                        <i class="bi bi-arrow-left"></i> Назад
+                    </a>
                 </div>
-            </div>
-            
-            <!-- SUBJECT SECTION -->
-            <div class="row">
-                <div class="col-md-5 mb-3">
-                    <label asp-for="SubjectId" class="form-label">
-                        <span class="text-danger">*</span> Предмет
-                    </label>
-                    <select asp-for="SubjectId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Subjects, "Id", "Title", Model.SubjectId))">
-                        <option value="">-- Виберіть предмет --</option>
-                    </select>
-                    <span asp-validation-for="SubjectId" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-5 mb-3">
-                    <label asp-for="SubjectTitle" class="form-label">Або нова назва</label>
-                    <input asp-for="SubjectTitle" class="form-control" placeholder="Напр. Математика" />
-                </div>
-            </div>
-            
-            <!-- DATE AND TIME SECTION -->
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <label asp-for="Date" class="form-label"><span class="text-danger">*</span> Дата</label>
-                    <input asp-for="Date" class="form-control" type="date" />
-                    <span asp-validation-for="Date" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-2 mb-3">
-                    <label asp-for="StartTime" class="form-label"><span class="text-danger">*</span> Початок</label>
-                    <input asp-for="StartTime" class="form-control" type="time" />
-                    <span asp-validation-for="StartTime" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-2 mb-3">
-                    <label asp-for="EndTime" class="form-label"><span class="text-danger">*</span> Кінець</label>
-                    <input asp-for="EndTime" class="form-control" type="time" />
-                    <span asp-validation-for="EndTime" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-3 mb-3">
-                    <label asp-for="Place" class="form-label">Аудиторія</label>
-                    <input asp-for="Place" class="form-control" placeholder="Напр. ауд. 201" />
-                </div>
-            </div>
-            
-            <!-- TEACHER AND TYPE SECTION -->
-            <div class="row">
-                <div class="col-md-5 mb-3">
-                    <label asp-for="TeacherId" class="form-label">
-                        <span class="text-danger">*</span> Викладач (вибір)
-                    </label>
-                    <select asp-for="TeacherId" class="form-select" asp-items="@(new Microsoft.AspNetCore.Mvc.Rendering.SelectList(Model.Teachers, "Id", "FullName", Model.TeacherId))">
-                        <option value="">-- Виберіть викладача --</option>
-                    </select>
-                    <span asp-validation-for="TeacherId" class="text-danger"></span>
-                    <small class="text-muted">Або введіть нове ім'я нижче</small>
-                </div>
-
-                <div class="col-md-5 mb-3">
-                    <label asp-for="TeacherName" class="form-label">Викладач (новий)</label>
-                    <input asp-for="TeacherName" class="form-control" placeholder="Напр. Петренко І.В." />
-                    <small class="text-muted">Якщо вибрали викладача вище, це поле ігнорується</small>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label asp-for="Type" class="form-label">Тип заняття</label>
-                    <select asp-for="Type" class="form-select">
-                        <option value="">-- Виберіть тип --</option>
-                        <option value="Lecture">Лекція</option>
-                        <option value="Lab">Лабораторна</option>
-                        <option value="Seminar">Семінар</option>
-                        <option value="Practical">Практична</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- RECURRENCE SECTION -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label asp-for="RecurrenceType" class="form-label">Повторення</label>
-                    <select asp-for="RecurrenceType" class="form-select">
-                        <option value="None">Не повторюється</option>
-                        <option value="Daily">Щодня</option>
-                        <option value="Weekly">Щотижня</option>
-                        <option value="BiWeekly">Раз на два тижні</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="RecurrenceUntil" class="form-label">Повторювати до (дата)</label>
-                    <input asp-for="RecurrenceUntil" class="form-control" type="date" />
-                </div>
-            </div>
-
-            <input type="hidden" asp-for="Recurrence" />
-
-            <button type="submit" class="btn btn-primary">Створити розклад</button>
-            <a asp-action="Index" asp-controller="Calendar" class="btn btn-secondary ms-2">Назад</a>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
 }

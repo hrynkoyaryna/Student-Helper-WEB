@@ -54,7 +54,9 @@
 
             <div class="form-actions">
                 <button type="submit" class="action-btn save-btn">Зберегти зміни</button>
-                <a asp-action="Details" asp-route-id="@Model.Id" class="action-btn cancel-btn">Скасувати</a>
+                <a asp-action="Index" class="btn-app btn-app-cancel">
+                    <i class="bi bi-x-circle"></i> Скасувати
+                </a>
             </div>
         </form>
     </div>

@@ -1,84 +1,62 @@
-/* ====================================
-   Unified Button Styling System
-   ==================================== */
-
-.btn-unified {
-    padding: 12px 24px;
+/* 1. БАЗОВІ НАЛАШТУВАННЯ - тут ми задаємо однаковий розмір */
+.btn-app {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    min-width: 140px;    /* ГАРАНТІЯ однакової ширини */
+    height: 44px;       /* ГАРАНТІЯ однакової висоти */
     border: none;
     border-radius: 10px;
     font-weight: 700;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.btn-unified-sm {
-    padding: 8px 16px;
-    border-radius: 8px;
     font-size: 14px;
-    font-weight: 600;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    white-space: nowrap;
 }
 
-/* Edit Button - Dark/Primary */
-.btn-edit, .btn-action-edit {
-    background-color: #111827;
-    color: white;
-    border: none;
+/* 2. КОЛЬОРИ */
+.btn-app-primary { background-color: #5bc8d8; color: white !important; } 
+.btn-app-dark    { background-color: #111827; color: white !important; } 
+.btn-app-danger  { background-color: #ef4444; color: white !important; } 
+.btn-app-warning { background-color: #ffb020; color: #212529 !important; }
+.btn-app-success { background-color: #22c55e; color: white !important; }
+.btn-app-cancel  { background-color: #64748b; color: white !important; }
+
+/* Кнопка Назад (світла) */
+.btn-app-back { 
+    background-color: #f1f5f9; 
+    color: #475569 !important; 
+    border: 1px solid #e2e8f0;
 }
 
-.btn-edit:hover, .btn-action-edit:hover {
-    background-color: #1f2937;
+/* 3. ЕФЕКТИ */
+.btn-app:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(17, 24, 39, 0.2);
-    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    filter: brightness(1.1);
 }
 
-/* Delete Button - Red */
-.btn-delete, .btn-action-delete {
-    background-color: #ef4444;
-    color: white;
-    border: none;
+/* 4. МАЛЕНЬКА КНОПКА (для таблиць/списків) */
+.btn-app-sm {
+    min-width: auto; 
+    padding: 6px 12px;
+    font-size: 12px;
+    height: 32px;
+}
+/* Уніфікація висоти для всіх елементів форми */
+.form-app-control {
+    height: 45px !important;
+    border-radius: 10px !important;
+    border: 1px solid #dee2e6 !important;
+    padding: 0.375rem 0.75rem !important;
 }
 
-.btn-delete:hover, .btn-action-delete:hover {
-    background-color: #dc2626;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2);
-    color: white;
-}
-
-/* Save/Action Button - Primary Color (Твій бірюзовий) */
-.save-btn, .btn-save, .btn-action-save {
-    background-color: #5bc8d8;
-    color: white;
-}
-
-.save-btn:hover, .btn-save:hover, .btn-action-save:hover {
-    background-color: #4ab5c4;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(91, 200, 216, 0.2);
-    color: white;
-}
-
-/* Back/Cancel Button - Gray */
-.btn-back, .btn-cancel, .btn-action-cancel {
-    background-color: #f1f5f9;
-    color: #475569;
-}
-
-.btn-back:hover, .btn-cancel:hover, .btn-action-cancel:hover {
-    background-color: #e2e8f0;
-    color: #1e293b;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.btn-unified:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none !important;
+/* Виправлення іконок у календарях та випадаючих списках */
+select.form-app-control {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
 }

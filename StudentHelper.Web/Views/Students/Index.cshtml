@@ -66,17 +66,18 @@
                                 {
                                     <form asp-action="UnblockStudent" asp-controller="Admin" asp-route-id="@student.Id" method="post" class="form-inline">
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-outline-success btn-sm" title="Розблокувати студента">
-                                            ✓ Розблок.
+                                        <button class="btn-app btn-app-warning">
+                                            <i class="bi bi-slash-circle"></i> Розблокувати
                                         </button>
+
                                     </form>
                                 }
                                 else
                                 {
                                     <form asp-action="BlockStudent" asp-controller="Admin" asp-route-id="@student.Id" method="post" onsubmit="return confirm('Ви впевнені, що хочете заблокувати цього студента?');" class="form-inline">
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Заблокувати студента">
-                                            ⊗ Блок.
+                                        <button class="btn-app btn-app-warning">
+                                            <i class="bi bi-slash-circle"></i> Блокувати
                                         </button>
                                     </form>
                                 }
