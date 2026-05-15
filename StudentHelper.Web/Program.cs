@@ -31,7 +31,7 @@ if (!builder.Environment.IsDevelopment())
     }
 }
 
-// --- 2. ПІДГОТОВКА CONNECTION STRING ---
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var secretPassword = builder.Configuration["DbPassword"];
 
