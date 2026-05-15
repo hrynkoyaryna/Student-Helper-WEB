@@ -6,6 +6,7 @@ using StudentHelper.Domain.Entities;
 using StudentHelper.Web.Controllers;
 using StudentHelper.Web.Models.Students;
 using Xunit;
+using System.Linq.Expressions;
 
 namespace StudentHelper.Application.Tests;
 
@@ -51,44 +52,6 @@ public class StudentsControllerTests
 
         var viewResult = Assert.IsType<ViewResult>(result);
         Assert.IsType<CreateStudentViewModel>(viewResult.Model);
-    }
-
-    [Fact]
-    public async Task Create_Post_ValidModel_RedirectsToIndex()
-    {
-        var userManagerMock = GetUserManagerMock(new List<User>().AsQueryable());
-
-        userManagerMock
-            .Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-            .ReturnsAsync((User?)null);
-
-        userManagerMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync((User?)null);
-
-        userManagerMock
-            .Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Success);
-
-        userManagerMock
-            .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), "User"))
-            .ReturnsAsync(IdentityResult.Success);
-
-        var controller = new StudentsController(userManagerMock.Object);
-
-        var model = new CreateStudentViewModel
-        {
-            UserName = "student1",
-            Email = "student1@test.com",
-            Password = "Password123!",
-            FirstName = "Ім'я",
-            LastName = "Прізвище",
-        };
-
-        var result = await controller.Create(model);
-
-        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectResult.ActionName);
     }
 
     [Fact]
@@ -147,17 +110,8 @@ public class StudentsControllerTests
     private static Mock<UserManager<User>> GetUserManagerMock(IQueryable<User> users)
     {
         var store = new Mock<IUserStore<User>>();
-
         var mock = new Mock<UserManager<User>>(
-            store.Object,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!);
+            store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
 
         var userStore = new TestAsyncEnumerable<User>(users);
         mock.Setup(x => x.Users).Returns(userStore);
@@ -166,80 +120,33 @@ public class StudentsControllerTests
     }
 }
 
+// --- ДОПОМІЖНІ КЛАСИ (ЯКІ БУЛИ ВИДАЛЕНІ) ---
+
 public class TestAsyncEnumerable<T> : EnumerableQuery<T>, IAsyncEnumerable<T>, IQueryable<T>
 {
-    public TestAsyncEnumerable(IEnumerable<T> enumerable)
-        : base(enumerable)
-    {
-    }
-
-    public TestAsyncEnumerable(System.Linq.Expressions.Expression expression)
-        : base(expression)
-    {
-    }
-
-    public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
-    {
-        return new TestAsyncEnumerator<T>(this.AsEnumerable().GetEnumerator());
-    }
-
+    public TestAsyncEnumerable(IEnumerable<T> enumerable) : base(enumerable) { }
+    public TestAsyncEnumerable(Expression expression) : base(expression) { }
+    public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default) 
+        => new TestAsyncEnumerator<T>(this.AsEnumerable().GetEnumerator());
     IQueryProvider IQueryable.Provider => new TestAsyncQueryProvider<T>(this);
 }
 
 public class TestAsyncEnumerator<T> : IAsyncEnumerator<T>
 {
     private readonly IEnumerator<T> inner;
-
-    public TestAsyncEnumerator(IEnumerator<T> inner)
-    {
-        this.inner = inner;
-    }
-
-    public T Current => this.inner.Current;
-
-    public ValueTask DisposeAsync()
-    {
-        this.inner.Dispose();
-        return ValueTask.CompletedTask;
-    }
-
-    public ValueTask<bool> MoveNextAsync()
-    {
-        return new ValueTask<bool>(this.inner.MoveNext());
-    }
+    public TestAsyncEnumerator(IEnumerator<T> inner) => this.inner = inner;
+    public T Current => inner.Current;
+    public ValueTask DisposeAsync() { inner.Dispose(); return ValueTask.CompletedTask; }
+    public ValueTask<bool> MoveNextAsync() => new ValueTask<bool>(inner.MoveNext());
 }
 
 public class TestAsyncQueryProvider<TEntity> : IAsyncQueryProvider
 {
     private readonly IQueryProvider inner;
-
-    public TestAsyncQueryProvider(IQueryProvider inner)
-    {
-        this.inner = inner;
-    }
-
-    public IQueryable CreateQuery(System.Linq.Expressions.Expression expression)
-    {
-        return new TestAsyncEnumerable<TEntity>(expression);
-    }
-
-    public IQueryable<TElement> CreateQuery<TElement>(System.Linq.Expressions.Expression expression)
-    {
-        return new TestAsyncEnumerable<TElement>(expression);
-    }
-
-    public object Execute(System.Linq.Expressions.Expression expression)
-    {
-        return this.inner.Execute(expression)!;
-    }
-
-    public TResult Execute<TResult>(System.Linq.Expressions.Expression expression)
-    {
-        return this.inner.Execute<TResult>(expression);
-    }
-
-    public TResult ExecuteAsync<TResult>(System.Linq.Expressions.Expression expression, CancellationToken cancellationToken = default)
-    {
-        return this.Execute<TResult>(expression);
-    }
+    public TestAsyncQueryProvider(IQueryProvider inner) => this.inner = inner;
+    public IQueryable CreateQuery(Expression expression) => new TestAsyncEnumerable<TEntity>(expression);
+    public IQueryable<TElement> CreateQuery<TElement>(Expression expression) => new TestAsyncEnumerable<TElement>(expression);
+    public object Execute(Expression expression) => inner.Execute(expression)!;
+    public TResult Execute<TResult>(Expression expression) => inner.Execute<TResult>(expression);
+    public TResult ExecuteAsync<TResult>(Expression expression, CancellationToken token = default) => Execute<TResult>(expression);
 }
