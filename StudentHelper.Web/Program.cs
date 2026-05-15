@@ -20,7 +20,7 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- ПУНКТ 3: Налаштування Azure Key Vault ---
+// --- 1. НАЛАШТУВАННЯ AZURE KEY VAULT ---
 if (!builder.Environment.IsDevelopment())
 {
     var vaultUriString = builder.Configuration["KeyVaultUri"];
@@ -30,22 +30,28 @@ if (!builder.Environment.IsDevelopment())
         builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
     }
 }
-// ----------------------------------------------
 
+// --- 2. ПІДГОТОВКА CONNECTION STRING ---
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var secretPassword = builder.Configuration["DbPassword"];
+
+if (!string.IsNullOrEmpty(secretPassword) && connectionString != null)
+{
+    connectionString = connectionString.Replace("{DbPassword}", secretPassword);
+}
+
+builder.Services.AddDbContext<StudentHelperDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// --- 3. РЕЄСТРАЦІЯ СЕРВІСІВ ---
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddControllersWithViews();
-
-// Додаємо SignalR
 builder.Services.AddSignalR();
 
 builder.Services.Configure<ApplicationSettings>(
     builder.Configuration.GetSection("ApplicationSettings"));
-
-// Тепер пароль у ConnectionString може підтягуватися автоматично з Key Vault
-builder.Services.AddDbContext<StudentHelperDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IGroupsService, GroupsService>();
 
@@ -61,15 +67,6 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
         options.Password.RequireUppercase = appSettings.PasswordSettings.RequireUppercase;
         options.Password.RequireLowercase = appSettings.PasswordSettings.RequireLowercase;
     }
-    else
-    {
-        options.Password.RequireDigit = true;
-        options.Password.RequiredLength = 8;
-        options.Password.RequireNonAlphanumeric = true;
-        options.Password.RequireUppercase = true;
-        options.Password.RequireLowercase = true;
-    }
-
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<StudentHelperDbContext>()
@@ -90,10 +87,8 @@ builder.Services.AddScoped<IPersonalEventRepository, PersonalEventRepository>();
 builder.Services.AddScoped<IExamsRepository, ExamsRepository>();
 builder.Services.AddScoped<INotesRepository, NotesRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
-
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<IScheduleService, StudentHelper.Infrastructure.Services.ScheduleService>();
-
 builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
@@ -101,13 +96,12 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<INotesService, NotesService>();
 builder.Services.AddScoped<IExamsService, ExamsService>();
-
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddHostedService<NotificationBackgroundService>();
-
 builder.Services.AddMemoryCache();
-builder.Services.AddScoped<ICacheableLookupService, StudentHelper.Web.Services.CacheableLookupServiceWeb>();
+builder.Services.AddScoped<ICacheableLookupService, CacheableLookupServiceWeb>();
 
+// --- НАЛАШТУВАННЯ ПОШТИ ---
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 var smtpOptions = builder.Configuration.GetSection("Smtp").Get<SmtpOptions>();
 
@@ -122,18 +116,8 @@ else
 
 var app = builder.Build();
 
-var currentEnv = app.Environment.EnvironmentName;
-var itemsPerPage = app.Configuration["ApplicationSettings:ItemsPerPage"];
-var smtpHost = app.Configuration["Smtp:Host"];
-
-Console.WriteLine("\n" + new string('=', 50));
-Console.WriteLine($">>> ====== APPLICATION STARTED ======");
-Console.WriteLine($">>> Environment: {currentEnv}");
-Console.WriteLine($">>> ItemsPerPage: {itemsPerPage}");
-Console.WriteLine($">>> SMTP Host: {(string.IsNullOrEmpty(smtpHost) ? "Console Mode (No SMTP)" : smtpHost)}");
-Console.WriteLine(new string('=', 50) + "\n");
-
-app.UseMiddleware<StudentHelper.Web.Middleware.GlobalExceptionHandlerMiddleware>();
+// --- 4. КОНФІГУРАЦІЯ MIDDLEWARE ---
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -142,14 +126,14 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<StudentHelperDbContext>();
         context.Database.Migrate();
-
         await DbSeeder.SeedAdminAsync(services);
     }
     catch (Exception ex)
     {
-        Console.WriteLine($">>> Error: {ex.Message}");
+        Log.Error(ex, "Помилка під час міграції БД");
     }
 }
+
 app.UseSerilogRequestLogging();
 
 if (!app.Environment.IsDevelopment())
@@ -172,7 +156,9 @@ app.MapControllerRoute(
 
 app.Run();
 
-// --- Класи та Допоміжні сервіси ---
+// ==========================================================
+// --- ДОПОМІЖНІ КЛАСИ (МАЮТЬ БУТИ В КІНЦІ ФАЙЛУ) ---
+// ==========================================================
 
 public class SmtpOptions
 {
@@ -186,11 +172,7 @@ public class SmtpOptions
 public class SmtpEmailSender : IEmailSender
 {
     private readonly SmtpOptions options;
-
-    public SmtpEmailSender(IOptions<SmtpOptions> options)
-    {
-        this.options = options.Value;
-    }
+    public SmtpEmailSender(IOptions<SmtpOptions> options) { this.options = options.Value; }
 
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
@@ -202,12 +184,8 @@ public class SmtpEmailSender : IEmailSender
 
         using var client = new MailKit.Net.Smtp.SmtpClient();
         await client.ConnectAsync(this.options.Host, this.options.Port, MailKit.Security.SecureSocketOptions.StartTls);
-
         if (!string.IsNullOrEmpty(this.options.UserName))
-        {
             await client.AuthenticateAsync(this.options.UserName, this.options.Password);
-        }
-
         await client.SendAsync(message);
         await client.DisconnectAsync(true);
     }
